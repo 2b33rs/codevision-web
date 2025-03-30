@@ -8,16 +8,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
+  SidebarRail,
 } from "@/components/ui/sidebar.tsx";
 import { NAV_MAIN } from "@/navigation/sidebarItems.tsx";
 import { Shirt } from "lucide-react";
 import { NavUser } from "@/components/sidebar/nav-user.tsx";
 
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon"  {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -39,13 +38,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/*<NavSecondary items={data.navSecondary} className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={{
-          name: "John Doe",
-          email: "hi@test.de",
-          avatar: "Avatar",
-        }} />
+        <NavUser
+          user={{
+            name: "John Doe",
+            email: "hi@test.de",
+            avatar: "Avatar",
+          }}
+        />
       </SidebarFooter>
-      <SidebarRail/>
+      <SidebarRail />
     </Sidebar>
-  )
+  );
 }

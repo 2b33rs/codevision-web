@@ -1,7 +1,6 @@
-import DefaultLayout from "@/components/layout/DefaultLayout"
+import DefaultLayout from "@/components/layout/DefaultLayout";
 import { NAV_MAIN } from "@/navigation/sidebarItems.tsx";
 import { createBrowserRouter, Navigate } from "react-router";
-
 
 export const router = createBrowserRouter([
   {
@@ -22,4 +21,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+]);

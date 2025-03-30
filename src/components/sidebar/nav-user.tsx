@@ -4,13 +4,13 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar.tsx"
+} from "@/components/ui/avatar.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,32 +19,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx"
+} from "@/components/ui/dropdown-menu.tsx";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar.tsx"
+} from "@/components/ui/sidebar.tsx";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
-  const avatar = <Avatar className="h-8 w-8 rounded-lg">
-    <AvatarImage src={user.avatar} alt={user.name} />
-    <AvatarFallback className="rounded-lg">{user.name.split(" ").map((value) => {
-      return value.charAt(0).toUpperCase()
-    })}</AvatarFallback>
-
-  </Avatar>;
+  const avatar = (
+    <Avatar className="h-8 w-8 rounded-lg">
+      <AvatarImage src={user.avatar} alt={user.name} />
+      <AvatarFallback className="rounded-lg">
+        {user.name.split(" ").map((value) => {
+          return value.charAt(0).toUpperCase();
+        })}
+      </AvatarFallback>
+    </Avatar>
+  );
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -105,5 +108,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

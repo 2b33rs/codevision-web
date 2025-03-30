@@ -5,7 +5,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar.tsx";
 import { Link, useLocation } from "react-router";
 import { HorizontalFlex } from "@/common/flex/Flex.tsx";
@@ -13,16 +13,15 @@ import { useIsMobile } from "@/hooks/use-mobile.ts";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 
-export function NavMain(
-  {
-    items
-  }: {
-    items: {
-      title: string
-      url: string
-      icon?: Icon
-    }[]
-  }) {
+export function NavMain({
+  items,
+}: {
+  items: {
+    title: string;
+    url: string;
+    icon?: Icon;
+  }[];
+}) {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { toggleSidebar, state } = useSidebar();
@@ -36,7 +35,7 @@ export function NavMain(
             return (
               <SidebarMenuItem
                 key={item.title}
-                className={cn(state === "collapsed" && "mx-auto" , )}
+                className={cn(state === "collapsed" && "mx-auto")}
               >
                 <Link
                   to={item.url}
@@ -47,11 +46,15 @@ export function NavMain(
                   <SidebarMenuButton
                     tooltip={item.title}
                     variant={isActive ? "outline" : "default"}
-                    className={cn("w-full justify-start text-muted-foreground " +
-                      "", isActive && "text-primary")}
+                    className={cn(
+                      "text-muted-foreground w-full justify-start " + "",
+                      isActive && "text-primary",
+                    )}
                   >
-                    {state === "collapsed" ? item.icon && <item.icon /> :
-                      (<HorizontalFlex gap={2}>
+                    {state === "collapsed" ? (
+                      item.icon && <item.icon />
+                    ) : (
+                      <HorizontalFlex gap={2}>
                         {item.icon && <item.icon className={"!size-5"} />}
                         <AnimatePresence initial={false} mode="wait">
                           {state === "expanded" && (
@@ -66,7 +69,8 @@ export function NavMain(
                             </motion.span>
                           )}
                         </AnimatePresence>
-                      </HorizontalFlex>)}
+                      </HorizontalFlex>
+                    )}
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
