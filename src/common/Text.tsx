@@ -7,23 +7,33 @@ type TextProps = {
 };
 
 export const H1: React.FC<TextProps> = ({ children, className }) => (
-  <h1 className={cn("text-2xl font-medium", className)}>{children}</h1>
+  <h1 className={cn("text-4xl font-medium tracking-tight", className)}>
+    {children}
+  </h1>
 );
 
 export const H2: React.FC<TextProps> = ({ children, className }) => (
-  <h2 className={cn("text-xl font-medium", className)}>{children}</h2>
+  <h2 className={cn("text-2xl font-medium tracking-tight", className)}>
+    {children}
+  </h2>
 );
 
 export const H3: React.FC<TextProps> = ({ children, className }) => (
-  <h3 className={cn("text-lg font-medium", className)}>{children}</h3>
+  <h3 className={cn("text-lg font-medium tracking-tight", className)}>
+    {children}
+  </h3>
 );
 
 export const P: React.FC<TextProps> = ({ children, className }) => (
-  <p className={cn("text-base font-medium", className)}>{children}</p>
+  <p className={cn("text-base font-medium tracking-tight", className)}>
+    {children}
+  </p>
 );
 
 export const Small: React.FC<TextProps> = ({ children, className }) => (
-  <small className={cn("text-sm font-medium", className)}>{children}</small>
+  <small className={cn("text-sm font-medium tracking-tight", className)}>
+    {children}
+  </small>
 );
 
 export const Text = (props: {
