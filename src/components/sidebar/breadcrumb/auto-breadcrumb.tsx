@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useLocation } from "react-router";
 import { ChevronRight } from "lucide-react";
-import { HorizontalFlex } from "@/common/flex/Flex";
+import { Row } from "@/common/flex/Flex";
 import { useActiveRoute } from "@/navigation/useActiveRoute.ts";
 
 export function AutoBreadcrumb() {
@@ -22,7 +22,7 @@ export function AutoBreadcrumb() {
 
   return (
     <Breadcrumb>
-      <HorizontalFlex gap={1}>
+      <Row gap={1}>
         {breadcrumbs.map((crumb, idx) => {
           const isActive = crumb.path === activePath;
           return (
@@ -41,7 +41,7 @@ export function AutoBreadcrumb() {
             </BreadcrumbItem>
           );
         })}
-      </HorizontalFlex>
+      </Row>
     </Breadcrumb>
   );
 }

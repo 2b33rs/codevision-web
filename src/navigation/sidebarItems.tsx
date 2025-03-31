@@ -1,7 +1,7 @@
 import { IconDashboard, IconDownload, IconTable } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
-import Matrix from "@/feature/matrix/Matrix.tsx";
 import Export from "@/feature/export/Export.tsx";
+import Order from "@/feature/order/Order.tsx";
 
 export const NAV_MAIN = [
   {
@@ -11,10 +11,10 @@ export const NAV_MAIN = [
     element: <Dashboard />,
   },
   {
-    title: "Risiko-Matrix",
-    url: "/matrix",
+    title: "Bestellung",
+    url: "/bestellung",
     icon: IconTable,
-    element: <Matrix />,
+    element: <Order />,
   },
   {
     title: "Export / Import",

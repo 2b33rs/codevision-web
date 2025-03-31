@@ -8,7 +8,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar.tsx";
 import { Link, useLocation } from "react-router";
-import { HorizontalFlex } from "@/common/flex/Flex.tsx";
+import { Row } from "@/common/flex/Flex.tsx";
 import { useIsMobile } from "@/hooks/use-mobile.ts";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -54,7 +54,7 @@ export function NavMain({
                     {state === "collapsed" ? (
                       item.icon && <item.icon />
                     ) : (
-                      <HorizontalFlex gap={2}>
+                      <Row gap={2}>
                         {item.icon && <item.icon className={"!size-5"} />}
                         <AnimatePresence initial={false} mode="wait">
                           {state === "expanded" && (
@@ -69,7 +69,7 @@ export function NavMain({
                             </motion.span>
                           )}
                         </AnimatePresence>
-                      </HorizontalFlex>
+                      </Row>
                     )}
                   </SidebarMenuButton>
                 </Link>
