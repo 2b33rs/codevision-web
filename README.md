@@ -15,3 +15,9 @@ https://ui.shadcn.com/
 ### styling with
 
 https://tailwindcss.com/
+
+
+
+### backend service url
+
+`codevision-backend-production.up.railway.app`
