@@ -6,6 +6,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
+# also ensure vite is installed
+RUN npm install -g vite
+
 COPY . .
 RUN npm run build
 
