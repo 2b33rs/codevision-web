@@ -8,6 +8,7 @@ export const orderApi = baseApi.injectEndpoints({
       query: () => "/orders",
       providesTags: ["Order"],
     }),
+    //
     createOrder: builder.mutation<
       Order,
       { customerId: string; template?: OrderTemplate }
@@ -19,6 +20,7 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Order"],
     }),
+    //
     filterOrders: builder.query<FilterResult<Order>, Filter<Order>>({
       query: (filter) => ({
         url: "/orders/filter",
@@ -27,6 +29,7 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Order"],
     }),
+    //
     updateOrder: builder.mutation<
       Order,
       { id: string; status: Order["status"] }
@@ -38,6 +41,7 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Order"],
     }),
+    //
     deleteOrder: builder.mutation<void, string>({
       query: (id) => ({
         url: `/orders/${id}`,
