@@ -1,25 +1,17 @@
-# --- Build Stage ---
+# --- Build stage ---
 FROM node:18 AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
 COPY . .
 RUN npm run build
 
-# --- Production Stage ---
-FROM node:18
+# --- Production stage ---
+FROM nginx:alpine
 
-WORKDIR /app
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN npm install -g vite
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/vite.config.* ./
-COPY --from=builder /app/index.html ./
-COPY --from=builder /app/package*.json ./
-
-EXPOSE 4173
-CMD ["vite", "preview", "--port", "4173", "--host"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
