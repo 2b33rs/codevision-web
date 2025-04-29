@@ -13,10 +13,11 @@ import {
 import { NAV_MAIN } from "@/navigation/sidebarItems.tsx";
 import { Shirt } from "lucide-react";
 import { NavUser } from "@/components/sidebar/nav-user.tsx";
+import { Link } from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" variant={"inset"} {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -24,10 +25,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to={"/"}>
                 <Shirt className="!size-5" />
                 <span className="text-base font-semibold">YourShirt GmbH</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

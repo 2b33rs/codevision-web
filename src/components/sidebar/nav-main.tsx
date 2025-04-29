@@ -51,7 +51,7 @@ export function NavMain({
                       isActive && "text-primary",
                     )}
                   >
-                    {state === "collapsed" ? (
+                    {state === "collapsed" && !isMobile ? (
                       item.icon && <item.icon />
                     ) : (
                       <Row gap={2}>
