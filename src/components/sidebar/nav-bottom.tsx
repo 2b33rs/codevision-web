@@ -27,7 +27,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar.tsx";
 
-export function NavUser({
+export function NavBottom({
   user,
 }: {
   user: {

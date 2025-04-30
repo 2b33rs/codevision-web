@@ -1,4 +1,3 @@
-import { type Icon } from "@tabler/icons-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,6 +11,8 @@ import { Row } from "@/common/flex/Flex.tsx";
 import { useIsMobile } from "@/hooks/use-mobile.ts";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
+import { LucideProps } from "lucide-react";
 
 export function NavMain({
   items,
@@ -19,7 +20,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: Icon;
+    icon?: React.FC<Omit<LucideProps, "ref">>;
   }[];
 }) {
   const location = useLocation();

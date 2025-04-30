@@ -9,13 +9,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar.tsx";
-import { NAV_MAIN } from "@/navigation/sidebarItems.tsx";
+import { NAV_ABTEILUNGEN, NAV_MAIN } from "@/navigation/sidebarItems.tsx";
 import { Shirt } from "lucide-react";
-import { NavUser } from "@/components/sidebar/nav-user.tsx";
 import { Link } from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
+
   return (
     <Sidebar collapsible="icon" variant={"inset"} {...props}>
       <SidebarHeader>
@@ -35,17 +38,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={NAV_MAIN} />
-        {/*<NavDocuments items={data.documents} />*/}
-        {/*<NavSecondary items={data.navSecondary} className="mt-auto" />*/}
       </SidebarContent>
+      {state == "expanded" && <SidebarSeparator />}
       <SidebarFooter>
-        <NavUser
-          user={{
-            name: "John Doe",
-            email: "hi@test.de",
-            avatar: "Avatar",
-          }}
-        />
+        <NavMain items={NAV_ABTEILUNGEN} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
