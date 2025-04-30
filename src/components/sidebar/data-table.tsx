@@ -1,17 +1,12 @@
 import * as React from "react";
-import { type UniqueIdentifier } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+
 import {
   IconChevronLeft,
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
 } from "@tabler/icons-react";
+import { globalFilterFn } from "@/lib/tableFilter";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -45,23 +40,11 @@ import {
   TableRow,
 } from "@/components/ui/table.tsx";
 import { Col } from "@/common/flex/Flex.tsx";
+import { SearchInput } from "@/components/ui/search-input.tsx";
 
-function DraggableRow<T extends { id: string }>({ row }: { row: TSRow<T> }) {
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.id,
-  });
-
+function StaticRow<T extends { id: string }>({ row }: { row: TSRow<T> }) {
   return (
-    <TableRow
-      data-state={row.getIsSelected() && "selected"}
-      data-dragging={isDragging}
-      ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition: transition,
-      }}
-    >
+    <TableRow data-state={row.getIsSelected() && "selected"}>
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -90,10 +73,7 @@ export function DataTable<T extends { id: string }>({
     pageSize: 10,
   });
 
-  const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id) || [],
-    [data],
-  );
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
     data,
@@ -103,8 +83,11 @@ export function DataTable<T extends { id: string }>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
       pagination,
     },
+    globalFilterFn,
+    onGlobalFilterChange: setGlobalFilter,
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -122,6 +105,12 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <Col f1>
+      <SearchInput
+        value={globalFilter}
+        onChange={setGlobalFilter}
+        placeholder={"Suche nach Auftragsnummer, Status oder Kunde .. "}
+        className="max-w-sm"
+      />
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
@@ -144,21 +133,16 @@ export function DataTable<T extends { id: string }>({
           </TableHeader>
           <TableBody className="**:data-[slot=table-cell]:first:w-8">
             {table.getRowModel().rows?.length ? (
-              <SortableContext
-                items={dataIds}
-                strategy={verticalListSortingStrategy}
-              >
-                {table.getRowModel().rows.map((row) => (
-                  <DraggableRow key={row.id} row={row} />
-                ))}
-              </SortableContext>
+              table
+                .getRowModel()
+                .rows.map((row) => <StaticRow key={row.id} row={row} />)
             ) : (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Keine Ergebnisse
                 </TableCell>
               </TableRow>
             )}
@@ -173,7 +157,7 @@ export function DataTable<T extends { id: string }>({
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
-              Rows per page
+              Einträge pro Seite
             </Label>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -196,7 +180,7 @@ export function DataTable<T extends { id: string }>({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            Seite {table.getState().pagination.pageIndex + 1} von{" "}
             {table.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
