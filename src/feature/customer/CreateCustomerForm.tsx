@@ -16,12 +16,14 @@ import { Button } from "@/components/ui/button";
 import { PhoneInput } from "@/components/ui/phone-input.tsx";
 
 const schema = z.object({
-  name: z.string().optional(),
-  addr_strasse: z.string().optional(),
-  addr_plz: z.string().optional(),
-  addr_ort: z.string().optional(),
-  telefon: z.string().optional(),
-  mail: z.string().email().optional(),
+  name: z.string().nonempty('Pflichtfeld'),
+  addr_strasse: z.string().nonempty('Pflichtfeld'),
+  addr_plz: z.string().nonempty('Pflichtfeld'),
+  addr_ort: z.string().nonempty('Pflichtfeld'),
+    firstname: z.string().nonempty('Pflichtfeld'),
+    lastname: z.string().nonempty('Pflichtfeld'),
+  telefon: z.string().nonempty('Pflichtfeld'),
+  mail: z.string().email('Pflichtfeld'),
 });
 
 type CustomerForm = z.infer<typeof schema>;
@@ -34,6 +36,8 @@ export default function CreateCustomerForm() {
       addr_strasse: "",
       addr_plz: "",
       addr_ort: "",
+        firstname:"",
+        lastname:"",
       telefon: "",
       mail: "",
     },
@@ -53,7 +57,7 @@ export default function CreateCustomerForm() {
             <FormItem>
               <FormLabel>Firmenname</FormLabel>
               <FormControl>
-                <Input placeholder="Muster GmbH" {...field} />
+                <Input placeholder="MusterFirma GmbH" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -67,7 +71,7 @@ export default function CreateCustomerForm() {
             <FormItem>
               <FormLabel>Straße</FormLabel>
               <FormControl>
-                <Input {...field} placeholder={"Musterweg"} />
+                <Input {...field} placeholder={"Musterweg 21b"} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,7 +84,7 @@ export default function CreateCustomerForm() {
             name="addr_plz"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>PLZ</FormLabel>
+                <FormLabel>Postleitzahl</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder={"77654"} />
                 </FormControl>
@@ -102,6 +106,38 @@ export default function CreateCustomerForm() {
             )}
           />
         </div>
+
+          <h3 className="mt-6 text-sm font-semibold text-black-700">
+              Ansprechpartner
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+              <FormField
+                  control={form.control}
+                  name="firstname"
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Vorname</FormLabel>
+                          <FormControl>
+                              <Input {...field} placeholder={"Max"} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
+              <FormField
+                  control={form.control}
+                  name="lastname"
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Nachname</FormLabel>
+                          <FormControl>
+                              <Input {...field} placeholder={"Mustermann"} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
+          </div>
 
         <FormField
           control={form.control}

@@ -37,10 +37,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+          {state === "expanded" && (
+              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Funktionen
+              </div>
+          )}
         <NavMain items={NAV_MAIN} />
       </SidebarContent>
       {state == "expanded" && <SidebarSeparator />}
       <SidebarFooter>
+          {state === "expanded" && (
+              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Abteilungen
+              </div>
+          )}
         <NavMain items={NAV_ABTEILUNGEN} />
       </SidebarFooter>
       <SidebarRail />

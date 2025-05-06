@@ -3,6 +3,9 @@ import { UserPlus } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import CreateCustomerForm from "@/feature/customer/CreateCustomerForm.tsx";
 import React from "react";
+import CustomerTable from "@/feature/customer/CustomerTable.tsx";
+import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
+import CustomerTablePrivate from "@/feature/customer/CustomerTablePrivate.tsx";
 
 const Customer = () => {
   const [showModal, setShowModal] = React.useState(false);
@@ -19,7 +22,15 @@ const Customer = () => {
           isLoading: false,
         }}
       >
-        Huhu Kunden
+        <BaseTabsLayout
+          tabs={[
+            { title: "Firmenkunden", content: <CustomerTable /> },
+            {
+              title: "Privatkunden",
+              content: <CustomerTablePrivate />,
+            },
+          ]}
+        />
       </BaseContentLayout>
       <DialogContent>
         <CreateCustomerForm />
