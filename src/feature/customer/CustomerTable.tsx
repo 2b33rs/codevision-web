@@ -1,13 +1,11 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { orderApi } from "@/api/endpoints/orderApi.ts";
+import {ColumnDef} from "@tanstack/react-table";
+import {DataTable} from "@/components/sidebar/data-table.tsx";
 import {Pencil, Trash} from "lucide-react";
 import {Customer} from "@/models/user.ts";
 import {Button} from "@/components/ui/button.tsx";
 
-
 const CustomerTable = () => {
-    //const { data } = orderApi.useGetOrdersQuery();
+  //const { data } = orderApi.useGetOrdersQuery();
 
     const data: Customer[] = [
         {
@@ -44,7 +42,7 @@ const CustomerTable = () => {
 
 
     const columns: ColumnDef<Customer>[] = [
-        { accessorKey: "customerId", header: "KundenId" },
+    { accessorKey: "customerId", header: "KundenId" },
         { accessorKey: "companyname", header: "Firmenname" },
         { accessorKey: "firstname", header: "Vorname" },
         { accessorKey: "lastname", header: "Nachname" },
@@ -82,15 +80,15 @@ const CustomerTable = () => {
         }
     ];
 
-    const handleEdit = (customer: Customer) => {
-        console.log("Bearbeiten:", customer);
-        //Bearbeiten Logik hinzufügen
+  const handleEdit = (customer: Customer) => {
+    console.log("Bearbeiten:", customer);
+    //Bearbeiten Logik hinzufügen
     };
 
     const handleDelete = (customer: Customer) => {
         console.log("Löschen:", customer);
         // Löschen Logik hinzufügen
-    };
+  };
 
 
     return <DataTable<Customer> data={data} columns={columns} />;
