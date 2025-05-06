@@ -45,7 +45,6 @@ const CustomerTable = () => {
 
     const columns: ColumnDef<Customer>[] = [
         { accessorKey: "customerId", header: "KundenId" },
-        { accessorKey: "companyname", header: "Firmenname" },
         { accessorKey: "firstname", header: "Vorname" },
         { accessorKey: "lastname", header: "Nachname" },
         { accessorKey: "address", header: "Straße" },

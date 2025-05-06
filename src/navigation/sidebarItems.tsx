@@ -32,12 +32,12 @@ export const NAV_MAIN = [
     icon: IconTable,
     element: <Order />,
   },
-  {
+  /*{
     title: "Export / Import",
     url: "/export",
     icon: IconDownload,
     element: <Export />,
-  },
+  },*/
 
   {
     title: "Fertigware",
