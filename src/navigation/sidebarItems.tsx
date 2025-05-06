@@ -7,9 +7,10 @@ import {
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Order from "@/feature/order/Order.tsx";
-import { BookCheck, User2 } from "lucide-react";
+import { BookCheck, Package, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
 import ProducedOrder from "@/feature/produced_order/ProducedOrder.tsx";
+import StandardProduct from "@/feature/standard_products/StandardProduct.tsx";
 
 export const NAV_MAIN = [
   {
@@ -30,7 +31,12 @@ export const NAV_MAIN = [
     icon: IconTable,
     element: <Order />,
   },
-
+  {
+    title: "Standartprodukte",
+    url: "/standardProduct",
+    icon: Package,
+    element: <StandardProduct />,
+  },
   {
     title: "Fertigware",
     url: "/producedOrder",
