@@ -11,6 +11,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -18,17 +25,18 @@ const schema = z.object({
     customer: z.string().optional(),
     position: z.array(
         z.object({
-            menge: z.number().int().positive(),
-            artikel: z.string().min(1),
-            groesse: z.string().min(1),
-            farbe: z.string().min(1),
-            motiv: z.boolean(),
-            motivURL: z.string().url().optional(),
-            nettopreis: z.number().positive(),
-            auftragsart: z.string().min(1),
+            amount: z.coerce.number().int().positive(),
+            prodCat: z.string().min(1),
+            shirtSize: z.string().min(1),
+            color: z.string().min(1),
+            design: z.boolean(),
+            designURL: z.string().url().optional().or(z.literal("")),
+            netPrice: z.coerce.number().positive(),
         })
     ),
 });
+
+
 
 
 
@@ -44,14 +52,13 @@ export default function CreateOrderForm() {
         defaultValues: {
             customer: "",
             position: [{
-                menge: 0,
-                artikel: "",
-                groesse: "",
-                farbe: "",
-                motiv: false,
-                motivURL: "",
-                nettopreis: 0,
-                auftragsart: "",
+                amount: 0,
+                prodCat: "T-Shirt",
+                shirtSize: "",
+                color: "",
+                design: false,
+                designURL: "",
+                netPrice: 0.00,
             }],
         },
     });
@@ -61,9 +68,16 @@ export default function CreateOrderForm() {
         name: "position",
     });
 
-    const onSubmit = form.handleSubmit((data) => {
-        console.log(data);
-    });
+    const onSubmit = form.handleSubmit(
+        (data) => {
+            console.log("✅ Formulardaten:", data);
+        },
+        (errors) => {
+            console.error("❌ Validierungsfehler:", errors);
+        }
+    );
+
+
 
     return (
         <Form {...form}>
@@ -97,7 +111,7 @@ export default function CreateOrderForm() {
                         {/* Menge */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.menge`}
+                                name={`position.${index}.amount`}
                                 render={({ field }) => (
                                     <FormItem className="flex-1">
                                         <FormLabel>Menge</FormLabel>
@@ -109,10 +123,10 @@ export default function CreateOrderForm() {
                                 )}
                             />
 
-                            {/* Artikel */}
+                            {/* prodCat */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.artikel`}
+                                name={`position.${index}.prodCat`}
                                 render={({ field }) => (
                                     <FormItem className="flex-1">
                                         <FormLabel>Artikel</FormLabel>
@@ -127,37 +141,52 @@ export default function CreateOrderForm() {
                             {/* Größe */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.groesse`}
+                                name={`position.${index}.shirtSize`}
                                 render={({ field }) => (
                                     <FormItem className="flex-1">
                                         <FormLabel>Größe</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Größe" {...field} className="w-[100%]" />
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Größe wählen" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="XS">XS</SelectItem>
+                                                    <SelectItem value="S">S</SelectItem>
+                                                    <SelectItem value="M">M</SelectItem>
+                                                    <SelectItem value="L">L</SelectItem>
+                                                    <SelectItem value="XL">XL</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Farbe */}
+                            {/* color */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.farbe`}
+                                name={`position.${index}.color`}
                                 render={({ field }) => (
                                     <FormItem className="flex-1">
                                         <FormLabel>Farbe</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Farbe" {...field} className="w-[100%]" />
+                                            <Input placeholder="CMYK" {...field} className="w-[100%]" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Motiv Checkbox */}
+                            {/* design Checkbox */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.motiv`}
+                                name={`position.${index}.design`}
                                 render={({ field }) => (
                                     <FormItem className="w-[5%]">
                                         <FormLabel>Motiv</FormLabel>
@@ -174,11 +203,11 @@ export default function CreateOrderForm() {
                                 )}
                             />
 
-                            {/* MotivURL (Nur wenn Motiv aktiviert ist) */}
-                            {form.watch(`position.${index}.motiv`) && (
+                            {/* designURL (Nur wenn design aktiviert ist) */}
+                            {form.watch(`position.${index}.design`) && (
                                 <FormField
                                     control={form.control}
-                                    name={`position.${index}.motivURL`}
+                                    name={`position.${index}.designURL`}
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
                                             <FormLabel>Motiv URL</FormLabel>
@@ -191,36 +220,21 @@ export default function CreateOrderForm() {
                                 />
                             )}
 
-                            {/* Nettopreis */}
+                            {/* netPrice */}
                             <FormField
                                 control={form.control}
-                                name={`position.${index}.nettopreis`}
+                                name={`position.${index}.netPrice`}
                                 render={({ field }) => (
                                     <FormItem className="flex-1">
                                         <FormLabel>Nettopreis</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="Nettopreis" {...field} className="w-[100%]" />
+                                            <Input type="number" placeholder="Nettopreis" {...field} className="w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Auftragsart */}
-                            <FormField
-                                control={form.control}
-                                name={`position.${index}.auftragsart`}
-                                render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                        <FormLabel>Auftragsart</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Auftragsart" {...field} className="w-[100%]" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-
-                            />
 
                             </div>
 
@@ -243,14 +257,13 @@ export default function CreateOrderForm() {
                         <Button
                             type="button"
                             onClick={() => append({
-                                menge: 0,
-                                artikel: "",
-                                groesse: "",
-                                farbe: "",
-                                motiv: false,
-                                motivURL: "",
-                                nettopreis: 0,
-                                auftragsart: "",
+                                amount: 0,
+                                prodCat: "",
+                                shirtSize: "",
+                                color: "",
+                                design: false,
+                                designURL: "",
+                                netPrice: 0.00,
                             })}
                         >
                             +
