@@ -7,9 +7,14 @@ const ProducedOrderTable = () => {
   const { data } = orderApi.useGetOrdersQuery();
   const columns: ColumnDef<Order>[] = [
     // TODO Variablen anpassen
-    { accessorKey: "orderNumber", header: "Auftragsnummer" },
-    { accessorKey: "status", header: "Status" },
-    { accessorKey: "customerId", header: "Kunde" },
+    { accessorKey: "ordernumber", header: "Bestellnummer"},
+    { accessorKey: "orderposition", header: "Position"},
+    { accessorKey: "count", header: "Anzahl" },
+    { accessorKey: "companyname", header: "Firmenname"},
+    { accessorKey: "address", header: "Adresse"},
+    { accessorKey: "postalcode", header: "Postleitzahl"},
+    { accessorKey: "city", header: "Ort"},
+    { accessorKey: "select", header: "Auswählen"},
   ];
 
   return <DataTable data={data || []} columns={columns} />;

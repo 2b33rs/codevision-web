@@ -14,7 +14,7 @@ const CustomerTable = () => {
         { accessorKey: "address", header: "Straße" },
         { accessorKey: "postalcode", header: "Postleitzahl" },
         { accessorKey: "city", header: "Ort" },
-        // ➕ Bearbeiten-Button-Spalte
+
         {
             id: "actions",
             header: "", // optional: leer lassen, damit keine Überschrift erscheint
