@@ -1,4 +1,4 @@
-import fuzzysort from "fuzzysort";
+import fuzzysort from 'fuzzysort';
 
 export function globalFilterFn(
   row: any,
