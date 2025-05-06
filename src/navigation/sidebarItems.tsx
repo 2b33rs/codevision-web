@@ -2,12 +2,10 @@ import {
   IconBuildingFactory,
   IconBuildingWarehouse,
   IconDashboard,
-  IconDownload,
   IconShoppingCart,
-  IconTable
+  IconTable,
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
-import Export from "@/feature/export/Export.tsx";
 import Order from "@/feature/order/Order.tsx";
 import { BookCheck, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
@@ -32,12 +30,6 @@ export const NAV_MAIN = [
     icon: IconTable,
     element: <Order />,
   },
-  {
-    title: "Export / Import",
-    url: "/export",
-    icon: IconDownload,
-    element: <Export />,
-  },
 
   {
     title: "Fertigware",
@@ -45,26 +37,22 @@ export const NAV_MAIN = [
     icon: BookCheck,
     element: <ProducedOrder />,
   },
-
 ];
 
 export const NAV_ABTEILUNGEN = [
   {
     title: "Verkauf & Versand",
     url: "/",
-    icon: IconShoppingCart
-    ,
+    icon: IconShoppingCart,
   },
   {
     title: "Produktion",
     url: "https://www.google.de/ref-to/prod",
-    icon: IconBuildingFactory
-    ,
+    icon: IconBuildingFactory,
   },
   {
     title: "Materialwirtschaft",
     url: "https://www.google.de/ref-to/prod",
-    icon: IconBuildingWarehouse
-    ,
+    icon: IconBuildingWarehouse,
   },
 ];
