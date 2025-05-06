@@ -4,6 +4,7 @@ export type Order = OrderTemplate & {
     updatedAt: string
     deletedAt: string | null
     customerId: string
+
 }
 
 

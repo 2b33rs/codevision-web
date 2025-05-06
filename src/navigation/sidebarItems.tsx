@@ -4,14 +4,15 @@ import {
   IconDashboard,
   IconDownload,
   IconShoppingCart,
-  IconTable
+  IconTable,
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Export from "@/feature/export/Export.tsx";
 import Order from "@/feature/order/Order.tsx";
-import { BookCheck, User2 } from "lucide-react";
+import { BookCheck, Package, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
 import ProducedOrder from "@/feature/produced_order/ProducedOrder.tsx";
+import StandardProduct from "@/feature/standard_products/StandardProduct.tsx";
 
 export const NAV_MAIN = [
   {
@@ -33,6 +34,12 @@ export const NAV_MAIN = [
     element: <Order />,
   },
   {
+    title: "Standartprodukte",
+    url: "/standardProduct",
+    icon: Package,
+    element: <StandardProduct />,
+  },
+  {
     title: "Export / Import",
     url: "/export",
     icon: IconDownload,
@@ -45,26 +52,22 @@ export const NAV_MAIN = [
     icon: BookCheck,
     element: <ProducedOrder />,
   },
-
 ];
 
 export const NAV_ABTEILUNGEN = [
   {
     title: "Verkauf & Versand",
     url: "/",
-    icon: IconShoppingCart
-    ,
+    icon: IconShoppingCart,
   },
   {
     title: "Produktion",
     url: "https://www.google.de/ref-to/prod",
-    icon: IconBuildingFactory
-    ,
+    icon: IconBuildingFactory,
   },
   {
     title: "Materialwirtschaft",
     url: "https://www.google.de/ref-to/prod",
-    icon: IconBuildingWarehouse
-    ,
+    icon: IconBuildingWarehouse,
   },
 ];
