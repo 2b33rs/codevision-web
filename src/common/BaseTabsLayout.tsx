@@ -13,7 +13,7 @@ interface TabObject {
 
 const BaseTabsLayout = ({ tabs }: { tabs: TabObject[] }) => {
   return (
-    <Tabs defaultValue="account">
+    <Tabs defaultValue={tabs[0].title} className={"flex-1"}>
       <TabsList>
         {tabs.map((tab, index) => (
           <TabsTrigger key={index} value={tab.title}>

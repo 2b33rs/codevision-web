@@ -6,6 +6,7 @@ import ProducedOrderForm from "@/feature/produced_order/ProducedOrderForm.tsx"
 import React from "react";
 import {Dialog, DialogContent} from "@/components/ui/dialog.tsx";
 import CustomerTable from "@/feature/customer/CustomerTable.tsx";
+import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
 
 
 const ProducedOrder = () => {
@@ -24,7 +25,8 @@ const ProducedOrder = () => {
                   isLoading: false,
               }}
           >
-              <ProducedOrderTable />
+              <BaseTabsLayout tabs={[{title:"Fertigware im Lager", content: <ProducedOrderTable />},{title:"Offene Sichtprüfungen", content: <ProducedOrderTable />} ]}>
+              </BaseTabsLayout>
           </BaseContentLayout>
           <DialogContent>
               <ProducedOrderForm />

@@ -4,6 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import CreateCustomerForm from "@/feature/customer/CreateCustomerForm.tsx";
 import React from "react";
 import CustomerTable from "@/feature/customer/CustomerTable.tsx";
+import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
 
 const Customer = () => {
   const [showModal, setShowModal] = React.useState(false);
@@ -20,7 +21,9 @@ const Customer = () => {
           isLoading: false,
         }}
       >
-          <CustomerTable />
+          <BaseTabsLayout tabs={[{title:"Firmenkunden", content: <CustomerTable />},{title:"Privatkunden", content: <CustomerTable />} ]}>
+
+          </BaseTabsLayout>
       </BaseContentLayout>
       <DialogContent>
         <CreateCustomerForm />
