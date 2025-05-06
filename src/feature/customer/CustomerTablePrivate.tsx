@@ -1,6 +1,5 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { orderApi } from "@/api/endpoints/orderApi.ts";
+import {ColumnDef} from "@tanstack/react-table";
+import {DataTable} from "@/components/sidebar/data-table.tsx";
 import {Pencil, Trash} from "lucide-react";
 import {Customer} from "@/models/user.ts";
 import {Button} from "@/components/ui/button.tsx";

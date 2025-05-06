@@ -1,10 +1,7 @@
-import { Order } from "@/models/order.ts";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { orderApi } from "@/api/endpoints/orderApi.ts";
+import {ColumnDef} from "@tanstack/react-table";
+import {DataTable} from "@/components/sidebar/data-table.tsx";
 import {ProducedOrder} from "@/models/produced_order.ts";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
-import {Customer} from "@/models/user.ts";
 
 const ProducedOrderTable = () => {
   //const { data } = orderApi.useGetOrdersQuery();

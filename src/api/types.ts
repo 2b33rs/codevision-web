@@ -1,10 +1,5 @@
-import { User } from "@/models/user";
 import { Path, PathImpl2 } from "@/lib/DeepProps";
 
-export interface Auth {
-  token: string;
-  user: User;
-}
 
 export interface FilterResult<T> {
   total: number;
