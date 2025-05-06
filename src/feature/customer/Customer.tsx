@@ -21,9 +21,15 @@ const Customer = () => {
           isLoading: false,
         }}
       >
-          <BaseTabsLayout tabs={[{title:"Firmenkunden", content: <CustomerTable />},{title:"Privatkunden", content: <CustomerTable />} ]}>
-
-          </BaseTabsLayout>
+        <BaseTabsLayout
+          tabs={[
+            { title: "Firmenkunden", content: <CustomerTable /> },
+            {
+              title: "Privatkunden",
+              content: <CustomerTable />,
+            },
+          ]}
+        />
       </BaseContentLayout>
       <DialogContent>
         <CreateCustomerForm />
