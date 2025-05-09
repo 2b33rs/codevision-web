@@ -11,10 +11,12 @@ export const customerApi = baseApi.injectEndpoints({
       query: () => "/customer",
       providesTags: ["Customer"],
     }),
+    //
     getCustomerById: builder.query<Customer, string>({
       query: (id) => `/customer/${id}`,
-      providesTags: (_res, _err, id) => [{ type: "Customer", id }],
+      providesTags: ["Customer"],
     }),
+    //
     createCustomer: builder.mutation<Customer, CreateCustomerDto>({
       query: (body) => ({
         url: "/customer",
@@ -23,6 +25,7 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Customer"],
     }),
+    //
     updateCustomer: builder.mutation<
       Customer,
       { id: string; data: UpdateCustomerDto }
@@ -32,14 +35,15 @@ export const customerApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (_res, _err, { id }) => [{ type: "Customer", id }],
+      invalidatesTags: ["Customer"],
     }),
+    //
     deleteCustomer: builder.mutation<Customer, string>({
       query: (id) => ({
         url: `/customer/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (_res, _err, id) => [{ type: "Customer", id }],
+      invalidatesTags: ["Customer"],
     }),
   }),
 });

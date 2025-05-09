@@ -2,8 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table";
-import { Mail, Pencil, Phone, Trash2 } from "lucide-react";
-import { Customer } from "@/models/customer";
+import { FileUp, Mail, Pencil, Phone, Trash2, UserPlus } from "lucide-react";
+import { Customer, CustomerType } from "@/models/customer";
 import { Button } from "@/components/ui/button";
 import { customerApi } from "@/api/endpoints/customerApi.ts";
 import {
@@ -14,16 +14,53 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { motion } from "framer-motion";
 import React from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
+import UploadCSVForm from "@/feature/customer/UploadCSVForm.tsx";
+import CreateCustomerForm from "@/feature/customer/CreateCustomerForm.tsx";
+import EditCustomerForm from "@/feature/customer/EditCustomerForm.tsx";
 
-const CustomerTable = () => {
-  const { data = [], isLoading } = customerApi.useListCustomersQuery();
+interface CustomerTableProps {
+  customerType: CustomerType;
+}
+const CustomerTable = ({ customerType }: CustomerTableProps) => {
+  const [showModal, setShowModal] = React.useState(false);
+  const [editCustomer, setEditCustomer] = React.useState<Customer | null>(null);
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+
+  const [deleteCustomer] = customerApi.useDeleteCustomerMutation();
+  const { data = [], isLoading, refetch } = customerApi.useListCustomersQuery();
+
+  const filteredData = React.useMemo(
+    () => data.filter((c) => c.customerType === customerType),
+    [data, customerType],
+  );
+
+  let b = customerType === CustomerType.Webshop;
+
+  const cta = b
+    ? {
+        text: "CSV importieren",
+        icon: FileUp,
+        onClick: () => setShowModal(true),
+        isLoading: false,
+      }
+    : {
+        text: "Kunde hinzufügen",
+        icon: UserPlus,
+        onClick: () => setShowModal(true),
+        isLoading: false,
+      };
 
   const handleEdit = (customer: Customer) => {
-    console.log("Bearbeiten:", customer);
+    setEditCustomer(customer);
+    setShowModal(true);
   };
 
-  const handleDelete = (customer: Customer) => {
-    console.log("Löschen:", customer);
+  const handleDelete = async (customer: Customer) => {
+    setDeletingId(customer.id);
+    await deleteCustomer(customer.id);
+    await refetch();
+    setDeletingId(null);
   };
 
   const columns: ColumnDef<Customer>[] = [
@@ -38,7 +75,6 @@ const CustomerTable = () => {
 
         return (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-            {/* Telefon-Link mit Hover-Control */}
             <motion.a
               href={`tel:${phone}`}
               className="flex items-center gap-1"
@@ -59,7 +95,6 @@ const CustomerTable = () => {
               </motion.span>
             </motion.a>
 
-            {/* Mail-Link mit Inverslogik */}
             <motion.a
               href={`mailto:${email}`}
               className="flex items-center gap-1"
@@ -114,8 +149,30 @@ const CustomerTable = () => {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={deletingId === customer.id}
+                >
+                  {deletingId === customer.id ? (
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -124,9 +181,33 @@ const CustomerTable = () => {
                     variant="destructive"
                     className="w-full justify-start"
                     onClick={() => handleDelete(customer)}
+                    disabled={deletingId === customer.id}
                   >
-                    <Trash2 className="h-4 w-4" />
-                    Löschen
+                    {deletingId === customer.id ? (
+                      <svg
+                        className="mr-2 h-4 w-4 animate-spin"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                      </svg>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                    {deletingId === customer.id
+                      ? "Wird gelöscht..."
+                      : "Löschen"}
                   </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -138,7 +219,29 @@ const CustomerTable = () => {
   ];
 
   return (
-    <DataTable<Customer> data={data} columns={columns} loading={isLoading} />
+    <Dialog open={showModal} onOpenChange={setShowModal}>
+      <DataTable<Customer>
+        cta={cta}
+        data={filteredData}
+        columns={columns}
+        loading={isLoading}
+      />
+      <DialogContent>
+        {editCustomer ? (
+          <EditCustomerForm
+            customer={editCustomer}
+            setShowModal={(v) => {
+              setShowModal(v);
+              if (!v) setEditCustomer(null);
+            }}
+          />
+        ) : b ? (
+          <UploadCSVForm setShowModal={setShowModal} />
+        ) : (
+          <CreateCustomerForm setShowModal={setShowModal} />
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

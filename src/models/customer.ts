@@ -1,5 +1,8 @@
 import { BaseEntity } from "@/models/base.ts";
-
+export enum CustomerType {
+  Webshop = "WEBSHOP",
+  Business = "BUSINESS",
+}
 export type CreateCustomerDto = {
   name: string;
   email: string;
@@ -10,7 +13,7 @@ export type CreateCustomerDto = {
   addr_street: string;
   addr_line1: string;
   addr_line2: string;
-  customerType: "WEBSHOP" | "BUSINESS";
+  customerType: CustomerType;
 };
 
 export type UpdateCustomerDto = Partial<CreateCustomerDto>;
