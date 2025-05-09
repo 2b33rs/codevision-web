@@ -33,7 +33,7 @@ const Customer = () => {
         />
       </BaseContentLayout>
       <DialogContent>
-        <CreateCustomerForm />
+        <CreateCustomerForm setShowModal={setShowModal} />
       </DialogContent>
     </Dialog>
   );

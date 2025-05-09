@@ -41,25 +41,37 @@ import {
 } from "@/components/ui/table.tsx";
 import { Col } from "@/common/flex/Flex.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
+import { AnimatePresence, motion } from "framer-motion";
+
+const MotionTableRow = motion(TableRow);
 
 function StaticRow<T extends { id: string }>({ row }: { row: TSRow<T> }) {
   return (
-    <TableRow data-state={row.getIsSelected() && "selected"}>
+    <MotionTableRow
+      data-state={row.getIsSelected() && "selected"}
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+    >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
-    </TableRow>
+    </MotionTableRow>
   );
 }
 
 export function DataTable<T extends { id: string }>({
   data,
   columns,
+  loading,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
+  loading?: any;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -111,7 +123,7 @@ export function DataTable<T extends { id: string }>({
         placeholder={"Suche nach Auftragsnummer, Status oder Kunde .. "}
         className="max-w-sm"
       />
-      <div className="overflow-hidden rounded-lg border">
+      <div className="max-w-full overflow-auto rounded-lg border">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -131,11 +143,22 @@ export function DataTable<T extends { id: string }>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="**:data-[slot=table-cell]:first:w-8">
-            {table.getRowModel().rows?.length ? (
-              table
-                .getRowModel()
-                .rows.map((row) => <StaticRow key={row.id} row={row} />)
+          <TableBody className="text-muted-foreground **:data-[slot=table-cell]:first:w-8">
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Lädt...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
+              <AnimatePresence initial={false}>
+                {table.getRowModel().rows.map((row) => (
+                  <StaticRow key={row.id} row={row} />
+                ))}
+              </AnimatePresence>
             ) : (
               <TableRow>
                 <TableCell

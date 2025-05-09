@@ -1,98 +1,145 @@
-import {ColumnDef} from "@tanstack/react-table";
-import {DataTable} from "@/components/sidebar/data-table.tsx";
-import {Pencil, Trash} from "lucide-react";
-import {Customer} from "@/models/user.ts";
-import {Button} from "@/components/ui/button.tsx";
+"use client";
+
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/sidebar/data-table";
+import { Mail, Pencil, Phone, Trash2 } from "lucide-react";
+import { Customer } from "@/models/customer";
+import { Button } from "@/components/ui/button";
+import { customerApi } from "@/api/endpoints/customerApi.ts";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
+import { motion } from "framer-motion";
+import React from "react";
 
 const CustomerTable = () => {
-  //const { data } = orderApi.useGetOrdersQuery();
-
-    const data: Customer[] = [
-        {
-            id: "1",
-            createdAt: "2024-01-01T10:00:00Z",
-            updatedAt: "2024-01-01T10:00:00Z",
-            deletedAt: null,
-            customerId: "C001",
-            companyname: "Musterfirma GmbH",
-            address: "Musterstraße 12",
-            postalcode: "12345",
-            city: "Musterstadt",
-            firstname: "Max",
-            lastname: "Mustermann",
-            phonenumber: "+49 123 4567890",
-            mail: "max@musterfirma.de",
-        },
-        {
-            id: "2",
-            createdAt: "2024-02-15T14:30:00Z",
-            updatedAt: "2024-02-15T14:30:00Z",
-            deletedAt: null,
-            customerId: "C002",
-            companyname: "Beispiel AG",
-            address: "Beispielweg 7",
-            postalcode: "54321",
-            city: "Beispielstadt",
-            firstname: "Erika",
-            lastname: "Beispiel",
-            phonenumber: "+49 987 6543210",
-            mail: "erika@beispiel-ag.de",
-        },
-    ];
-
-
-    const columns: ColumnDef<Customer>[] = [
-    { accessorKey: "customerId", header: "KundenId" },
-        { accessorKey: "companyname", header: "Firmenname" },
-        { accessorKey: "firstname", header: "Vorname" },
-        { accessorKey: "lastname", header: "Nachname" },
-        { accessorKey: "address", header: "Straße" },
-        { accessorKey: "postalcode", header: "Postleitzahl" },
-        { accessorKey: "city", header: "Ort" },
-        {
-            id: "actions",
-            header: "",
-            cell: ({ row }) => {
-                const customer = row.original;
-
-                return (
-                    <div className="flex gap-2 justify-end">
-                        {/* Bearbeiten-Button */}
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(customer)}
-                        >
-                            <Pencil className="w-4 h-4" />
-                        </Button>
-
-                        {/* Löschen-Button */}
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(customer)}
-                        >
-                            <Trash className="w-4 h-4" />
-                        </Button>
-                    </div>
-                );
-            },
-        }
-    ];
+  const { data = [], isLoading } = customerApi.useListCustomersQuery();
 
   const handleEdit = (customer: Customer) => {
     console.log("Bearbeiten:", customer);
-    //Bearbeiten Logik hinzufügen
-    };
-
-    const handleDelete = (customer: Customer) => {
-        console.log("Löschen:", customer);
-        // Löschen Logik hinzufügen
   };
 
+  const handleDelete = (customer: Customer) => {
+    console.log("Löschen:", customer);
+  };
 
-    return <DataTable<Customer> data={data} columns={columns} />;
-    //return <DataTable data={data || []} columns={columns} />;
+  const columns: ColumnDef<Customer>[] = [
+    { accessorKey: "name", header: "Name" },
+    {
+      id: "contact",
+      header: "Kontakt",
+      cell: ({ row }) => {
+        const { phone, email } = row.original;
+
+        const [hovered, setHovered] = React.useState(false);
+
+        return (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+            {/* Telefon-Link mit Hover-Control */}
+            <motion.a
+              href={`tel:${phone}`}
+              className="flex items-center gap-1"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+            >
+              <Phone className="size-4 shrink-0" />
+              <motion.span
+                initial={false}
+                animate={{
+                  opacity: hovered ? 1 : 0,
+                  width: hovered ? "auto" : 0,
+                }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                {phone}
+              </motion.span>
+            </motion.a>
+
+            {/* Mail-Link mit Inverslogik */}
+            <motion.a
+              href={`mailto:${email}`}
+              className="flex items-center gap-1"
+              onMouseEnter={() => setHovered(false)}
+              onMouseLeave={() => setHovered(false)}
+            >
+              <Mail className="size-4 shrink-0" />
+              <motion.span
+                initial={false}
+                animate={{
+                  opacity: hovered ? 0 : 1,
+                  width: hovered ? 0 : "auto",
+                }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                {email}
+              </motion.span>
+            </motion.a>
+          </div>
+        );
+      },
+    },
+    {
+      id: "address",
+      header: "Adresse",
+      cell: ({ row }) => {
+        const { addr_street, addr_zip, addr_city } = row.original;
+        return (
+          <div className="flex max-w-[260px] flex-wrap gap-x-2 gap-y-1 text-sm">
+            <span>{addr_street},</span>
+            <span>
+              {addr_zip} {addr_city}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const customer = row.original;
+        return (
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              variant={"ghost"}
+              onClick={() => handleEdit(customer)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Button
+                    variant="destructive"
+                    className="w-full justify-start"
+                    onClick={() => handleDelete(customer)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Löschen
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
+    },
+  ];
+
+  return (
+    <DataTable<Customer> data={data} columns={columns} loading={isLoading} />
+  );
 };
 
 export default CustomerTable;
