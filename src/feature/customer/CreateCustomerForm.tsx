@@ -6,24 +6,15 @@ import CustomerForm, {
 
 interface CreateCustomerFormProps {
   setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;
+  defaultValues: CustomerFormType;
 }
 
 export default function CreateCustomerForm({
   setShowModal,
+  defaultValues,
 }: CreateCustomerFormProps) {
   const [createCustomer, { isLoading }] =
     customerApi.useCreateCustomerMutation();
-
-  const defaultValues = {
-    name: "",
-    addr_strasse: "",
-    addr_plz: "",
-    addr_ort: "",
-    firstname: "",
-    lastname: "",
-    telefon: "",
-    mail: "",
-  };
 
   const onSubmit = async (data: CustomerFormType) => {
     await createCustomer({

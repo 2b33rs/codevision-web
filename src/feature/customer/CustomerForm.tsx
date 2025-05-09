@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PhoneInput } from "@/components/ui/phone-input";
+import React from "react";
 
 const schema = z.object({
   name: z.string().nonempty("Pflichtfeld"),
@@ -46,10 +47,20 @@ export default function CustomerForm({
     defaultValues,
   });
 
+  React.useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues]);
+
   const handleSubmit = form.handleSubmit(onSubmit);
 
   return (
-    <Form {...form}>
+    <Form
+      {...form}
+      key={
+        "hi-refresh-me-and-react-fix-this-annoying-bug" +
+        JSON.stringify(defaultValues)
+      }
+    >
       <form onSubmit={handleSubmit} className="grid max-w-md gap-4">
         <FormField
           control={form.control}

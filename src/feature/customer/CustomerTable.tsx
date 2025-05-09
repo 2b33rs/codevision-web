@@ -18,12 +18,18 @@ import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import UploadCSVForm from "@/feature/customer/UploadCSVForm.tsx";
 import CreateCustomerForm from "@/feature/customer/CreateCustomerForm.tsx";
 import EditCustomerForm from "@/feature/customer/EditCustomerForm.tsx";
+import { CustomerFormType } from "@/feature/customer/CustomerForm.tsx";
 
 interface CustomerTableProps {
   customerType: CustomerType;
 }
 const CustomerTable = ({ customerType }: CustomerTableProps) => {
   const [showModal, setShowModal] = React.useState(false);
+  const [formMode, setFormMode] = React.useState<"create" | "edit" | null>(
+    null,
+  );
+  const [formDefaults, setFormDefaults] =
+    React.useState<CustomerFormType | null>(null);
   const [editCustomer, setEditCustomer] = React.useState<Customer | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
@@ -47,11 +53,35 @@ const CustomerTable = ({ customerType }: CustomerTableProps) => {
     : {
         text: "Kunde hinzufügen",
         icon: UserPlus,
-        onClick: () => setShowModal(true),
+        onClick: () => {
+          setFormDefaults({
+            name: "",
+            addr_strasse: "",
+            addr_plz: "",
+            addr_ort: "",
+            firstname: "",
+            lastname: "",
+            telefon: "",
+            mail: "",
+          });
+          setFormMode("create");
+          setShowModal(true);
+        },
         isLoading: false,
       };
 
   const handleEdit = (customer: Customer) => {
+    setFormDefaults({
+      name: customer.name,
+      addr_strasse: customer.addr_street,
+      addr_plz: customer.addr_zip,
+      addr_ort: customer.addr_city,
+      firstname: customer.addr_line1.split(" ")[0],
+      lastname: customer.addr_line1.split(" ")[1],
+      telefon: customer.phone,
+      mail: customer.email,
+    });
+    setFormMode("edit");
     setEditCustomer(customer);
     setShowModal(true);
   };
@@ -227,19 +257,33 @@ const CustomerTable = ({ customerType }: CustomerTableProps) => {
         loading={isLoading}
       />
       <DialogContent>
-        {editCustomer ? (
+        {formMode === "edit" && formDefaults && editCustomer ? (
           <EditCustomerForm
-            customer={editCustomer}
+            defaultValues={formDefaults}
+            customerId={editCustomer?.id}
             setShowModal={(v) => {
               setShowModal(v);
-              if (!v) setEditCustomer(null);
+              if (!v) {
+                setFormMode(null);
+                setFormDefaults(null);
+                setEditCustomer(null);
+              }
+            }}
+          />
+        ) : formMode === "create" && formDefaults ? (
+          <CreateCustomerForm
+            defaultValues={formDefaults}
+            setShowModal={(v) => {
+              setShowModal(v);
+              if (!v) {
+                setFormMode(null);
+                setFormDefaults(null);
+              }
             }}
           />
         ) : b ? (
           <UploadCSVForm setShowModal={setShowModal} />
-        ) : (
-          <CreateCustomerForm setShowModal={setShowModal} />
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

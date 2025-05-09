@@ -29,7 +29,7 @@ const UploadCSVForm = ({ setShowModal }: UploadCSVFormProps) => {
     if (files.length === 0) return;
     console.log("CSV-Dateien hochladen:", files);
     // TODO: Upload-Logik hier
-    // setShowModal(false);
+    setShowModal(true);
   };
 
   return (
