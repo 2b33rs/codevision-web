@@ -11,7 +11,7 @@ export default function CustomerContactCell({
   const [hovered, setHovered] = React.useState(false);
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+    <div className="flex items-center gap-x-4 gap-y-1 text-sm">
       <motion.a
         href={`tel:${phone}`}
         className="flex items-center gap-1"
