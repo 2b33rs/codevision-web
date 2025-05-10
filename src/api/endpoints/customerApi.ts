@@ -17,6 +17,14 @@ export const customerApi = baseApi.injectEndpoints({
       providesTags: ["Customer"],
     }),
     //
+    getCustomerMeta: builder.query<
+      { orderCount: number; canDelete: boolean },
+      string
+    >({
+      query: (id) => `/customer/${id}/meta`,
+      providesTags: ["Customer"],
+    }),
+    //
     createCustomer: builder.mutation<Customer, CreateCustomerDto>({
       query: (body) => ({
         url: "/customer",

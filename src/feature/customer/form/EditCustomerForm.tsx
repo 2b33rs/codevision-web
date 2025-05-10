@@ -1,7 +1,7 @@
 import { customerApi } from "@/api/endpoints/customerApi.ts";
 import CustomerForm, {
   CustomerFormType,
-} from "@/feature/customer/CustomerForm.tsx";
+} from "@/feature/customer/form/CustomerForm.tsx";
 
 interface EditCustomerFormProps {
   customerId: string;

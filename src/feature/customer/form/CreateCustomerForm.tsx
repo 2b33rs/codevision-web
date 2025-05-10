@@ -2,7 +2,7 @@ import { customerApi } from "@/api/endpoints/customerApi.ts";
 import { CustomerType } from "@/models/customer.ts";
 import CustomerForm, {
   CustomerFormType,
-} from "@/feature/customer/CustomerForm";
+} from "@/feature/customer/form/CustomerForm.tsx";
 
 interface CreateCustomerFormProps {
   setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;

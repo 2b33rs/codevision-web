@@ -1,5 +1,5 @@
 import { BaseContentLayout } from "@/common/BaseContentLayout.tsx";
-import CustomerTable from "@/feature/customer/CustomerTable.tsx";
+import CustomerTable from "@/components/customer/CustomerTable.tsx";
 import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
 import { CustomerType } from "@/models/customer.ts";
 
