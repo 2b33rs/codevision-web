@@ -7,10 +7,11 @@ import {
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Order from "@/feature/order/Order.tsx";
-import { BookCheck, Package, User2 } from "lucide-react";
+import { BookCheck, FileWarning, Package, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
 import ProducedOrder from "@/feature/produced_order/ProducedOrder.tsx";
 import StandardProduct from "@/feature/standard_products/StandardProduct.tsx";
+import Complaints from "@/feature/complaints/Complaints.tsx";
 
 export const NAV_MAIN = [
   {
@@ -43,6 +44,13 @@ export const NAV_MAIN = [
     icon: BookCheck,
     element: <ProducedOrder />,
   },
+  {
+    title: "Reklamationen",
+    url: "/reklamationen",
+    icon: FileWarning,
+    element: <Complaints />,
+  },
+
 ];
 
 export const NAV_ABTEILUNGEN = [
