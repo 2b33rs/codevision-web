@@ -1,5 +1,3 @@
-"use client";
-
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -53,13 +51,12 @@ export default function AddStandardProductForm() {
     },
     (errors) => {
       console.error("❌ Validation errors:", errors);
-    }
+    },
   );
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-4 w-[95%] mx-auto px-2">
-
+      <form onSubmit={onSubmit} className="mx-auto w-[95%] space-y-4 px-2">
         {/* product fields */}
         <FormField
           control={form.control}
@@ -68,7 +65,12 @@ export default function AddStandardProductForm() {
             <FormItem>
               <FormLabel>ID</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="ID" {...field} className="w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <Input
+                  type="number"
+                  placeholder="ID"
+                  {...field}
+                  className="w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,7 +98,10 @@ export default function AddStandardProductForm() {
             <FormItem>
               <FormLabel>Größe</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Größe auswählen" />
                   </SelectTrigger>
@@ -135,7 +140,12 @@ export default function AddStandardProductForm() {
             <FormItem>
               <FormLabel>Mindest Lagerbestand</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Mindestbestand" {...field} className="w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <Input
+                  type="number"
+                  placeholder="Mindestbestand"
+                  {...field}
+                  className="w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

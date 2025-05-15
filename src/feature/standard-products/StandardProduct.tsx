@@ -1,9 +1,10 @@
 import { BaseContentLayout } from "@/common/BaseContentLayout.tsx";
 import { Grid2x2Plus } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
-import StandardProductTable from "@/feature/standard_products/StandardProductTable.tsx";
-import AddStandardProductForm from "@/feature/standard_products/AddStandardProductForm.tsx";
+
 import React from "react";
+import StandardProductTable from "@/feature/standard-products/StandardProductTable.tsx";
+import AddStandardProductForm from "@/feature/standard-products/AddStandardProductForm.tsx";
 
 const StandardProduct = () => {
   const [showModal, setShowModal] = React.useState(false);

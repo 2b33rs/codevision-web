@@ -1,11 +1,11 @@
 import { BaseContentLayout } from "@/common/BaseContentLayout.tsx";
 import { Grid2x2Plus } from "lucide-react";
-import ProducedOrderTable from "@/feature/produced_order/ProducedOrderTable.tsx";
-import ProducedOrderForm from "@/feature/produced_order/ProducedOrderForm.tsx";
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
-import VisualCheckTable from "@/feature/produced_order/VisualCheckTable.tsx";
+import ProducedOrderTable from "@/feature/produced-order/ProducedOrderTable.tsx";
+import VisualCheckTable from "@/feature/produced-order/VisualCheckTable.tsx";
+import ProducedOrderForm from "@/feature/produced-order/ProducedOrderForm.tsx";
 
 const ProducedOrder = () => {
   //const [, { isLoading }] = orderApi.useCreateOrderMutation();

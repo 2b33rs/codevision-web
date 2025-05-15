@@ -5,7 +5,7 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL || "http://localhost:8080/", // localhost can only be used for local dev
   }),
-  tagTypes: ["User", "Order", "Customer"],
+  tagTypes: ["User", "Order", "Customer", "Product"],
   refetchOnReconnect: true,
   refetchOnFocus: true,
   endpoints: () => ({}),

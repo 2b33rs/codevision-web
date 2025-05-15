@@ -9,8 +9,8 @@ import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Order from "@/feature/order/Order.tsx";
 import { BookCheck, Package, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
-import ProducedOrder from "@/feature/produced_order/ProducedOrder.tsx";
-import StandardProduct from "@/feature/standard_products/StandardProduct.tsx";
+import StandardProduct from "@/feature/standard-products/StandardProduct.tsx";
+import ProducedOrder from "@/feature/produced-order/ProducedOrder.tsx";
 
 export const NAV_MAIN = [
   {
@@ -21,19 +21,19 @@ export const NAV_MAIN = [
   },
   {
     title: "Kunden",
-    url: "/customer",
+    url: "/kunden",
     icon: User2,
     element: <Customer />,
   },
   {
     title: "Bestellung",
-    url: "/order",
+    url: "/bestellung",
     icon: IconTable,
     element: <Order />,
   },
   {
     title: "Standartprodukte",
-    url: "/standardProduct",
+    url: "/produkt",
     icon: Package,
     element: <StandardProduct />,
   },

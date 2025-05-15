@@ -12,7 +12,7 @@ const schema = z.object({
 
 type ProducedOrderForm = z.infer<typeof schema>;
 
-export default function CreateCustomerForm() {
+export default function ProducedOrderForm() {
   const form = useForm<ProducedOrderForm>({
     resolver: zodResolver(schema),
     defaultValues: {
