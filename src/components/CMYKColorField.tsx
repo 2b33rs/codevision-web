@@ -23,6 +23,11 @@ export function CMYKColorField({
 }) {
   const [cmyk, setCmyk] = useState<CMYK>(parseCMYK(value));
 
+  // Synchronize local cmyk state with external value prop changes
+  useEffect(() => {
+    setCmyk(parseCMYK(value));
+  }, [value]);
+
   useEffect(() => {
     if (!disabled && onChange) {
       onChange(toCMYKString(cmyk));

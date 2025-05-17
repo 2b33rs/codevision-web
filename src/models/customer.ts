@@ -1,8 +1,10 @@
 import { BaseEntity } from "@/models/base.ts";
+
 export enum CustomerType {
   Webshop = "WEBSHOP",
   Business = "BUSINESS",
 }
+
 export type CreateCustomerDto = {
   name: string;
   email: string;

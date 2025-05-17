@@ -9,11 +9,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Check, Loader2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { productApi } from "@/api/endpoints/productApi.ts";
+import { toast } from "sonner";
 
 export function WarehouseOrderCell({ product }: { product: Product }) {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const [createProductionOrder] = productApi.useCreateProductionOrderMutation();
 
   const handleSubmit = async () => {
     const num = parseInt(inputValue, 10);
@@ -23,17 +27,12 @@ export function WarehouseOrderCell({ product }: { product: Product }) {
     setSuccess(false);
 
     try {
-      // Simuliert API-Call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      console.log(`Produktionsauftrag für ${product.id}:`, num);
-      // TODO: call useCreateProductionOrderMutation()
-
+      await createProductionOrder({ id: product.id, amount: num });
+      toast.success("Produktionsauftrag versendet!");
       setSuccess(true);
       setInputValue("");
     } catch (err) {
-      console.error("Fehler beim Erstellen des Auftrags", err);
-      // TODO: Fehlerhandling (Toast?)
+      toast.error("Fehler beim Erstellen des Auftrags" + err);
     } finally {
       setIsLoading(false);
     }
