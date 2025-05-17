@@ -24,11 +24,20 @@ export const createOrderFormZ = z.object({
 
 export type CreateOrderForm = z.infer<typeof createOrderFormZ>;
 
+type Position = BaseEntity &
+  z.infer<typeof positionInputZ> & {
+    standardProductId: string;
+    orderId: string;
+    Status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
 export type Order = BaseEntity & {
   customerId: string;
   orderNumber: string;
   status: "PENDING" | "QUARANTINE" | "COMPLETED" | "CANCELLED";
-  positions: z.infer<typeof positionInputZ>[];
+  positions: Position[];
 };
 
 export const orderSchema = createOrderFormZ;
