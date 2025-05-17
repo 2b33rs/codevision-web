@@ -62,6 +62,7 @@ const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
       data={data || []}
       columns={columns}
       loading={isLoading}
+      initialSorting={[{ id: "name", desc: false }]}
       cta={{
         text: "Standartprodukt hinzufügen",
         icon: Grid2x2Plus,

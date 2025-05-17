@@ -71,6 +71,7 @@ export function DataTable<T extends { id: string }>({
   columns,
   loading,
   cta,
+  initialSorting,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -81,6 +82,7 @@ export function DataTable<T extends { id: string }>({
     onClick: () => void;
     isLoading: boolean;
   };
+  initialSorting?: SortingState;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -106,6 +108,9 @@ export function DataTable<T extends { id: string }>({
       columnFilters,
       globalFilter,
       pagination,
+    },
+    initialState: {
+      sorting: initialSorting,
     },
     globalFilterFn,
     onGlobalFilterChange: setGlobalFilter,
