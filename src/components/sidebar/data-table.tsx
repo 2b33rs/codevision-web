@@ -201,11 +201,14 @@ export function DataTable<T extends { id: string }>({
         </Table>
       </div>
       <div className="flex items-center justify-between px-4">
-        <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex w-full items-center gap-8 lg:w-fit">
+        {table.getFilteredSelectedRowModel().rows.length > 0 && (
+          <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+            {table.getFilteredSelectedRowModel().rows.length} von{" "}
+            {table.getFilteredRowModel().rows.length} Spalten ausgewählt.
+          </div>
+        )}
+
+        <div className="ml-auto flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
               Einträge pro Seite

@@ -41,5 +41,17 @@ export const productApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Product"],
     }),
+
+    createProductionOrder: builder.mutation<
+      { status: "ok"; message: string; productId: string; amount: number },
+      { id: string; amount: number }
+    >({
+      query: ({ id, amount }) => ({
+        url: `/product/${id}/production-order`,
+        method: "POST",
+        body: { amount },
+      }),
+      invalidatesTags: ["Product"],
+    }),
   }),
 });

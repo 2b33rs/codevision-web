@@ -1,16 +1,19 @@
 import { Product } from "@/models/product";
-import { EditableNumberCell } from "@/feature/standard-products/EditableNumberCell.tsx";
+import { productApi } from "@/api/endpoints/productApi.ts";
+import { EditableValueCell } from "@/components/EditableValueCell.tsx";
 
 const EditableMinStockCell = ({ product }: { product: Product }) => {
+  const [updateProduct] = productApi.useUpdateProductMutation();
+
   return (
-    <EditableNumberCell
+    <EditableValueCell
       value={product.minAmount}
       onChange={(newValue) => {
-        console.log(`Neuer Mindestbestand für ${product.id}:`, newValue);
-        // TODO: hier RTK Mutation oder API-Call
+        updateProduct({ id: product.id, data: { minAmount: newValue } });
       }}
       label="Mindestbestand ändern"
       title="Mindestbestand bearbeiten"
+      inputType={"number"}
     />
   );
 };

@@ -1,4 +1,5 @@
 import { BaseEntity } from "@/models/base.ts";
+import { z } from "zod";
 
 export enum ShirtSize {
   S = "S",
@@ -12,15 +13,33 @@ export enum ProductCategory {
 }
 
 export type CreateProductDto = {
-  name: string;
-  color?: string;
+  color: string;
   shirtSize?: ShirtSize;
   productCategory: ProductCategory;
   minAmount: number;
-  currentStock: number;
-  amountInProduction: number;
+  name: string;
 };
+
+export type Product = CreateProductDto &
+  BaseEntity & {
+    currentStock: number;
+    amountInProduction: number;
+  };
 
 export type UpdateProductDto = Partial<CreateProductDto>;
 
-export type Product = CreateProductDto & BaseEntity;
+export const createProductZ = z.object({
+  name: z.string(),
+  color: z
+    .string()
+    .regex(
+      /^cmyk\(\s?\d{1,3}%\s?,\s?\d{1,3}%\s?,\s?\d{1,3}%\s?,\s?\d{1,3}%\s?\)$/i,
+      "Ungültige CMYK-Farbe – bitte im Format cmyk(0%, 100%, 100%, 0%)",
+    ),
+  shirtSize: z.nativeEnum(ShirtSize).optional(),
+  productCategory: z
+    .nativeEnum(ProductCategory)
+    .default(ProductCategory.TShirt),
+  minAmount: z.coerce.number().int().nonnegative(),
+  amountInProduction: z.coerce.number().int().nonnegative().default(0),
+});

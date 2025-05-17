@@ -1,19 +1,37 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table.tsx";
 import type { Product } from "@/models/product.ts";
-
-import { Trash } from "lucide-react";
 import EditableMinStockCell from "@/feature/standard-products/EditableMinStockCell.tsx";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { WarehouseOrderCell } from "@/feature/standard-products/WarehouseOrderCell.tsx";
 import { Row } from "@/common/flex/Flex.tsx";
+import { CMYKColorField } from "@/components/CMYKColorField.tsx";
+import { DeleteDropdownButton } from "@/common/DeleteDropdownButton.tsx";
+import EditableNameCell from "@/feature/standard-products/EditableNameCell.tsx";
+import { Grid2x2Plus } from "lucide-react";
 
-const StandardProduct = () => {
+interface StandardProductTableProps {
+  setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;
+}
+
+const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
   const { data, isLoading } = productApi.useListProductsQuery();
+  const [deleteProduct] = productApi.useDeleteProductMutation();
 
   const columns: ColumnDef<Product>[] = [
+    {
+      accessorKey: "color",
+      header: "Farbe",
+      cell: ({ row }) => (
+        <CMYKColorField value={row.original.color ?? ""} disabled />
+      ),
+    },
     { accessorKey: "shirtSize", header: "Größe" },
-    { accessorKey: "color", header: "Farbe" },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => <EditableNameCell product={row.original} />,
+    },
     {
       cell: ({ row }) => <EditableMinStockCell product={row.original} />,
       accessorKey: "minAmount",
@@ -33,16 +51,27 @@ const StandardProduct = () => {
         const product = row.original;
         return (
           <Row className="gap-3">
-            <Trash
-              className="h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
-              onClick={() => console.log("Löschen:", product.id)}
-            />
+            <DeleteDropdownButton onConfirm={() => deleteProduct(product.id)} />
           </Row>
         );
       },
     },
   ];
-  return <DataTable data={data || []} columns={columns} loading={isLoading} />;
+  return (
+    <DataTable
+      data={data || []}
+      columns={columns}
+      loading={isLoading}
+      cta={{
+        text: "Standartprodukt hinzufügen",
+        icon: Grid2x2Plus,
+        onClick: () => {
+          setShowModal?.(true);
+        },
+        isLoading: false,
+      }}
+    />
+  );
 };
 
 export default StandardProduct;
