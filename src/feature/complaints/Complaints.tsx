@@ -4,8 +4,10 @@ import { Grid2x2Plus } from "lucide-react";
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import CreateOrderForm from "@/feature/order/CreateOrderForm.tsx";
+import ComplaintsTable from "@/feature/complaints/ComplaintsTable.tsx";
+import ComplaintsForm from "@/feature/complaints/ComplaintsForm.tsx";
 
-const Order = () => {
+const Complaints = () => {
   const [showModal, setShowModal] = React.useState(false);
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
@@ -20,10 +22,13 @@ const Order = () => {
         isLoading: false,
       }}
     >
-      <OrderTable />
+      <ComplaintsTable />
     </BaseContentLayout>
+        <DialogContent>
+            <ComplaintsForm />
+        </DialogContent>
       </Dialog>
   );
 };
 
-export default Order;
+export default Complaints;
