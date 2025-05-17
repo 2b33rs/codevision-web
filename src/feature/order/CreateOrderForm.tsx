@@ -7,8 +7,18 @@ import { Button } from "@/components/ui/button";
 import CustomerSelect from "./CustomerSelect";
 import PositionList from "./PositionList";
 import { OrderForm, orderSchema } from "@/models/order.ts";
+import { orderApi } from "@/api/endpoints/orderApi.ts";
+import { toast } from "sonner";
 
-export default function CreateOrderForm() {
+interface CreateOrderFormProps {
+  setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;
+}
+
+export default function CreateOrderForm({
+  setShowModal,
+}: CreateOrderFormProps) {
+  const [createOrder] = orderApi.useCreateOrderMutation();
+
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
     // Beispiel-Objekt für eine leere Position mit Standardwerten
@@ -30,8 +40,21 @@ export default function CreateOrderForm() {
   });
 
   const onSubmit = form.handleSubmit(
-    (data) => console.log("✅", data),
-    (errors) => console.error("❌", errors),
+    async (data) => {
+      try {
+        const result = await createOrder(data).unwrap();
+        toast.success("Bestellung erstellt:", result);
+        form.reset();
+      } catch (err) {
+        console.error(data);
+        console.error(err);
+        toast.error(
+          "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
+        );
+      }
+      setShowModal?.(false);
+    },
+    (errors) => console.error("❌ Validierungsfehler:", errors),
   );
 
   return (
