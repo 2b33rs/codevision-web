@@ -51,6 +51,7 @@ function isKnownStatus(
   return Object.prototype.hasOwnProperty.call(config, status);
 }
 
+
 export function PositionStatusBadge({ status }: { status: PositionStatus }) {
   if (!isKnownStatus(status)) status = "IN_PROGRESS";
   const { label, color, icon } =

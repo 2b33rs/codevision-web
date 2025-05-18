@@ -1,3 +1,4 @@
+import { PositionStatusBadge } from "@/common/PositionStatusBadge.tsx" // Passe den Pfad ggf. an
 import {
   Dialog,
   DialogContent,
@@ -20,9 +21,12 @@ function cmykToRgb(c: number, m: number, y: number, k: number): string {
 function parseCmykString(cmyk: string): string {
   const match = cmyk.match(/cmyk\((\d+)%?,\s*(\d+)%?,\s*(\d+)%?,\s*(\d+)%?\)/i);
   if (!match) return "#000"; // fallback
-  const [_, c, m, y, k] = match.map(Number);
+  const [, c, m, y, k] = match.map(Number);
   return cmykToRgb(c / 100, m / 100, y / 100, k / 100);
 }
+
+
+
 
 export default function PositionDetailsDialog({ order }: { order: Order }) {
   const [open, setOpen] = useState(false);
@@ -66,6 +70,11 @@ export default function PositionDetailsDialog({ order }: { order: Order }) {
                 {pos.description && (
                   <div><strong>Beschreibung:</strong> {pos.description}</div>
                 )}
+                <div className="flex items-center gap-2">
+                  <strong>Status:</strong>
+                  <PositionStatusBadge status={pos.Status} />
+                </div>
+
               </div>
             );
           })}
