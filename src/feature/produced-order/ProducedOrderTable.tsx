@@ -1,5 +1,6 @@
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
+import { toast } from "sonner";
 
 const ProducedOrderTable = () => {
   const { data: producedOrders = [] } =
@@ -19,7 +20,7 @@ const ProducedOrderTable = () => {
   return (
     <div className="space-y-6">
       {sortedOrders.map((order) => (
-        <div key={order.id} className="">
+        <div key={order.id}>
           <SelectablePositionsTable
             positions={order.positions}
             orderNumber={order.orderNumber}
@@ -34,7 +35,11 @@ const ProducedOrderTable = () => {
                   </div>
                 ),
                 onConfirm: (selected, orderNumber) => {
-                  console.log("Angefordert:", selected, orderNumber);
+                  toast.success(
+                    "Angefordert:" +
+                      JSON.stringify(selected) +
+                      JSON.stringify(orderNumber),
+                  );
                 },
                 renderDropdown: true,
               },
