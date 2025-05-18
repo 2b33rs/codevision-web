@@ -7,13 +7,13 @@ import {Position} from "@/models/order.ts";
 
 const VisualCheckTable = () => {
   const { data: producedOrders = [], refetch } =
-      orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_SHIPMENT");
+      orderApi.useGetOrdersWithPositionStatusQuery("COMPLETED"); //READ_FOR_INSPECTION sobald es implementiert ist
 
   const [refreshCounter, setRefreshCounter] = useState(0);
 
   const ordersWithCount = producedOrders.map((order) => {
     const readyCount = order.positions.filter(
-        (pos) => pos.Status === "READY_FOR_SHIPMENT"
+        (pos) => pos.Status === "COMPLETED"
     ).length;
     return { ...order, readyCount };
   });
@@ -26,7 +26,7 @@ const VisualCheckTable = () => {
   const handleStatusChange = async (
       selected: Position[],
       orderNumber: string,
-      status: "COMPLETED" | "CANCELLED"
+      status: "INSPECTED" | "CANCELLED"
   ) => {
     try {
       const responses = await Promise.all(
@@ -74,7 +74,7 @@ const VisualCheckTable = () => {
                   key={`${order.id}-${refreshCounter}`} // 🔁 forces reset
                   positions={order.positions}
                   orderNumber={order.orderNumber}
-                  selectableStatus={"READY_FOR_SHIPMENT"}
+                  selectableStatus={"COMPLETED"}
                   actions={[
                     {
                       label: "Visueller Check durchgeführt",
@@ -84,7 +84,7 @@ const VisualCheckTable = () => {
                           </div>
                       ),
                       onConfirm: (selected, orderNumber) =>
-                          handleStatusChange(selected, orderNumber, "COMPLETED"),
+                          handleStatusChange(selected, orderNumber, "INSPECTED"),
                       renderDropdown: true,
                     },
                     {

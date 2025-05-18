@@ -1,10 +1,10 @@
 import { customerApi } from "@/api/endpoints/customerApi";
-import { Order } from "@/models/order.ts";
+import { orderApi } from "@/api/endpoints/orderApi";
+import { Order } from "@/models/order";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { orderApi } from "@/api/endpoints/orderApi.ts";
+import { DataTable } from "@/components/sidebar/data-table";
 import { Grid2x2Plus } from "lucide-react";
-import PositionDetails from "@/common/PositionDetails.tsx";
+import PositionDetailsDialog from "@/feature/order/PositionDetailsDialog.tsx";
 
 const CustomerCell = ({ customerId }: { customerId: string }) => {
   const { data, isLoading, isError } =
@@ -19,25 +19,6 @@ const CustomerCell = ({ customerId }: { customerId: string }) => {
     <div className="text-sm">
       <div className="font-medium">{data.name}</div>
       <div className="text-muted-foreground">{data.email}</div>
-    </div>
-  );
-};
-
-const OrderDetailsCell = ({ order }: { order: Order }) => {
-  const MAX_VISIBLE = 4;
-  const visiblePositions = order.positions.slice(0, MAX_VISIBLE);
-  const hasMore = order.positions.length > MAX_VISIBLE;
-
-  return (
-    <div className="pl-6" title="Weitere Details folgen …">
-      <div className="text-muted-foreground space-y-2 text-sm">
-        {visiblePositions.map((position) => (
-          <PositionDetails position={position} />
-        ))}
-        {hasMore && (
-          <div className="text-muted-foreground mt-1 text-xs italic">…</div>
-        )}
-      </div>
     </div>
   );
 };
@@ -66,8 +47,8 @@ const OrderTable = ({ setShowModal }: OrderTableProps) => {
       ),
     },
     {
-      header: "Details",
-      cell: ({ row }) => <OrderDetailsCell order={row.original} />,
+      header: "Anzahl Positionen",
+      cell: ({ row }) => <PositionDetailsDialog order={row.original} />,
     },
   ];
 
