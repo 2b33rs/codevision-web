@@ -1,97 +1,114 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { ProducedOrder } from "@/models/produced_order.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { Play } from "lucide-react";
+import { orderApi } from "@/api/endpoints/orderApi.ts";
+import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
+import { toast } from "sonner";
+import buildComposeId from "@/common/Utils.ts"
 
-const ProducedOrderTable = () => {
-  //const { data } = orderApi.useGetOrdersQuery();
+const VisualCheckTable = () => {
+  const { data: producedOrders = [] } =
+      orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_SHIPMENT");
 
-  //DummyDaten
-  const dummyProducedOrders: any = [
-    {
-      id: "1",
-      createdAt: "2024-04-01T08:30:00Z",
-      updatedAt: "2024-04-01T08:30:00Z",
-      deletedAt: null,
-      customerId: "CUST001",
-      ordernumber: "ORD-1001",
-      position: "T-Shirt Classic – Blau – M",
-      count: 50,
-      companyname: "BlueWear GmbH",
-      address: "Fabrikstraße 12",
-      postalcode: "70173",
-      city: "Stuttgart",
-    },
-    {
-      id: "2",
-      createdAt: "2024-04-05T14:00:00Z",
-      updatedAt: "2024-04-06T09:20:00Z",
-      deletedAt: null,
-      customerId: "CUST002",
-      ordernumber: "ORD-1002",
-      position: "T-Shirt Premium – Schwarz – L",
-      count: 25,
-      companyname: "StylePro AG",
-      address: "Modering 45",
-      postalcode: "20095",
-      city: "Hamburg",
-    },
-    {
-      id: "3",
-      createdAt: "2024-04-10T11:45:00Z",
-      updatedAt: "2024-04-10T11:45:00Z",
-      deletedAt: null,
-      customerId: "CUST003",
-      orderNumber: "ORD-1003",
-      position: "Poloshirt – Weiß – XL",
-      count: 10,
-      companyname: "SportZone KG",
-      address: "Aktivallee 3",
-      postalcode: "80331",
-      city: "München",
-    },
-  ];
+  const ordersWithCount = producedOrders.map((order) => {
+    const readyCount = order.positions.filter(
+        (pos) => pos.Status === "READY_FOR_SHIPMENT",
+    ).length;
+    return { ...order, readyCount };
+  });
 
-  const columns: ColumnDef<ProducedOrder>[] = [
-    { accessorKey: "ordernumber", header: "Bestellnummer" },
-    { accessorKey: "position", header: "Position" },
-    { accessorKey: "count", header: "Anzahl" },
-    { accessorKey: "companyname", header: "Firmenname" },
-    { accessorKey: "address", header: "Adresse" },
-    { accessorKey: "postalcode", header: "Postleitzahl" },
-    { accessorKey: "city", header: "Ort" },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) => {
-        const producedOrder = row.original;
-
-        return (
-          <div className="flex justify-end gap-2">
-            {/* Bearbeiten-Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleEdit(producedOrder)}
-            >
-              <Play className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const handleEdit = (customer: ProducedOrder) => {
-    console.log("Bearbeiten:", customer);
-    //Bearbeiten Logik hinzufügen
-  };
+  const sortedOrders = ordersWithCount.sort(
+      (a, b) => b.readyCount - a.readyCount,
+  );
 
   return (
-    <DataTable<ProducedOrder> data={dummyProducedOrders} columns={columns} />
+      <div className="space-y-6">
+        {sortedOrders.map((order) => (
+            <div key={order.id}>
+              <SelectablePositionsTable
+                  positions={order.positions}
+                  orderNumber={order.orderNumber}
+                  selectableStatus={"READY_FOR_SHIPMENT"}
+
+                  actions={[
+                    {
+                      label: "Visueller Check durchgeführt",
+                      content: (selected, orderNumber) => (
+                          <div className="px-4 py-2 text-sm">
+                            {selected.length} Position(en) aus Order #{orderNumber} geprüft?
+                          </div>
+                      ),
+                      onConfirm: async (selected, orderNumber) => {
+                        try {
+                          const responses = await Promise.all(
+                              selected.map((position) => {
+                                const compositeId = buildComposeId(orderNumber, position.pos_number);
+                                return fetch(`https://codevision-backend-production.up.railway.app/position/${compositeId}`, {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ status: "COMPLETED" }),
+                                });
+                              })
+                          );
+
+                          const allSuccessful = responses.every((res) => res.ok);
+
+                          if (allSuccessful) {
+                            toast.success(
+                                `${selected.length} Position(en) aus Order #${orderNumber} erfolgreich als visuell geprüft markiert.`
+                            );
+                          } else {
+                            toast.error("Einige Positionen konnten nicht aktualisiert werden.");
+                          }
+                        } catch (error) {
+                          toast.error("Fehler beim PATCH-Request: " + (error as Error).message);
+                        }
+                      },
+                      renderDropdown: true,
+                    },
+                    {
+                      label: "Reklamieren",
+                      content: (selected, orderNumber) => (
+                          <div className="px-4 py-2 text-sm">
+                            {selected.length} Position(en) aus Order #{orderNumber} reklamieren?
+                          </div>
+                      ),
+                      onConfirm: async (selected, orderNumber) => {
+                        try {
+                          const responses = await Promise.all(
+                              selected.map((position) => {
+                                const compositeId = buildComposeId(orderNumber, position.pos_number);
+                                return fetch(`https://codevision-backend-production.up.railway.app/position/${compositeId}`, {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ status: "CANCELLED" }),
+                                });
+                              })
+                          );
+
+                          const allSuccessful = responses.every((res) => res.ok);
+
+                          if (allSuccessful) {
+                            toast.success(
+                                `${selected.length} Position(en) aus Order #${orderNumber} erfolgreich reklamiert.`
+                            );
+                          } else {
+                            toast.error("Einige Positionen konnten nicht reklamiert werden.");
+                          }
+                        } catch (error) {
+                          toast.error("Fehler beim PATCH-Request: " + (error as Error).message);
+                        }
+                      },
+                      renderDropdown: true,
+                    },
+                  ]}
+
+              />
+            </div>
+        ))}
+      </div>
   );
-  //return <DataTable data={data || []} columns={columns} />;
 };
 
-export default ProducedOrderTable;
+export default VisualCheckTable;
