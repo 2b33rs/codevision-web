@@ -24,7 +24,7 @@ export const createOrderFormZ = z.object({
 
 export type CreateOrderForm = z.infer<typeof createOrderFormZ>;
 
-type Position = BaseEntity &
+export type Position = BaseEntity &
   z.infer<typeof positionInputZ> & {
     standardProductId: string;
     orderId: string;

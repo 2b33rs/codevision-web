@@ -1,5 +1,4 @@
 import { BaseContentLayout } from "@/common/BaseContentLayout.tsx";
-import { Grid2x2Plus } from "lucide-react";
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import BaseTabsLayout from "@/common/BaseTabsLayout.tsx";
@@ -8,21 +7,10 @@ import VisualCheckTable from "@/feature/produced-order/VisualCheckTable.tsx";
 import ProducedOrderForm from "@/feature/produced-order/ProducedOrderForm.tsx";
 
 const ProducedOrder = () => {
-  //const [, { isLoading }] = orderApi.useCreateOrderMutation();
   const [showModal, setShowModal] = React.useState(false);
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
-      <BaseContentLayout
-        title="Fertigware"
-        primaryCallToActionButton={{
-          text: "Fertigware anfordern",
-          icon: Grid2x2Plus,
-          onClick: () => {
-            setShowModal(true);
-          },
-          isLoading: false,
-        }}
-      >
+      <BaseContentLayout title="Fertigware">
         <BaseTabsLayout
           tabs={[
             { title: "Fertigware im Lager", content: <ProducedOrderTable /> },

@@ -1,4 +1,10 @@
 import { customerApi } from "@/api/endpoints/customerApi";
+import { Order } from "@/models/order.ts";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/sidebar/data-table.tsx";
+import { orderApi } from "@/api/endpoints/orderApi.ts";
+import { Grid2x2Plus } from "lucide-react";
+import PositionDetails from "@/common/PositionDetails.tsx";
 
 const CustomerCell = ({ customerId }: { customerId: string }) => {
   const { data, isLoading, isError } =
@@ -16,13 +22,6 @@ const CustomerCell = ({ customerId }: { customerId: string }) => {
     </div>
   );
 };
-import { Order } from "@/models/order.ts";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/sidebar/data-table.tsx";
-import { orderApi } from "@/api/endpoints/orderApi.ts";
-import { CMYKColorField } from "@/components/CMYKColorField.tsx";
-import { PositionStatusBadge } from "@/common/PositionStatusBadge.tsx";
-import { Grid2x2Plus } from "lucide-react";
 
 const OrderDetailsCell = ({ order }: { order: Order }) => {
   const MAX_VISIBLE = 4;
@@ -33,29 +32,7 @@ const OrderDetailsCell = ({ order }: { order: Order }) => {
     <div className="pl-6" title="Weitere Details folgen …">
       <div className="text-muted-foreground space-y-2 text-sm">
         {visiblePositions.map((position) => (
-          <div key={position.id}>
-            <div className="grid grid-cols-5 items-center gap-2">
-              <div>{position.amount}×</div>
-              <div>Größe: {position.shirtSize}</div>
-              <div className="text-muted-foreground mt-1 pl-1 text-xs">
-                {" "}
-                {position.design && (
-                  <a
-                    href={position.design}
-                    className="hover:text-foreground underline underline-offset-2"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {position.design}
-                  </a>
-                )}
-              </div>
-              <div className="scale-[0.85]">
-                <CMYKColorField value={position.color} disabled />
-              </div>
-              <PositionStatusBadge status={position.Status} />
-            </div>
-          </div>
+          <PositionDetails position={position} />
         ))}
         {hasMore && (
           <div className="text-muted-foreground mt-1 text-xs italic">…</div>

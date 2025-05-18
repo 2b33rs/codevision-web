@@ -72,6 +72,9 @@ export function DataTable<T extends { id: string }>({
   loading,
   cta,
   initialSorting,
+  search = true,
+  rowSelection,
+  onRowSelectionChange,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -83,8 +86,12 @@ export function DataTable<T extends { id: string }>({
     isLoading: boolean;
   };
   initialSorting?: SortingState;
+  search?: boolean;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: (updater: any) => void;
 }) {
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [internalRowSelection, setInternalRowSelection] = React.useState({});
+  const effectiveRowSelection = rowSelection ?? internalRowSelection;
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -104,7 +111,7 @@ export function DataTable<T extends { id: string }>({
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
+      rowSelection: effectiveRowSelection,
       columnFilters,
       globalFilter,
       pagination,
@@ -116,7 +123,7 @@ export function DataTable<T extends { id: string }>({
     onGlobalFilterChange: setGlobalFilter,
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: onRowSelectionChange ?? setInternalRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -132,12 +139,15 @@ export function DataTable<T extends { id: string }>({
   return (
     <Col f1>
       <Row justify="between">
-        <SearchInput
-          value={globalFilter}
-          onChange={setGlobalFilter}
-          placeholder={"Suche nach Auftragsnummer, Status oder Kunde .. "}
-          className="max-w-sm"
-        />
+        {search && (
+          <SearchInput
+            value={globalFilter}
+            onChange={setGlobalFilter}
+            placeholder={"Suche nach Auftragsnummer, Status oder Kunde .. "}
+            className="max-w-sm"
+          />
+        )}
+
         {cta && (
           <Button
             disabled={cta.isLoading}
@@ -205,86 +215,88 @@ export function DataTable<T extends { id: string }>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between px-4">
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} von{" "}
-            {table.getFilteredRowModel().rows.length} Spalten ausgewählt.
-          </div>
-        )}
+      {search && (
+        <div className="flex items-center justify-between px-4">
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+              {table.getFilteredSelectedRowModel().rows.length} von{" "}
+              {table.getFilteredRowModel().rows.length} Spalten ausgewählt.
+            </div>
+          )}
 
-        <div className="ml-auto flex w-full items-center gap-8 lg:w-fit">
-          <div className="hidden items-center gap-2 lg:flex">
-            <Label htmlFor="rows-per-page" className="text-sm font-medium">
-              Einträge pro Seite
-            </Label>
-            <Select
-              value={`${table.getState().pagination.pageSize}`}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-            >
-              <SelectTrigger size="sm" className="w-20" id="rows-per-page">
-                <SelectValue
-                  placeholder={table.getState().pagination.pageSize}
-                />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Seite {table.getState().pagination.pageIndex + 1} von{" "}
-            {table.getPageCount()}
-          </div>
-          <div className="ml-auto flex items-center gap-2 lg:ml-0">
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Zur ersten Seite springen</span>
-              <IconChevronsLeft />
-            </Button>
-            <Button
-              variant="outline"
-              className="size-8"
-              size="icon"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Zur vorherigen Seite springen</span>
-              <IconChevronLeft />
-            </Button>
-            <Button
-              variant="outline"
-              className="size-8"
-              size="icon"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Zur nächsten Seite springen</span>
-              <IconChevronRight />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden size-8 lg:flex"
-              size="icon"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Zur letzten Seite springen</span>
-              <IconChevronsRight />
-            </Button>
+          <div className="ml-auto flex w-full items-center gap-8 lg:w-fit">
+            <div className="hidden items-center gap-2 lg:flex">
+              <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                Einträge pro Seite
+              </Label>
+              <Select
+                value={`${table.getState().pagination.pageSize}`}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+              >
+                <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+                  <SelectValue
+                    placeholder={table.getState().pagination.pageSize}
+                  />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex w-fit items-center justify-center text-sm font-medium">
+              Seite {table.getState().pagination.pageIndex + 1} von{" "}
+              {table.getPageCount()}
+            </div>
+            <div className="ml-auto flex items-center gap-2 lg:ml-0">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Zur ersten Seite springen</span>
+                <IconChevronsLeft />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8"
+                size="icon"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Zur vorherigen Seite springen</span>
+                <IconChevronLeft />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8"
+                size="icon"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Zur nächsten Seite springen</span>
+                <IconChevronRight />
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden size-8 lg:flex"
+                size="icon"
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Zur letzten Seite springen</span>
+                <IconChevronsRight />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Col>
   );
 }
