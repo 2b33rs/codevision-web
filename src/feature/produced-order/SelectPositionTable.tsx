@@ -1,5 +1,3 @@
-// SelectablePositionsTable.tsx
-
 import { ReactNode, useState } from "react";
 import { Position } from "@/models/order";
 import { ColumnDef } from "@tanstack/react-table";
@@ -29,11 +27,11 @@ type Props = {
 };
 
 const SelectablePositionsTable = ({
-  positions,
-  orderNumber,
-  selectableStatus,
-  actions,
-}: Props) => {
+                                    positions,
+                                    orderNumber,
+                                    selectableStatus,
+                                    actions,
+                                  }: Props) => {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
@@ -54,7 +52,6 @@ const SelectablePositionsTable = ({
               checked={anyChecked}
               onChange={(e) => {
                 const shouldSelect = e.target.checked;
-                // selektiere per table API alle relevanten IDs
                 const newSel: Record<string, boolean> = {};
                 table.getFilteredRowModel().rows.forEach((row) => {
                   if (row.original.Status === selectableStatus) {
