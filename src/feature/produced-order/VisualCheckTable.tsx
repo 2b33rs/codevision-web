@@ -14,9 +14,56 @@ const VisualCheckTable = () => {
     orderNumber: string;
   } | null>(null);
 
+  const ordersWithCount = producedOrders.map((order) => {
+    const readyCount = order.positions.filter(
+      (pos) => pos.Status === "READY_FOR_INSPECTION",
+    ).length;
+    return { ...order, readyCount };
+  });
+
   const handleComplete = async () => {
     await refetch();
     setRefreshCounter((prev) => prev + 1);
+  const sortedOrders = ordersWithCount.sort((a, b) =>
+    a.orderNumber.localeCompare(b.orderNumber),
+  );
+
+  const handleStatusChange = async (
+    selected: Position[],
+    orderNumber: string,
+    status: "INSPECTED" | "CANCELLED",
+  ) => {
+    try {
+      const responses = await Promise.all(
+        selected.map((position: Position) => {
+          const compositeId = buildComposeId(orderNumber, position.pos_number);
+          return fetch(
+            `https://codevision-backend-production.up.railway.app/position/${compositeId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ status }),
+            },
+          );
+        }),
+      );
+
+      const allSuccessful = responses.every((res) => res.ok);
+
+      if (allSuccessful) {
+        toast.success(
+          `${selected.length} Position(en) aus Order #${orderNumber} erfolgreich auf "${status}" gesetzt.`,
+        );
+        await refetch();
+        setRefreshCounter((prev) => prev + 1); // 🔁 trigger Table reset
+      } else {
+        toast.error("Einige Positionen konnten nicht aktualisiert werden.");
+      }
+    } catch (error) {
+      toast.error("Fehler beim PATCH-Request: " + (error as Error).message);
+    }
   };
 
   const sortedOrders = [...producedOrders].sort((a, b) =>

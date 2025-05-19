@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ export default function CreateOrderForm({
     defaultValues: {
       positions: [
         {
+          productCategory: "T_SHIRT",
           amount: 0,
           shirtSize: undefined,
           color: "",
