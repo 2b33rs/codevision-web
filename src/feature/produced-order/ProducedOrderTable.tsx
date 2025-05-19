@@ -1,10 +1,13 @@
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
 import { toast } from "sonner";
+import { positionApi } from "@/api/endpoints/positionApi.ts";
 
 const ProducedOrderTable = () => {
   const { data: producedOrders = [] } =
     orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_SHIPMENT");
+
+  const [patchPosition] = positionApi.usePatchPositionMutation();
 
   const ordersWithCount = producedOrders.map((order) => {
     const readyCount = order.positions.filter(
@@ -34,11 +37,19 @@ const ProducedOrderTable = () => {
                     anfordern?
                   </div>
                 ),
-                onConfirm: (selected, orderNumber) => {
-                  toast.success(
-                    "Angefordert:" +
-                      selected.map((p) => orderNumber + p.pos_number),
-                  );
+                onConfirm: async (selected, orderNumber) => {
+                  try {
+                    await patchPosition({
+                      orderNumber,
+                      positions: selected,
+                      status: "IN_PROGRESS",
+                    }).unwrap();
+                    toast.success(
+                      `${selected.length} Position(en) angefordert.`,
+                    );
+                  } catch {
+                    toast.error("Fehler beim Anfordern der Positionen.");
+                  }
                 },
                 renderDropdown: true,
               },
