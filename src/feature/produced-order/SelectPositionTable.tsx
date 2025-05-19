@@ -3,18 +3,12 @@ import { Position } from "@/models/order";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table.tsx";
 import PositionDetails from "@/common/PositionDetails.tsx";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input.tsx";
 
 type Action = {
   label: ReactNode;
-  content: (selected: Position[], orderNumber: string) => ReactNode;
+  content?: (selected: Position[], orderNumber: string) => ReactNode;
   onConfirm: (selected: Position[], orderNumber: string) => void;
   renderDropdown?: boolean;
 };
@@ -41,24 +35,25 @@ const SelectablePositionsTable = ({
     {
       id: "select",
       header: ({ table }) => {
-        const anyChecked = table
+        const allSelectable = table
           .getFilteredRowModel()
           .rows.filter((row) => row.original.Status === selectableStatus)
           .every((row) => row.getIsSelected());
+
         return (
           <div className="flex justify-center">
             <Input
               type="checkbox"
-              checked={anyChecked}
+              checked={allSelectable}
               onChange={(e) => {
                 const shouldSelect = e.target.checked;
-                const newSel: Record<string, boolean> = {};
+                const newSelection: Record<string, boolean> = {};
                 table.getFilteredRowModel().rows.forEach((row) => {
                   if (row.original.Status === selectableStatus) {
-                    newSel[row.id] = shouldSelect;
+                    newSelection[row.id] = shouldSelect;
                   }
                 });
-                setRowSelection(newSel);
+                setRowSelection(newSelection);
               }}
               aria-label="Alle auswählen"
             />
@@ -98,47 +93,19 @@ const SelectablePositionsTable = ({
       <div className="mb-2 flex items-center justify-between px-2 pt-2">
         <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
         <div className="flex space-x-2">
-          {selectedCount !== 0 &&
-            actions.map((action, idx) => {
-              if (action.renderDropdown) {
-                return (
-                  <DropdownMenu key={idx}>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        {action.label} ({selectedCount})
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      {action.content(selectedPositions, orderNumber)}
-                      <DropdownMenuItem asChild>
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            action.onConfirm(selectedPositions, orderNumber)
-                          }
-                          className={"ml-auto"}
-                        >
-                          Bestätigen
-                        </Button>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                );
-              }
-
-              return (
-                <Button
-                  key={idx}
-                  variant="link"
-                  size="sm"
-                  onClick={() =>
-                    action.onConfirm(selectedPositions, orderNumber)
-                  }
-                >
-                  {action.label} ({selectedCount})
-                </Button>
-              );
-            })}
+          {selectedCount > 0 &&
+            actions.map((action, idx) => (
+              <Button
+                key={idx}
+                variant="default"
+                size="sm"
+                onClick={() =>
+                  action.onConfirm(selectedPositions, orderNumber)
+                }
+              >
+                {action.label} ({selectedCount})
+              </Button>
+            ))}
         </div>
       </div>
       <DataTable
