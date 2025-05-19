@@ -71,8 +71,13 @@ export default function VisualCheckDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Geprüfte Positionen für Auftrag {orderNumber}</DialogTitle>
+          <DialogTitle>
+            {positions.length === 1
+              ? `Position für Bestellung ${orderNumber} prüfen`
+              : `Positionen für Bestellung ${orderNumber} prüfen`}
+          </DialogTitle>
         </DialogHeader>
+
         <div className="space-y-4 max-h-[60vh] overflow-y-auto">
           {positions.map((pos, idx) => {
             const fillColor = parseCmykString(pos.color || "cmyk(0%,0%,0%,100%)");

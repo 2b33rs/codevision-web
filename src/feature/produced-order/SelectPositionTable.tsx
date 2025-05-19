@@ -16,9 +16,11 @@ type Action = {
 type Props = {
   positions: Position[];
   orderNumber: string;
-  selectableStatus: Position["Status"];
+  selectableStatus: Position["Status"] | Position["Status"][];
   actions: Action[];
+  onResetSelection?: () => void;
 };
+
 
 const SelectablePositionsTable = ({
                                     positions,
@@ -31,49 +33,65 @@ const SelectablePositionsTable = ({
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
   const selectedCount = selectedPositions.length;
 
+  const isSelectable = (status: Position["Status"]) => {
+    return Array.isArray(selectableStatus)
+      ? selectableStatus.includes(status)
+      : selectableStatus === status;
+  };
+
   const columns: ColumnDef<Position>[] = [
     {
       id: "select",
       header: ({ table }) => {
-        const allSelectable = table
-          .getFilteredRowModel()
-          .rows.filter((row) => row.original.Status === selectableStatus)
-          .every((row) => row.getIsSelected());
+        const rows = table.getFilteredRowModel().rows;
+        const selectableRows = rows.filter((row) =>
+          Array.isArray(selectableStatus)
+            ? selectableStatus.includes(row.original.Status)
+            : row.original.Status === selectableStatus
+        );
+
+        const allSelected = selectableRows.every((row) => rowSelection[row.id]);
+        const someSelected = selectableRows.some((row) => rowSelection[row.id]);
+
+        const handleSelectAll = (checked: boolean) => {
+          const newSelection: Record<string, boolean> = {};
+          selectableRows.forEach((row) => {
+            newSelection[row.id] = checked;
+          });
+          setRowSelection(newSelection);
+        };
 
         return (
           <div className="flex justify-center">
-            <Input
+            <input
               type="checkbox"
-              checked={allSelectable}
-              onChange={(e) => {
-                const shouldSelect = e.target.checked;
-                const newSelection: Record<string, boolean> = {};
-                table.getFilteredRowModel().rows.forEach((row) => {
-                  if (row.original.Status === selectableStatus) {
-                    newSelection[row.id] = shouldSelect;
-                  }
-                });
-                setRowSelection(newSelection);
+              ref={(el) => {
+                if (el) el.indeterminate = someSelected && !allSelected;
               }}
+              checked={allSelected && selectableRows.length > 0}
+              onChange={(e) => handleSelectAll(e.target.checked)}
               aria-label="Alle auswählen"
             />
           </div>
         );
       },
+
       cell: ({ row }) => {
-        const isSelectable = row.original.Status === selectableStatus;
+        const pos = row.original;
+        const canSelect = isSelectable(pos.Status);
+
         return (
           <div className="flex justify-center">
             <Input
               type="checkbox"
-              checked={row.getIsSelected()}
-              disabled={!isSelectable}
-              onChange={(e) =>
+              checked={rowSelection[row.id]}
+              disabled={!canSelect}
+              onChange={(e) => {
                 setRowSelection((prev) => ({
                   ...prev,
                   [row.id]: e.target.checked,
-                }))
-              }
+                }));
+              }}
               aria-label="Zeile auswählen"
             />
           </div>
@@ -99,9 +117,10 @@ const SelectablePositionsTable = ({
                 key={idx}
                 variant="default"
                 size="sm"
-                onClick={() =>
-                  action.onConfirm(selectedPositions, orderNumber)
-                }
+                onClick={async () => {
+                  action.onConfirm(selectedPositions, orderNumber);
+                  setRowSelection({});
+                }}
               >
                 {action.label} ({selectedCount})
               </Button>

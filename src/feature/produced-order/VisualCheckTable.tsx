@@ -6,7 +6,7 @@ import { Position } from "@/models/order.ts";
 
 const VisualCheckTable = () => {
   const { data: producedOrders = [], refetch } =
-    orderApi.useGetOrdersWithPositionStatusQuery("COMPLETED");
+    orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
 
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [dialogData, setDialogData] = useState<{
@@ -31,10 +31,10 @@ const VisualCheckTable = () => {
             key={`${order.id}-${refreshCounter}`}
             positions={order.positions}
             orderNumber={order.orderNumber}
-            selectableStatus={"COMPLETED"}
+            selectableStatus={"READY_FOR_INSPECTION"}
             actions={[
               {
-                label: "Visueller Check durchgeführt",
+                label: "Check durchführen",
                 content: () => null,
                 onConfirm: (selected, orderNumber) =>
                   setDialogData({ positions: selected, orderNumber }),
