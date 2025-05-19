@@ -1,13 +1,14 @@
 import {
+  IconAlertTriangle,
   IconBuildingFactory,
-  IconBuildingWarehouse,
+  IconClipboardList,
   IconDashboard,
-  IconShoppingCart,
-  IconTable,
+  IconPackage,
+  IconTruck,
+  IconUser,
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Order from "@/feature/order/Order.tsx";
-import { BookCheck, FileWarning, Package, User2 } from "lucide-react";
 import Customer from "@/feature/customer/Customer.tsx";
 import StandardProduct from "@/feature/standard-products/StandardProduct.tsx";
 import ProducedOrder from "@/feature/produced-order/ProducedOrder.tsx";
@@ -22,42 +23,42 @@ export const NAV_MAIN = [
   },
   {
     title: "Kunden",
-    url: "/kunden",
-    icon: User2,
+    url: "/kunde",
+    icon: IconUser,
     element: <Customer />,
   },
   {
-    title: "Bestellung",
-    url: "/bestellung",
-    icon: IconTable,
-    element: <Order />,
-  },
-  {
-    title: "Standartprodukte",
+    title: "Produkte",
     url: "/produkt",
-    icon: Package,
+    icon: IconPackage,
     element: <StandardProduct />,
   },
   {
-    title: "Fertigware",
+    title: "Bestellungen",
+    url: "/bestellung",
+    icon: IconClipboardList,
+    element: <Order />,
+  },
+
+  {
+    title: "Lagerbestand",
     url: "/fertigware",
-    icon: BookCheck,
+    icon: IconPackage,
     element: <ProducedOrder />,
   },
   {
     title: "Reklamationen",
-    url: "/reklamationen",
-    icon: FileWarning,
+    url: "/reklamation",
+    icon: IconAlertTriangle,
     element: <Complaints />,
   },
-
 ];
 
 export const NAV_ABTEILUNGEN = [
   {
-    title: "Verkauf & Versand",
+    title: "Vertrieb & Logistik",
     url: "/",
-    icon: IconShoppingCart,
+    icon: IconTruck,
   },
   {
     title: "Produktion",
@@ -65,8 +66,8 @@ export const NAV_ABTEILUNGEN = [
     icon: IconBuildingFactory,
   },
   {
-    title: "Materialwirtschaft",
+    title: "Materialverwaltung",
     url: "https://www.google.de/ref-to/prod",
-    icon: IconBuildingWarehouse,
+    icon: IconBuildingFactory,
   },
 ];
