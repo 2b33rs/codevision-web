@@ -1,44 +1,48 @@
-import { useCancelPositionMutation } from "@/api/endpoints/positionApi";
 import { toast } from "sonner";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
 import { useMemo } from "react";
 import { orderApi } from "@/api/endpoints/orderApi";
 import { Order, Position } from "@/models/order";
+import { positionApi } from "@/api/endpoints/positionApi.ts";
 
-const selectableStatuses = ["IN_PROGRESS", "READY_FOR_SHIPMENT", "INSPECTED", "READY_FOR_INSPECTION", "COMPLETED"];
-
+const selectableStatuses = [
+  "IN_PROGRESS",
+  "READY_FOR_SHIPMENT",
+  "INSPECTED",
+  "READY_FOR_INSPECTION",
+  "COMPLETED",
+];
 
 const ComplaintsCapture = () => {
   const { data: allOrders = [], refetch } = orderApi.useGetOrdersQuery({});
-  const [cancelPosition] = useCancelPositionMutation();
+  const [patchPosition] = positionApi.usePatchPositionMutation();
 
   const validOrders = useMemo(() => {
     return (allOrders as Order[]).filter((order: Order) =>
-      order.positions.some((pos: Position) => pos.Status !== "CANCELLED")
+      order.positions.some((pos: Position) => pos.Status !== "CANCELLED"),
     );
   }, [allOrders]);
 
-
-
-
   const handleComplaint = async (
     selectedPositions: Position[],
-    orderNumber: string
+    orderNumber: string,
   ) => {
     try {
-      await cancelPosition({ orderNumber, positions: selectedPositions, status: "CANCELLED" }).unwrap();
+      await patchPosition({
+        orderNumber,
+        positions: selectedPositions,
+        status: "CANCELLED",
+      }).unwrap();
 
-      toast.success(
-        `Reklamation eingereicht`
-      );
+      toast.success(`Reklamation eingereicht`);
 
       await refetch(); // 👈 Daten neu laden
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unbekannter Fehler";
       toast.error("Fehler beim Einreichen der Reklamation: " + errorMessage);
     }
   };
-
 
   return (
     <div className="space-y-6">
@@ -55,7 +59,6 @@ const ComplaintsCapture = () => {
               },
             ]}
           />
-
         </div>
       ))}
     </div>

@@ -8,6 +8,7 @@ import {
 import { Order } from "@/models/order";
 import { useState } from "react";
 import { PositionPreview } from "@/common/PositionPreview.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function PositionDetailsDialog({ order }: { order: Order }) {
   const [open, setOpen] = useState(false);
@@ -19,12 +20,9 @@ export default function PositionDetailsDialog({ order }: { order: Order }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          className="text-foreground hover:text-primary text-sm font-medium underline-offset-4 transition-colors hover:underline"
-          title="Details anzeigen"
-        >
+        <Button title="Details anzeigen" variant={"link"}>
           {order.positions.length} Positionen
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>

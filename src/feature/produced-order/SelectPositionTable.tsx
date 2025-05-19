@@ -21,13 +21,12 @@ type Props = {
   onResetSelection?: () => void;
 };
 
-
 const SelectablePositionsTable = ({
-                                    positions,
-                                    orderNumber,
-                                    selectableStatus,
-                                    actions,
-                                  }: Props) => {
+  positions,
+  orderNumber,
+  selectableStatus,
+  actions,
+}: Props) => {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
@@ -47,7 +46,7 @@ const SelectablePositionsTable = ({
         const selectableRows = rows.filter((row) =>
           Array.isArray(selectableStatus)
             ? selectableStatus.includes(row.original.Status)
-            : row.original.Status === selectableStatus
+            : row.original.Status === selectableStatus,
         );
 
         const allSelected = selectableRows.every((row) => rowSelection[row.id]);
@@ -63,7 +62,7 @@ const SelectablePositionsTable = ({
 
         return (
           <div className="flex justify-center">
-            <input
+            <Input
               type="checkbox"
               ref={(el) => {
                 if (el) el.indeterminate = someSelected && !allSelected;

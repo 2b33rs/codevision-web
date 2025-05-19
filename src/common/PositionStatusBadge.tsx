@@ -32,27 +32,27 @@ const config: Record<
     icon: <IconLoader2 className="mr-1 h-4 w-4 animate-spin" />,
   },
   READY_FOR_INSPECTION: {
-    label: "Zur Prüfung ausgelagert",
+    label: "Ausgelagert",
     color: "bg-purple-100 text-purple-800",
     icon: <IconTruckLoading className="mr-1 h-4 w-4" />,
   },
   READY_FOR_SHIPMENT: {
-    label: "Fertig produziert",
+    label: "Produziert",
     color: "bg-blue-100 text-blue-800",
     icon: <IconBoxSeam className="mr-1 h-4 w-4" />,
   },
   INSPECTED: {
-    label: "Geprüft & freigegeben",
+    label: "Geprüft",
     color: "bg-purple-100 text-purple-800",
     icon: <IconCheckupList className="mr-1 h-4 w-4" />,
   },
   COMPLETED: {
-    label: "Versendet an Kunden",
+    label: "Versendet",
     color: "bg-green-100 text-green-800",
     icon: <IconCircleCheck className="mr-1 h-4 w-4" />,
   },
   CANCELLED: {
-    label: "Reklamiert / abgebrochen",
+    label: "Reklamiert",
     color: "bg-red-100 text-red-800",
     icon: <IconAlertTriangle className="mr-1 h-4 w-4" />,
   },

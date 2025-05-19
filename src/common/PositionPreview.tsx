@@ -38,7 +38,7 @@ export function PositionPreview({ pos }: { pos: Position }) {
               <Shirt className="text-muted absolute inset-0 h-full w-full opacity-30" />
               <img
                 src={pos.design}
-                alt="Design"
+                alt="Kein Design"
                 className="mask mask-squircle h-full w-full rounded-sm object-cover"
               />
             </div>

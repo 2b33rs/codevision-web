@@ -37,8 +37,7 @@ const ProducedOrderTable = () => {
                 onConfirm: (selected, orderNumber) => {
                   toast.success(
                     "Angefordert:" +
-                      JSON.stringify(selected) +
-                      JSON.stringify(orderNumber),
+                      selected.map((p) => orderNumber + p.pos_number),
                   );
                 },
                 renderDropdown: true,

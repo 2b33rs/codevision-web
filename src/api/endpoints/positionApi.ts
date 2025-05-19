@@ -1,19 +1,19 @@
 import { baseApi } from "@/api/baseApi";
 import { Position } from "@/models/order";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import buildComposeId from "@/common/Utils.ts";
 
-type CancelStatusArgs = {
-  orderNumber: string;
-  positions: Position[];
-  status: "CANCELLED";
-};
-
 export const positionApi = baseApi.injectEndpoints({
-  overrideExisting: true,
   endpoints: (builder) => ({
-    cancelPosition: builder.mutation<true, CancelStatusArgs>({
-      async queryFn({ orderNumber, positions, status }, _queryApi, _extraOptions, fetchWithBQ) {
+    patchPosition: builder.mutation<
+      true,
+      { orderNumber: string; positions: Position[]; status: Position["Status"] }
+    >({
+      async queryFn(
+        { orderNumber, positions, status },
+        _api,
+        _opts,
+        fetchWithBQ,
+      ) {
         const responses = await Promise.all(
           positions.map((pos) => {
             const compositeId = buildComposeId(orderNumber, pos.pos_number);
@@ -22,31 +22,26 @@ export const positionApi = baseApi.injectEndpoints({
               method: "PATCH",
               body: { status },
             });
-          })
+          }),
         );
 
         const failed = responses.find((res) => !res.meta?.response?.ok);
-
         if (failed) {
-          const statusCode = failed.meta?.response?.status ?? 500;
-          type ErrorResponse = { message?: string };
-          const errorMessage =
-            typeof failed.data === "string"
-              ? failed.data
-              : (failed.data as ErrorResponse)?.message ?? "Unbekannter Fehler";
-
           return {
             error: {
-              status: statusCode,
-              data: errorMessage,
-            } as FetchBaseQueryError,
+              status: failed.meta?.response?.status ?? 500,
+              data:
+                typeof failed.data === "string"
+                  ? failed.data
+                  : ((failed.data as { message?: string })?.message ??
+                    "Unbekannter Fehler"),
+            },
           };
         }
 
         return { data: true };
       },
+      invalidatesTags: ["Order", "Product"],
     }),
   }),
 });
-
-export const { useCancelPositionMutation } = positionApi;
