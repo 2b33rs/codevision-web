@@ -33,7 +33,7 @@ export default function PositionItem({
   index: number;
   remove: UseFieldArrayRemove;
 }) {
-  const { data: products } = productApi.useListProductsQuery();
+  const { data: products } = productApi.useListProductsQuery({});
 
   const handleProductSelect = (productId: string) => {
     const selected = products?.find((p) => p.id === productId);

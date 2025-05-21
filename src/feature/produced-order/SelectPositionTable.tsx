@@ -5,6 +5,7 @@ import { DataTable } from "@/components/sidebar/data-table.tsx";
 import PositionDetails from "@/common/PositionDetails.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input.tsx";
+import { Row } from "@/common/flex/Flex.tsx";
 
 type Action = {
   label: ReactNode;
@@ -61,17 +62,15 @@ const SelectablePositionsTable = ({
         };
 
         return (
-          <div className="flex justify-center">
-            <Input
-              type="checkbox"
-              ref={(el) => {
-                if (el) el.indeterminate = someSelected && !allSelected;
-              }}
-              checked={allSelected && selectableRows.length > 0}
-              onChange={(e) => handleSelectAll(e.target.checked)}
-              aria-label="Alle auswählen"
-            />
-          </div>
+          <Input
+            type="checkbox"
+            ref={(el) => {
+              if (el) el.indeterminate = someSelected && !allSelected;
+            }}
+            checked={allSelected && selectableRows.length > 0}
+            onChange={(e) => handleSelectAll(e.target.checked)}
+            aria-label="Alle auswählen"
+          />
         );
       },
 
@@ -80,20 +79,18 @@ const SelectablePositionsTable = ({
         const canSelect = isSelectable(pos.Status);
 
         return (
-          <div className="flex justify-center">
-            <Input
-              type="checkbox"
-              checked={rowSelection[row.id]}
-              disabled={!canSelect}
-              onChange={(e) => {
-                setRowSelection((prev) => ({
-                  ...prev,
-                  [row.id]: e.target.checked,
-                }));
-              }}
-              aria-label="Zeile auswählen"
-            />
-          </div>
+          <Input
+            type="checkbox"
+            checked={rowSelection[row.id]}
+            disabled={!canSelect}
+            onChange={(e) => {
+              setRowSelection((prev) => ({
+                ...prev,
+                [row.id]: e.target.checked,
+              }));
+            }}
+            aria-label="Zeile auswählen"
+          />
         );
       },
       enableSorting: false,
@@ -101,39 +98,40 @@ const SelectablePositionsTable = ({
     },
     {
       id: "pos_details",
+      header: "Alle Positionen",
       cell: ({ row }) => <PositionDetails position={row.original} />,
     },
   ];
 
   return (
-    <div className={`mb-4 rounded-md ${selectedCount > 0 ? "border" : ""}`}>
-      <div className="mb-2 flex items-center justify-between px-2 pt-2">
-        <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
-        <div className="flex space-x-2">
-          {selectedCount > 0 &&
-            actions.map((action, idx) => (
-              <Button
-                key={idx}
-                variant="default"
-                size="sm"
-                onClick={async () => {
-                  action.onConfirm(selectedPositions, orderNumber);
-                  setRowSelection({});
-                }}
-              >
-                {action.label} ({selectedCount})
-              </Button>
-            ))}
-        </div>
-      </div>
-      <DataTable
-        data={positions}
-        columns={columns}
-        search={false}
-        rowSelection={rowSelection}
-        onRowSelectionChange={setRowSelection}
-      />
-    </div>
+    <DataTable
+      toolbar={
+        <Row f1 gap={0} justify={"between"}>
+          <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
+          <div className="flex space-x-2">
+            {selectedCount > 0 &&
+              actions.map((action, idx) => (
+                <Button
+                  key={idx}
+                  variant="default"
+                  size="sm"
+                  onClick={async () => {
+                    action.onConfirm(selectedPositions, orderNumber);
+                    setRowSelection({});
+                  }}
+                >
+                  {action.label} ({selectedCount})
+                </Button>
+              ))}
+          </div>
+        </Row>
+      }
+      data={positions}
+      columns={columns}
+      search={false}
+      rowSelection={rowSelection}
+      onRowSelectionChange={setRowSelection}
+    />
   );
 };
 

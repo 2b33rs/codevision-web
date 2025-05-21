@@ -1,5 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table";
+import { useState, useMemo } from "react";
+import Fuse from "fuse.js";
+import { SearchInput } from "@/components/ui/search-input";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { useGetComplaintsQuery } from "@/api/endpoints/complaintsApi.ts";
@@ -23,9 +26,22 @@ const complaintReasonMap: Record<ComplaintDto["ComplaintReason"], string> = {
 
 const ComplaintsTable = ({ kind }: { kind?: "INTERN" | "EXTERN" }) => {
   const { data = [], isLoading } = useGetComplaintsQuery({});
-  const filteredData = kind
-    ? data.filter((c) => c.ComplaintKind === kind)
-    : data;
+  const [search, setSearch] = useState("");
+  const filtered = useMemo(() => {
+    const base = kind ? data.filter((c) => c.ComplaintKind === kind) : data;
+    if (!search) return base;
+    const fuse = new Fuse(base, {
+      keys: [
+        "ComplaintReason",
+        "position.name",
+        "position.color",
+        "position.shirtSize",
+      ],
+      threshold: 0.3,
+      ignoreLocation: true,
+    });
+    return fuse.search(search).map((r) => r.item);
+  }, [data, kind, search]);
 
   const columns: ColumnDef<ComplaintDto>[] = [
     {
@@ -56,8 +72,14 @@ const ComplaintsTable = ({ kind }: { kind?: "INTERN" | "EXTERN" }) => {
         <p>Reklamationen werden geladen...</p>
       ) : (
         <div className="w-full overflow-x-auto">
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Suche nach Grund oder Position ..."
+            className="mb-4 max-w-sm"
+          />
           <DataTable
-            data={filteredData}
+            data={filtered}
             columns={columns}
             initialSorting={[{ id: "updatedAt", desc: true }]}
           />

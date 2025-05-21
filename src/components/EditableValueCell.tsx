@@ -32,12 +32,17 @@ export function EditableValueCell<T extends string | number>({
   const Icon = icon;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="group flex items-center gap-2">
       <span>{value ?? "—"}</span>
 
       <DropdownMenu onOpenChange={setDropdownMenuOpen} open={dropdownMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" title={title}>
+          <Button
+            className="h-8 w-8 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+            title={title}
+            variant="ghost"
+            size="icon"
+          >
             <Icon className="text-muted-foreground hover:text-foreground h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

@@ -1,10 +1,15 @@
+import Fuse from "fuse.js";
 import { useState } from "react";
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
 import VisualCheckDialog from "./VisualCheckDialog.tsx";
 import { Position } from "@/models/order.ts";
 
-const VisualCheckTable = () => {
+interface VisualCheckTableProps {
+  searchValue?: string;
+}
+
+const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
   const { data: producedOrders = [] } =
     orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
 
@@ -13,7 +18,23 @@ const VisualCheckTable = () => {
     orderNumber: string;
   } | null>(null);
 
-  const ordersWithCount = producedOrders.map((order) => {
+  const filteredOrders =
+    searchValue && producedOrders.length > 0
+      ? new Fuse(producedOrders, {
+          keys: [
+            "orderNumber",
+            "positions.name",
+            "positions.color",
+            "positions.shirtSize",
+          ],
+          threshold: 0.3,
+          ignoreLocation: true,
+        })
+          .search(searchValue)
+          .map((result) => result.item)
+      : producedOrders;
+
+  const ordersWithCount = filteredOrders.map((order) => {
     const readyCount = order.positions.filter(
       (pos) => pos.Status === "READY_FOR_INSPECTION",
     ).length;
@@ -25,9 +46,9 @@ const VisualCheckTable = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-1">
       {sortedOrders.map((order) => (
-        <div key={order.id}>
+        <div key={order.id} className="bg-muted-foreground/2 p-1">
           <SelectablePositionsTable
             key={order.id}
             positions={order.positions}

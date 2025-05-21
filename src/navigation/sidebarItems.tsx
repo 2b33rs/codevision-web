@@ -29,7 +29,7 @@ export const NAV_MAIN = [
   },
   {
     title: "Produkte",
-    url: "/produkt",
+    url: "/standardprodukte",
     icon: IconPackage,
     element: <StandardProduct />,
   },

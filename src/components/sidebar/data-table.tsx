@@ -1,4 +1,5 @@
 import * as React from "react";
+import { JSX } from "react";
 
 import {
   IconChevronLeft,
@@ -40,10 +41,7 @@ import {
   TableRow,
 } from "@/components/ui/table.tsx";
 import { Col, Row } from "@/common/flex/Flex.tsx";
-import { SearchInput } from "@/components/ui/search-input.tsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils.ts";
 
 const MotionTableRow = motion(TableRow);
 
@@ -70,25 +68,20 @@ export function DataTable<T extends { id: string }>({
   data,
   columns,
   loading,
-  cta,
   initialSorting,
   search = true,
   rowSelection,
   onRowSelectionChange,
+  toolbar,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
   loading?: any;
-  cta?: {
-    text: string;
-    icon: LucideIcon;
-    onClick: () => void;
-    isLoading: boolean;
-  };
   initialSorting?: SortingState;
   search?: boolean;
   rowSelection?: Record<string, boolean>;
   onRowSelectionChange?: (updater: any) => void;
+  toolbar?: JSX.Element;
 }) {
   const [internalRowSelection, setInternalRowSelection] = React.useState({});
   const effectiveRowSelection = rowSelection ?? internalRowSelection;
@@ -138,34 +131,7 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <Col f1>
-      <Row justify="between">
-        {search && (
-          <SearchInput
-            value={globalFilter}
-            onChange={setGlobalFilter}
-            placeholder={"Suche nach Auftragsnummer, Status oder Kunde .. "}
-            className="max-w-sm"
-          />
-        )}
-
-        {cta && (
-          <Button
-            disabled={cta.isLoading}
-            onClick={() => {
-              cta?.onClick();
-            }}
-          >
-            <>
-              {cta.isLoading ? (
-                <Loader2 className={cn("h-4 w-4 animate-spin")} />
-              ) : (
-                <cta.icon className="h-4 w-4" />
-              )}
-              {cta?.text}
-            </>
-          </Button>
-        )}
-      </Row>
+      <Row>{toolbar}</Row>
       <div className="max-w-full overflow-auto rounded-lg border">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">

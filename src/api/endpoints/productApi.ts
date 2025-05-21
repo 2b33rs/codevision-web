@@ -3,8 +3,12 @@ import { CreateProductDto, Product, UpdateProductDto } from "@/models/product";
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    listProducts: builder.query<Product[], void>({
-      query: () => "/product",
+    listProducts: builder.query<Product[], { query?: string }>({
+      query: ({ query }) => {
+        const params = new URLSearchParams();
+        if (query) params.set("query", query);
+        return `/product?${params.toString()}`;
+      },
       providesTags: ["Product"],
     }),
 

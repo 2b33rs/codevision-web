@@ -5,7 +5,7 @@ import { CustomerType } from "@/models/customer.ts";
 
 const Customer = () => {
   return (
-    <BaseContentLayout title="Kunden">
+    <BaseContentLayout>
       <BaseTabsLayout
         tabs={[
           {

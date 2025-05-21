@@ -4,10 +4,13 @@ import type { Product } from "@/models/product.ts";
 import EditableMinStockCell from "@/feature/standard-products/EditableMinStockCell.tsx";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { WarehouseOrderCell } from "@/feature/standard-products/WarehouseOrderCell.tsx";
-import { Row } from "@/common/flex/Flex.tsx";
+import { Col, Row } from "@/common/flex/Flex.tsx";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { DeleteDropdownButton } from "@/common/DeleteDropdownButton.tsx";
 import EditableNameCell from "@/feature/standard-products/EditableNameCell.tsx";
+import { SearchInput } from "@/components/ui/search-input.tsx";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Grid2x2Plus } from "lucide-react";
 
 interface StandardProductTableProps {
@@ -15,7 +18,10 @@ interface StandardProductTableProps {
 }
 
 const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
-  const { data, isLoading } = productApi.useListProductsQuery();
+  const [search, setSearch] = useState("");
+  const { data, isLoading } = productApi.useListProductsQuery({
+    query: search,
+  });
   const [deleteProduct] = productApi.useDeleteProductMutation();
 
   const columns: ColumnDef<Product>[] = [
@@ -58,20 +64,28 @@ const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
     },
   ];
   return (
-    <DataTable
-      data={data || []}
-      columns={columns}
-      loading={isLoading}
-      initialSorting={[{ id: "name", desc: false }]}
-      cta={{
-        text: "Standartprodukt hinzufügen",
-        icon: Grid2x2Plus,
-        onClick: () => {
-          setShowModal?.(true);
-        },
-        isLoading: false,
-      }}
-    />
+    <Col f1 gap={0}>
+      <DataTable
+        toolbar={
+          <Row className="w-full justify-between gap-2">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Suche nach Name oder Farbe ..."
+              className="max-w-sm"
+            />
+            <Button onClick={() => setShowModal?.(true)} variant="default">
+              <Grid2x2Plus className="mr-2 h-4 w-4" />
+              Standardprodukt hinzufügen
+            </Button>
+          </Row>
+        }
+        data={data || []}
+        columns={columns}
+        loading={isLoading}
+        initialSorting={[{ id: "name", desc: false }]}
+      />
+    </Col>
   );
 };
 
