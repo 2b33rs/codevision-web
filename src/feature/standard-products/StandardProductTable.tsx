@@ -39,6 +39,10 @@ const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
       cell: ({ row }) => <EditableNameCell product={row.original} />,
     },
     {
+      accessorKey: "design",
+      header: "Design",
+    },
+    {
       cell: ({ row }) => <EditableMinStockCell product={row.original} />,
       accessorKey: "minAmount",
       header: "Mindestbestand",

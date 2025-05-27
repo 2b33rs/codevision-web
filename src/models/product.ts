@@ -42,4 +42,5 @@ export const createProductZ = z.object({
     .default(ProductCategory.TShirt),
   minAmount: z.coerce.number().int().nonnegative(),
   amountInProduction: z.coerce.number().int().nonnegative().default(0),
+  design: z.string().optional(),
 });

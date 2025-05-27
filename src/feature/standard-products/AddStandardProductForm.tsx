@@ -93,6 +93,28 @@ export default function AddStandardProductForm({
           />
         </Row>
 
+        <Row>
+          <FormField
+            control={form.control}
+            name="design"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Motiv-URL</FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://..."
+                    {...field}
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </Row>
+
+
         <FormField
           control={form.control}
           name="color"

@@ -148,6 +148,28 @@ export default function PositionItem({
 
         <FormField
           control={form.control}
+          name={`positions.${index}.design`}
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel>Motiv-URL (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="url"
+                  placeholder="https://..."
+                  {...field}
+                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+
+
+        <FormField
+          control={form.control}
           name={`positions.${index}.color`}
           render={({ field }) => (
             <FormItem className={"col-span-2"}>

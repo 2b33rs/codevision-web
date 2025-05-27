@@ -42,21 +42,41 @@ export default function CreateOrderForm({
 
   const onSubmit = form.handleSubmit(
     async (data) => {
+
+      const formatted = {
+        customerId: data.customerId,
+        positions: data.positions.map((pos, i) => ({
+          amount: pos.amount,
+          pos_number: i,
+          name: pos.name ,
+          productCategory: pos.productCategory,
+          design: pos.design ,
+          color: pos.color ,
+          shirtSize: pos.shirtSize ,
+          description: pos.description,
+          standardProductId:
+            pos.standardProductId,
+        })),
+      };
+
+
+      console.log(JSON.stringify(formatted, null, 2));
+
       try {
         const result = await createOrder(data).unwrap();
         toast.success("Bestellung erstellt:", result);
         form.reset();
+        setShowModal?.(false);
       } catch (err) {
-        console.error(data);
-        console.error(err);
+        console.error("❌ Fehler beim Absenden:", err);
         toast.error(
           "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
         );
       }
-      setShowModal?.(false);
     },
     (errors) => console.error("❌ Validierungsfehler:", errors),
   );
+
 
   return (
     <Form {...form}>

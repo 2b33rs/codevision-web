@@ -15,6 +15,7 @@ export const positionInputZ = z.object({
     ),
   shirtSize: z.enum(["S", "M", "L", "XL"]),
   description: z.string().nullable().optional(),
+  standardProductId: z.string().uuid().optional(),
 });
 
 export const createOrderFormZ = z.object({
