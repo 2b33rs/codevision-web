@@ -54,8 +54,7 @@ export default function CreateOrderForm({
           color: pos.color ,
           shirtSize: pos.shirtSize ,
           description: pos.description,
-          standardProductId:
-            pos.standardProductId,
+          standardProductId: pos.standardProductId || undefined,
         })),
       };
 
@@ -74,7 +73,10 @@ export default function CreateOrderForm({
         );
       }
     },
-    (errors) => console.error("❌ Validierungsfehler:", errors),
+      (errors) => {
+        console.error("❌ Validierungsfehler:", errors);
+      },
+
   );
 
 

@@ -37,18 +37,17 @@ export default function PositionItem({
 }) {
   const { data: products } = productApi.useListProductsQuery({});
 
-  const handleProductSelect = (productId: string) => {
-    const selected = products?.find((p) => p.id === productId);
-    if (!selected) return;
-    form.setValue(`positions.${index}.color`, selected.color);
-    form.setValue(
-      `positions.${index}.productCategory`,
-      selected.productCategory,
-    );
-    form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
-    form.setValue(`positions.${index}.name`, selected.name);
-    form.setValue(`positions.${index}.design`, selected.name);
-  };
+    const handleProductSelect = (productId: string) => {
+        const selected = products?.find((p) => p.id === productId);
+        if (!selected) return;
+
+        form.setValue(`positions.${index}.color`, selected.color);
+        form.setValue(`positions.${index}.productCategory`, selected.productCategory);
+        form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
+        form.setValue(`positions.${index}.name`, selected.name);
+        form.setValue(`positions.${index}.design`, selected.name);
+        form.setValue(`positions.${index}.standardProductId`, selected.id || undefined);
+    };
 
   useEffect(() => {
     form.setValue(`positions.${index}.pos_number`, index + 1);
