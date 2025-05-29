@@ -107,21 +107,31 @@ export default function PositionItem({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={`positions.${index}.amount`}
-          render={({ field }) => (
-            <FormItem className="relative">
-              <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                Menge
-              </FormLabel>
-              <FormControl>
-                <Input type="number" className="pt-5" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+              control={form.control}
+              name={`positions.${index}.amount`}
+              render={({ field }) => (
+                  <FormItem className="relative">
+                      <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                          Menge
+                      </FormLabel>
+                      <FormControl>
+                          <Input
+                              type="number"
+                              className="pt-5"
+                              min={0}
+                              value={field.value}
+                              onChange={(e) => {
+                                  const value = parseInt(e.target.value, 10);
+                                  field.onChange(isNaN(value) ? 0 : Math.max(0, value));
+                              }}
+                          />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+              )}
+          />
+
 
         <FormField
           control={form.control}
