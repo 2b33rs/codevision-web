@@ -21,21 +21,22 @@ export default function CustomerSelect({
   const { data: customers = [], isLoading } = customerApi.useListCustomersQuery();
   const [search, setSearch] = useState("");
   const [selectedCustomerLabel, setSelectedCustomerLabel] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const filteredCustomers = useMemo(() => {
-    if (!search.trim()) return [];
-    const term = search.toLowerCase();
+    const term = search.toLowerCase().trim();
+    if (!term && isFocused) return customers;
     return customers.filter((c) =>
       `${c.name} ${c.email}`.toLowerCase().includes(term)
     );
-  }, [customers, search]);
+  }, [customers, search, isFocused]);
 
   const handleSelectCustomer = (id: string, label: string) => {
     form.setValue("customerId", id);
     setSelectedCustomerLabel(label);
     setSearch(""); // schließt Dropdown
+    setIsFocused(false); // Dropdown schließen
   };
-
 
   return (
     <FormField
@@ -49,6 +50,8 @@ export default function CustomerSelect({
               <Input
                 placeholder="Kundenname oder E-Mail suchen"
                 value={search || selectedCustomerLabel}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setTimeout(() => setIsFocused(false), 100)} // kurz verzögern, damit Klicks funktionieren
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setSelectedCustomerLabel(""); // Reset beim Tippen
@@ -56,7 +59,7 @@ export default function CustomerSelect({
                 disabled={isLoading}
               />
 
-              {search && (
+              {isFocused && (
                 <div className="absolute left-0 right-0 mt-1 z-50">
                   <ScrollArea className="rounded-md border bg-background shadow max-h-[260px] overflow-auto">
                     {filteredCustomers.length === 0 ? (
@@ -74,7 +77,9 @@ export default function CustomerSelect({
                         >
                           <div className="space-y-0.5 leading-tight">
                             <div className="font-medium">{c.name}</div>
-                            <div className="text-sm text-muted-foreground">{c.email}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {c.email}
+                            </div>
                           </div>
                         </Card>
                       ))
@@ -83,7 +88,6 @@ export default function CustomerSelect({
                 </div>
               )}
             </div>
-
           </FormControl>
           <FormMessage />
         </FormItem>
