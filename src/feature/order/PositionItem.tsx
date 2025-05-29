@@ -23,6 +23,8 @@ import { UseFieldArrayRemove, UseFormReturn } from "react-hook-form";
 import { OrderForm } from "@/models/order.ts";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Image as ImageIcon } from "lucide-react";
 
 export default function PositionItem({
   form,
@@ -146,20 +148,53 @@ export default function PositionItem({
           )}
         />
 
+
+
         <FormField
           control={form.control}
           name={`positions.${index}.design`}
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel>Motiv-URL (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://..."
-                  {...field}
-                  className="w-full"
-                />
-              </FormControl>
+              <FormLabel>Motiv auswählen</FormLabel>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://..."
+                    {...field}
+                    className="w-full"
+                  />
+                </FormControl>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" variant="outline" size="icon">
+                      <ImageIcon className="w-4 h-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="grid grid-cols-3 gap-2 max-w-[300px]">
+                    {[...Array(12)].map((_, i) => {
+                      const imgUrl = `https://picsum.photos/seed/${i+1}/100/100`;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => field.onChange(imgUrl)}
+                          className="focus:outline-none focus:ring-2 ring-ring rounded"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={`Motiv ${i}`}
+                            width={200}
+                            height={200}
+                            className="rounded object-cover"
+                          />
+
+                        </button>
+                      );
+                    })}
+                  </PopoverContent>
+                </Popover>
+              </div>
               <FormMessage />
             </FormItem>
           )}
