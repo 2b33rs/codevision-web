@@ -9,14 +9,17 @@ import { toast } from "sonner";
 import { positionApi } from "@/api/endpoints/positionApi.ts";
 import { PositionPreview } from "@/common/PositionPreview.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { Checkbox } from "@/components/ui/checkbox.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { useState } from "react";
 
 export default function VisualCheckDialog({
-  positions,
-  orderNumber,
-  onComplete,
-  open,
-  onOpenChange,
-}: {
+                                            positions,
+                                            orderNumber,
+                                            onComplete,
+                                            open,
+                                            onOpenChange,
+                                          }: {
   positions: Position[];
   orderNumber: string;
   onComplete: () => void;
@@ -24,8 +27,31 @@ export default function VisualCheckDialog({
   onOpenChange: (val: boolean) => void;
 }) {
   const [patchPosition] = positionApi.usePatchPositionMutation();
+  const [checked, setChecked] = useState<boolean[]>(new Array(5).fill(false));
+  const [viewPreview, setViewPreview] = useState(false);
+  const [rejectedAmount, setRejectedAmount] = useState<number>(0);
+
+  const checklistLabels = [
+    "Farbe innerhalb Toleranz",
+    "Druck ohne Einschlüsse oder Risse",
+    "Position Druck innerhalb Toleranz",
+    "Label korrekt angebracht",
+    "Nähte in Ordnung",
+  ];
+
+  const isChecklistComplete = checked.every(Boolean);
+
+  const toggleCheck = (index: number) => {
+    const updated = [...checked];
+    updated[index] = !updated[index];
+    setChecked(updated);
+  };
 
   const handleAction = async (status: Position["Status"]) => {
+    if (status === "CANCELLED") {
+      console.log(`Reklamierte Anzahl: ${rejectedAmount}`);
+    }
+
     try {
       const success = await patchPosition({
         orderNumber,
@@ -56,21 +82,65 @@ export default function VisualCheckDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
-          {positions.map((pos, idx) => {
-            return <PositionPreview key={idx} pos={pos}></PositionPreview>;
-          })}
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+          {viewPreview ? (
+            <>
+              {positions.map((pos, idx) => (
+                <PositionPreview key={idx} pos={pos} />
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {checklistLabels.map((label, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <Checkbox
+                      id={`check-${idx}`}
+                      checked={checked[idx]}
+                      onCheckedChange={() => toggleCheck(idx)}
+                    />
+                    <label htmlFor={`check-${idx}`}>{label}</label>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4">
+                <label className="text-sm font-medium block mb-1">
+                  Anzahl reklamierter Teile
+                </label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={rejectedAmount}
+                  onChange={(e) => setRejectedAmount(Number(e.target.value))}
+                />
+              </div>
+            </>
+          )}
         </div>
-        <div className="mt-4 flex justify-end gap-2">
+
+        <div className="mt-4 flex flex-wrap justify-between items-center gap-2">
           <Button
-            onClick={() => handleAction("CANCELLED")}
-            variant={"secondary"}
+            variant="ghost"
+            onClick={() => setViewPreview((prev) => !prev)}
           >
-            Reklamieren
+            {viewPreview ? "Zurück zur Checkliste" : "Position(en) anzeigen"}
           </Button>
-          <Button onClick={() => handleAction("COMPLETED")} variant={"default"}>
-            An Kunden versenden
-          </Button>
+
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleAction("CANCELLED")}
+              variant="secondary"
+            >
+              Reklamieren
+            </Button>
+            <Button
+              onClick={() => handleAction("COMPLETED")}
+              variant="default"
+              disabled={!isChecklistComplete}
+            >
+              An Kunden versenden
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
