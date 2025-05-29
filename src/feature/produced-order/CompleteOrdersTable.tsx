@@ -4,46 +4,41 @@ import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTab
 import { toast } from "sonner";
 import { positionApi } from "@/api/endpoints/positionApi.ts";
 
-interface ProducedOrderTableProps {
+interface Props {
   searchValue?: string;
 }
 
-const ProducedOrderTable = ({ searchValue }: ProducedOrderTableProps) => {
-  const { data: producedOrders = [] } =
+const CompleteOrdersTable = ({ searchValue }: Props) => {
+  const { data: orders = [] } =
     orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_SHIPMENT");
 
   const [patchPosition] = positionApi.usePatchPositionMutation();
 
   const filteredOrders =
-    searchValue && producedOrders.length > 0
-      ? new Fuse(producedOrders, {
-          keys: [
-            "orderNumber",
-            "positions.name",
-            "positions.color",
-            "positions.shirtSize",
-          ],
-          threshold: 0.3,
-          ignoreLocation: true,
-        })
-          .search(searchValue)
-          .map((result) => result.item)
-      : producedOrders;
+    searchValue && orders.length > 0
+      ? new Fuse(orders, {
+        keys: [
+          "orderNumber",
+          "positions.name",
+          "positions.color",
+          "positions.shirtSize",
+        ],
+        threshold: 0.3,
+        ignoreLocation: true,
+      })
+        .search(searchValue)
+        .map((res) => res.item)
+      : orders;
 
-  const ordersWithCount = filteredOrders.map((order) => {
-    const readyCount = order.positions.filter(
-      (pos) => pos.Status === "READY_FOR_SHIPMENT",
-    ).length;
-    return { ...order, readyCount };
-  });
-
-  const sortedOrders = ordersWithCount.sort(
-    (a, b) => b.readyCount - a.readyCount,
+  const completeOrders = filteredOrders.filter(
+    (order) =>
+      order.positions.length > 0 &&
+      order.positions.every((pos) => pos.Status === "READY_FOR_SHIPMENT")
   );
 
   return (
     <div className="space-y-1">
-      {sortedOrders.map((order) => (
+      {completeOrders.map((order) => (
         <div key={order.id} className="bg-muted-foreground/2 p-1">
           <SelectablePositionsTable
             positions={order.positions}
@@ -54,8 +49,7 @@ const ProducedOrderTable = ({ searchValue }: ProducedOrderTableProps) => {
                 label: "Positionen anfordern",
                 content: (selected, orderNumber) => (
                   <div className="px-4 py-2 text-sm">
-                    {selected.length} Position(en) aus Order #{orderNumber}{" "}
-                    anfordern?
+                    {selected.length} Position(en) aus Order #{orderNumber} anfordern?
                   </div>
                 ),
                 onConfirm: async (selected, orderNumber) => {
@@ -65,9 +59,7 @@ const ProducedOrderTable = ({ searchValue }: ProducedOrderTableProps) => {
                       positions: selected,
                       status: "IN_PROGRESS",
                     }).unwrap();
-                    toast.success(
-                      `${selected.length} Position(en) angefordert.`,
-                    );
+                    toast.success(`${selected.length} Position(en) angefordert.`);
                   } catch {
                     toast.error("Fehler beim Anfordern der Positionen.");
                   }
@@ -82,4 +74,4 @@ const ProducedOrderTable = ({ searchValue }: ProducedOrderTableProps) => {
   );
 };
 
-export default ProducedOrderTable;
+export default CompleteOrdersTable;
