@@ -17,14 +17,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { Row } from "@/common/flex/Flex.tsx";
-import { Trash } from "lucide-react";
+import { Image as ImageIcon, Trash, Trash2 } from "lucide-react";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { UseFieldArrayRemove, UseFormReturn } from "react-hook-form";
 import { OrderForm } from "@/models/order.ts";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Image as ImageIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function PositionItem({
   form,
@@ -37,17 +40,22 @@ export default function PositionItem({
 }) {
   const { data: products } = productApi.useListProductsQuery({});
 
-    const handleProductSelect = (productId: string) => {
-        const selected = products?.find((p) => p.id === productId);
-        if (!selected) return;
+  const handleProductSelect = (productId: string) => {
+    const selected = products?.find((p) => p.id === productId);
+    if (!selected) return;
 
-        form.setValue(`positions.${index}.color`, selected.color);
-        form.setValue(`positions.${index}.productCategory`, selected.productCategory);
-        form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
-        form.setValue(`positions.${index}.name`, selected.name);
-        form.setValue(`positions.${index}.design`, selected.name);
-        form.setValue(`positions.${index}.standardProductId`, selected.id || undefined);
-    };
+    form.setValue(`positions.${index}.color`, selected.color);
+    form.setValue(
+      `positions.${index}.productCategory`,
+      selected.productCategory,
+    );
+    form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
+    form.setValue(`positions.${index}.name`, selected.name);
+    form.setValue(
+      `positions.${index}.standardProductId`,
+      selected.id || undefined,
+    );
+  };
 
   useEffect(() => {
     form.setValue(`positions.${index}.pos_number`, index + 1);
@@ -107,31 +115,30 @@ export default function PositionItem({
           )}
         />
 
-          <FormField
-              control={form.control}
-              name={`positions.${index}.amount`}
-              render={({ field }) => (
-                  <FormItem className="relative">
-                      <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                          Menge
-                      </FormLabel>
-                      <FormControl>
-                          <Input
-                              type="number"
-                              className="pt-5"
-                              min={0}
-                              value={field.value}
-                              onChange={(e) => {
-                                  const value = parseInt(e.target.value, 10);
-                                  field.onChange(isNaN(value) ? 0 : Math.max(0, value));
-                              }}
-                          />
-                      </FormControl>
-                      <FormMessage />
-                  </FormItem>
-              )}
-          />
-
+        <FormField
+          control={form.control}
+          name={`positions.${index}.amount`}
+          render={({ field }) => (
+            <FormItem className="relative">
+              <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                Menge
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  className="pt-5"
+                  min={0}
+                  value={field.value}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    field.onChange(isNaN(value) ? 0 : Math.max(0, value));
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -157,8 +164,6 @@ export default function PositionItem({
           )}
         />
 
-
-
         <FormField
           control={form.control}
           name={`positions.${index}.design`}
@@ -172,45 +177,73 @@ export default function PositionItem({
                     placeholder="https://..."
                     {...field}
                     className="w-full"
+                    hidden
                   />
                 </FormControl>
+
+                {/* BUTTON mit Bild oder Icon */}
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button type="button" variant="outline" size="icon">
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
+                    {field.value ? (
+                      <div className="border-muted size-20 overflow-hidden rounded border transition-all hover:scale-150">
+                        <img
+                          src={field.value}
+                          alt="Ausgewähltes Motiv"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="overflow-hidden"
+                      >
+                        <ImageIcon className="size-4" />
+                      </Button>
+                    )}
                   </PopoverTrigger>
-                  <PopoverContent className="grid grid-cols-3 gap-2 max-w-[300px]">
+
+                  <PopoverContent className="grid max-w-[300px] grid-cols-3 gap-2">
                     {[...Array(12)].map((_, i) => {
-                      const imgUrl = `https://picsum.photos/seed/${i+1}/100/100`;
+                      const imgUrl = `https://picsum.photos/seed/${i + 1}/100/100`;
                       return (
                         <button
                           key={i}
                           type="button"
                           onClick={() => field.onChange(imgUrl)}
-                          className="focus:outline-none focus:ring-2 ring-ring rounded"
+                          className="ring-ring rounded focus:ring-2 focus:outline-none"
                         >
                           <img
                             src={imgUrl}
                             alt={`Motiv ${i}`}
-                            width={200}
-                            height={200}
+                            width={100}
+                            height={100}
                             className="rounded object-cover"
                           />
-
                         </button>
                       );
                     })}
                   </PopoverContent>
                 </Popover>
+
+                {/* DELETE-BUTTON */}
+                {field.value && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => field.onChange("")}
+                    aria-label="Design entfernen"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                )}
               </div>
               <FormMessage />
             </FormItem>
           )}
         />
-
-
-
 
         <FormField
           control={form.control}

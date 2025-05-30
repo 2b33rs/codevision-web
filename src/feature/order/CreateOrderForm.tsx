@@ -21,7 +21,6 @@ export default function CreateOrderForm({
 
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
-    // Beispiel-Objekt für eine leere Position mit Standardwerten
     defaultValues: {
       positions: [
         {
@@ -42,25 +41,6 @@ export default function CreateOrderForm({
 
   const onSubmit = form.handleSubmit(
     async (data) => {
-
-      const formatted = {
-        customerId: data.customerId,
-        positions: data.positions.map((pos, i) => ({
-          amount: pos.amount,
-          pos_number: i,
-          name: pos.name ,
-          productCategory: pos.productCategory,
-          design: pos.design ,
-          color: pos.color ,
-          shirtSize: pos.shirtSize ,
-          description: pos.description,
-          standardProductId: pos.standardProductId || undefined,
-        })),
-      };
-
-
-      console.log(JSON.stringify(formatted, null, 2));
-
       try {
         const result = await createOrder(data).unwrap();
         toast.success("Bestellung erstellt:", result);
@@ -73,12 +53,10 @@ export default function CreateOrderForm({
         );
       }
     },
-      (errors) => {
-        console.error("❌ Validierungsfehler:", errors);
-      },
-
+    (errors) => {
+      toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
+    },
   );
-
 
   return (
     <Form {...form}>
