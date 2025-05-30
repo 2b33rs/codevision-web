@@ -21,7 +21,6 @@ export default function CreateOrderForm({
 
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
-    // Beispiel-Objekt für eine leere Position mit Standardwerten
     defaultValues: {
       positions: [
         {
@@ -46,16 +45,17 @@ export default function CreateOrderForm({
         const result = await createOrder(data).unwrap();
         toast.success("Bestellung erstellt:", result);
         form.reset();
+        setShowModal?.(false);
       } catch (err) {
-        console.error(data);
-        console.error(err);
+        console.error("❌ Fehler beim Absenden:", err);
         toast.error(
           "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
         );
       }
-      setShowModal?.(false);
     },
-    (errors) => console.error("❌ Validierungsfehler:", errors),
+    (errors) => {
+      toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
+    },
   );
 
   return (

@@ -17,12 +17,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { Row } from "@/common/flex/Flex.tsx";
-import { Trash } from "lucide-react";
+import { Image as ImageIcon, Trash, Trash2 } from "lucide-react";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { UseFieldArrayRemove, UseFormReturn } from "react-hook-form";
 import { OrderForm } from "@/models/order.ts";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function PositionItem({
   form,
@@ -38,6 +43,7 @@ export default function PositionItem({
   const handleProductSelect = (productId: string) => {
     const selected = products?.find((p) => p.id === productId);
     if (!selected) return;
+
     form.setValue(`positions.${index}.color`, selected.color);
     form.setValue(
       `positions.${index}.productCategory`,
@@ -45,7 +51,10 @@ export default function PositionItem({
     );
     form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
     form.setValue(`positions.${index}.name`, selected.name);
-    form.setValue(`positions.${index}.design`, selected.name);
+    form.setValue(
+      `positions.${index}.standardProductId`,
+      selected.id || undefined,
+    );
   };
 
   useEffect(() => {
@@ -115,7 +124,16 @@ export default function PositionItem({
                 Menge
               </FormLabel>
               <FormControl>
-                <Input type="number" className="pt-5" {...field} />
+                <Input
+                  type="number"
+                  className="pt-5"
+                  min={0}
+                  value={field.value}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    field.onChange(isNaN(value) ? 0 : Math.max(0, value));
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -141,6 +159,87 @@ export default function PositionItem({
                   </SelectContent>
                 </Select>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`positions.${index}.design`}
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel>Motiv auswählen</FormLabel>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://..."
+                    {...field}
+                    className="w-full"
+                    hidden
+                  />
+                </FormControl>
+
+                {/* BUTTON mit Bild oder Icon */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    {field.value ? (
+                      <div className="border-muted size-20 overflow-hidden rounded border transition-all hover:scale-150">
+                        <img
+                          src={field.value}
+                          alt="Ausgewähltes Motiv"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="overflow-hidden"
+                      >
+                        <ImageIcon className="size-4" />
+                      </Button>
+                    )}
+                  </PopoverTrigger>
+
+                  <PopoverContent className="grid max-w-[300px] grid-cols-3 gap-2">
+                    {[...Array(12)].map((_, i) => {
+                      const imgUrl = `https://picsum.photos/seed/${i + 1}/100/100`;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => field.onChange(imgUrl)}
+                          className="ring-ring rounded focus:ring-2 focus:outline-none"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={`Motiv ${i}`}
+                            width={100}
+                            height={100}
+                            className="rounded object-cover"
+                          />
+                        </button>
+                      );
+                    })}
+                  </PopoverContent>
+                </Popover>
+
+                {/* DELETE-BUTTON */}
+                {field.value && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => field.onChange("")}
+                    aria-label="Design entfernen"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                )}
+              </div>
               <FormMessage />
             </FormItem>
           )}

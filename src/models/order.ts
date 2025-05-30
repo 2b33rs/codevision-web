@@ -4,8 +4,8 @@ import { z } from "zod";
 export const positionInputZ = z.object({
   amount: z.coerce.number().int().positive(),
   pos_number: z.coerce.number().int().positive(),
-  name: z.string().min(1),
-  productCategory: z.literal("T_SHIRT"),
+    name: z.string().optional().transform(val => val ?? ""),
+    productCategory: z.literal("T_SHIRT"),
   design: z.string().min(1),
   color: z
     .string()
@@ -15,6 +15,13 @@ export const positionInputZ = z.object({
     ),
   shirtSize: z.enum(["S", "M", "L", "XL"]),
   description: z.string().nullable().optional(),
+    standardProductId: z
+        .string()
+        .uuid()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val))
+        .optional(),
+
 });
 
 export const createOrderFormZ = z.object({

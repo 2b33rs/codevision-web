@@ -117,7 +117,7 @@ export function CMYKChannelInput({
         </Label>
         <Input
           type="number"
-          className="w-full rounded border py-1 pr-2 pl-[4.5rem] text-right text-sm"
+          className="w-full rounded border py-1 pr-2 pl-[4.5rem] text-right  text-sm"
           min={0}
           max={100}
           value={value}
