@@ -12,6 +12,7 @@ export const complaintsApi = baseApi.injectEndpoints({
         method: "GET",
         params,
       }),
+      providesTags: ["Complaint"],
     }),
 
     createComplaint: build.mutation<
@@ -40,6 +41,8 @@ export const complaintsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: () => [
+        { type: "Order"},],
     }),
   }),
   overrideExisting: false,

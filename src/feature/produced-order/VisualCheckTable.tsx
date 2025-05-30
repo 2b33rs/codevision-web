@@ -10,8 +10,10 @@ interface VisualCheckTableProps {
 }
 
 const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
-  const { data: producedOrders = [] } =
-    orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
+  const {
+    data: producedOrders = [],
+  } = orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
+
 
   const [dialogData, setDialogData] = useState<{
     positions: Position[];
@@ -50,10 +52,10 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
       {sortedOrders.map((order) => (
         <div key={order.id} className="bg-muted-foreground/2 p-1">
           <SelectablePositionsTable
-            key={order.id}
             positions={order.positions}
             orderNumber={order.orderNumber}
             selectableStatus={"READY_FOR_INSPECTION"}
+            singleSelect
             actions={[
               {
                 label: "Check durchführen",
@@ -64,6 +66,7 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
               },
             ]}
           />
+
         </div>
       ))}
 
@@ -75,8 +78,11 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
           onOpenChange={(val) => {
             if (!val) setDialogData(null);
           }}
-          onComplete={() => setDialogData(null)}
+          onComplete={() => {
+            setDialogData(null);
+          }}
         />
+
       )}
     </div>
   );

@@ -41,7 +41,11 @@ export const positionApi = baseApi.injectEndpoints({
 
         return { data: true };
       },
-      invalidatesTags: ["Order", "Product"],
+
+      invalidatesTags: () => [
+        { type: "Order"},
+      ],
+
     }),
   }),
 });

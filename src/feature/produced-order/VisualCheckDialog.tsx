@@ -7,11 +7,31 @@ import {
 import { Position } from "@/models/order";
 import { toast } from "sonner";
 import { positionApi } from "@/api/endpoints/positionApi.ts";
+import { useCreateComplaintMutation } from "@/api/endpoints/complaintsApi";
+import { ComplaintDto } from "@/models/complaints";
 import { PositionPreview } from "@/common/PositionPreview.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
+
+const checklistLabels = [
+  "Farbe innerhalb Toleranz",
+  "Druck ohne Einschlüsse oder Risse",
+  "Position Druck innerhalb Toleranz",
+  "Label korrekt angebracht",
+  "Nähte in Ordnung",
+];
+
+const complaintReasons: Record<
+  number,
+  ComplaintDto["ComplaintReason"]
+> = {
+  0: "WRONG_COLOR",
+  1: "PRINT_INCORRECT",
+  2: "PRINT_OFF_CENTER",
+  3: "WRONG_PRODUCT",
+  4: "DAMAGED_ITEM",
+};
 
 export default function VisualCheckDialog({
   positions,
@@ -27,17 +47,12 @@ export default function VisualCheckDialog({
   onOpenChange: (val: boolean) => void;
 }) {
   const [patchPosition] = positionApi.usePatchPositionMutation();
+  const [createComplaint] = useCreateComplaintMutation();
   const [checked, setChecked] = useState<boolean[]>(new Array(5).fill(false));
-  const [viewPreview, setViewPreview] = useState(false);
-  const [rejectedAmount, setRejectedAmount] = useState<number>(0);
-
-  const checklistLabels = [
-    "Farbe innerhalb Toleranz",
-    "Druck ohne Einschlüsse oder Risse",
-    "Position Druck innerhalb Toleranz",
-    "Label korrekt angebracht",
-    "Nähte in Ordnung",
-  ];
+  const [complaintDialog, setComplaintDialog] = useState<{
+    positionId: string;
+    reason: ComplaintDto["ComplaintReason"];
+  } | null>(null);
 
   const isChecklistComplete = checked.every(Boolean);
 
@@ -48,9 +63,6 @@ export default function VisualCheckDialog({
   };
 
   const handleAction = async (status: Position["Status"]) => {
-    if (status === "CANCELLED") {
-      console.log(`Reklamierte Anzahl: ${rejectedAmount}`);
-    }
 
     try {
       const success = await patchPosition({
@@ -60,9 +72,7 @@ export default function VisualCheckDialog({
       }).unwrap();
 
       if (success) {
-        toast.success(
-          `${positions.length} Position(en) als "${status}" markiert.`,
-        );
+        toast.success(`${positions.length} Position(en) als "${status}" markiert.`);
         onOpenChange(false);
         onComplete();
       }
@@ -71,78 +81,127 @@ export default function VisualCheckDialog({
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {positions.length === 1
-              ? `Position für Bestellung ${orderNumber} prüfen`
-              : `Positionen für Bestellung ${orderNumber} prüfen`}
-          </DialogTitle>
-        </DialogHeader>
+  const submitComplaint = async (
+    positionId: string,
+    reason: ComplaintDto["ComplaintReason"],
+    createNewOrder: boolean
+  ) => {
+    const body = {
+      positionId,
+      ComplaintReason: reason,
+      ComplaintKind: "INTERN" as const,
+      createNewOrder,
+    };
 
-        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
-          {viewPreview ? (
-            <>
+    console.log("🚀 Reklamations-Body:", body);
+
+    try {
+      await createComplaint(body).unwrap();
+      toast.success("Reklamation erfolgreich gesendet.");
+      setComplaintDialog(null);
+      onOpenChange(false);
+    } catch (error) {
+      toast.error("Fehler bei der Reklamation: " + (error as Error).message);
+    }
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent style={{ width: "100%", maxWidth: "55vw", padding: 24 }}>
+
+        <DialogHeader>
+            <DialogTitle>
+              {positions.length === 1
+                ? `Position für Bestellung ${orderNumber} prüfen`
+                : `Positionen für Bestellung ${orderNumber} prüfen`}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex gap-6 max-h-[60vh] overflow-y-auto">
+            {/* Permanente Vorschau */}
+            <div className="w-1/2 space-y-4">
               {positions.map((pos, idx) => (
                 <PositionPreview key={idx} pos={pos} />
               ))}
-            </>
-          ) : (
-            <>
+            </div>
+
+
+            <div className="w-1/2 space-y-4">
               <div className="space-y-3">
                 {checklistLabels.map((label, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <Checkbox
-                      id={`check-${idx}`}
-                      checked={checked[idx]}
-                      onCheckedChange={() => toggleCheck(idx)}
-                    />
-                    <label htmlFor={`check-${idx}`}>{label}</label>
+                  <div key={idx} className="flex items-center gap-3 justify-between">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        id={`check-${idx}`}
+                        checked={checked[idx]}
+                        onCheckedChange={() => toggleCheck(idx)}
+                      />
+                      <label htmlFor={`check-${idx}`}>{label}</label>
+                    </div>
+                    {!checked[idx] && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() =>
+                          setComplaintDialog({
+                            reason: complaintReasons[idx],
+                            positionId: positions[0].id,
+                          })
+                        }
+                      >
+                        Reklamieren
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
-              <div className="pt-4">
-                <label className="mb-1 block text-sm font-medium">
-                  Anzahl reklamierter Teile
-                </label>
-                <Input
-                  type="number"
-                  min={0}
-                  value={rejectedAmount}
-                  onChange={(e) => setRejectedAmount(Number(e.target.value))}
-                />
+
+
+              <div className="flex gap-2 justify-end mt-4">
+                <Button
+                  onClick={() => handleAction("COMPLETED")}
+                  variant="default"
+                  disabled={!isChecklistComplete}
+                >
+                  An Kunden versenden
+                </Button>
               </div>
-            </>
-          )}
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => setViewPreview((prev) => !prev)}
-          >
-            {viewPreview ? "Zurück zur Checkliste" : "Position(en) anzeigen"}
-          </Button>
-
-          <div className="flex gap-2">
-            <Button
-              onClick={() => handleAction("CANCELLED")}
-              variant="secondary"
-            >
-              Reklamieren
-            </Button>
-            <Button
-              onClick={() => handleAction("COMPLETED")}
-              variant="default"
-              disabled={!isChecklistComplete}
-            >
-              An Kunden versenden
-            </Button>
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reklamationsentscheidung */}
+      <Dialog open={!!complaintDialog} onOpenChange={() => setComplaintDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Neu produzieren?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>Möchtest du diese Position neu produzieren lassen?</p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  complaintDialog &&
+                  submitComplaint(complaintDialog.positionId, complaintDialog.reason, false)
+                }
+              >
+                Nein
+              </Button>
+              <Button
+                onClick={() =>
+                  complaintDialog &&
+                  submitComplaint(complaintDialog.positionId, complaintDialog.reason, true)
+                }
+              >
+                Ja, neu produzieren
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
