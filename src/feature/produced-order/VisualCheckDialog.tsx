@@ -14,12 +14,12 @@ import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 
 export default function VisualCheckDialog({
-                                            positions,
-                                            orderNumber,
-                                            onComplete,
-                                            open,
-                                            onOpenChange,
-                                          }: {
+  positions,
+  orderNumber,
+  onComplete,
+  open,
+  onOpenChange,
+}: {
   positions: Position[];
   orderNumber: string;
   onComplete: () => void;
@@ -82,7 +82,7 @@ export default function VisualCheckDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
           {viewPreview ? (
             <>
               {positions.map((pos, idx) => (
@@ -104,7 +104,7 @@ export default function VisualCheckDialog({
                 ))}
               </div>
               <div className="pt-4">
-                <label className="text-sm font-medium block mb-1">
+                <label className="mb-1 block text-sm font-medium">
                   Anzahl reklamierter Teile
                 </label>
                 <Input
@@ -118,7 +118,7 @@ export default function VisualCheckDialog({
           )}
         </div>
 
-        <div className="mt-4 flex flex-wrap justify-between items-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <Button
             variant="ghost"
             onClick={() => setViewPreview((prev) => !prev)}
