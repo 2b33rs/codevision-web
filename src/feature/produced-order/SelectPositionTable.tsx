@@ -5,7 +5,12 @@ import { DataTable } from "@/components/sidebar/data-table.tsx";
 import PositionDetails from "@/common/PositionDetails.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input.tsx";
-import { Row } from "@/common/flex/Flex.tsx";
+import { Col, Row } from "@/common/flex/Flex.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
 
 type Action = {
   label: ReactNode;
@@ -23,15 +28,13 @@ type Props = {
   singleSelect?: boolean;
 };
 
-
 const SelectablePositionsTable = ({
-                                    positions,
-                                    orderNumber,
-                                    selectableStatus,
-                                    actions,
-                                    singleSelect = false, // default: false
-                                  }: Props) => {
-
+  positions,
+  orderNumber,
+  selectableStatus,
+  actions,
+  singleSelect = false, // default: false
+}: Props) => {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
@@ -127,19 +130,44 @@ const SelectablePositionsTable = ({
           <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
           <div className="flex space-x-2">
             {selectedCount > 0 &&
-              actions.map((action, idx) => (
-                <Button
-                  key={idx}
-                  variant="default"
-                  size="sm"
-                  onClick={async () => {
-                    action.onConfirm(selectedPositions, orderNumber);
-                    setRowSelection({});
-                  }}
-                >
-                  {action.label} ({selectedCount})
-                </Button>
-              ))}
+              actions.map((action, idx) =>
+                action.renderDropdown ? (
+                  <DropdownMenu key={idx}>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="default" size="sm">
+                        {action.label} ({selectedCount})
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <Col>
+                        {action.content?.(selectedPositions, orderNumber)}
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={async () => {
+                            action.onConfirm(selectedPositions, orderNumber);
+                            setRowSelection({});
+                          }}
+                        >
+                          {action.label}
+                        </Button>
+                      </Col>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button
+                    key={idx}
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      action.onConfirm(selectedPositions, orderNumber);
+                      setRowSelection({});
+                    }}
+                  >
+                    {action.label} ({selectedCount})
+                  </Button>
+                ),
+              )}
           </div>
         </Row>
       }

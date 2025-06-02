@@ -17,23 +17,23 @@ const CompleteOrdersTable = ({ searchValue }: Props) => {
   const filteredOrders =
     searchValue && orders.length > 0
       ? new Fuse(orders, {
-        keys: [
-          "orderNumber",
-          "positions.name",
-          "positions.color",
-          "positions.shirtSize",
-        ],
-        threshold: 0.3,
-        ignoreLocation: true,
-      })
-        .search(searchValue)
-        .map((res) => res.item)
+          keys: [
+            "orderNumber",
+            "positions.name",
+            "positions.color",
+            "positions.shirtSize",
+          ],
+          threshold: 0.3,
+          ignoreLocation: true,
+        })
+          .search(searchValue)
+          .map((res) => res.item)
       : orders;
 
   const completeOrders = filteredOrders.filter(
     (order) =>
       order.positions.length > 0 &&
-      order.positions.every((pos) => pos.Status === "READY_FOR_SHIPMENT")
+      order.positions.every((pos) => pos.Status === "READY_FOR_SHIPMENT"),
   );
 
   return (
@@ -49,7 +49,8 @@ const CompleteOrdersTable = ({ searchValue }: Props) => {
                 label: "Positionen anfordern",
                 content: (selected, orderNumber) => (
                   <div className="px-4 py-2 text-sm">
-                    {selected.length} Position(en) aus Order #{orderNumber} anfordern?
+                    {selected.length} Position(en) aus Order #{orderNumber}{" "}
+                    anfordern?
                   </div>
                 ),
                 onConfirm: async (selected, orderNumber) => {
@@ -59,7 +60,9 @@ const CompleteOrdersTable = ({ searchValue }: Props) => {
                       positions: selected,
                       status: "IN_PROGRESS",
                     }).unwrap();
-                    toast.success(`${selected.length} Position(en) angefordert.`);
+                    toast.success(
+                      `${selected.length} Position(en) angefordert.`,
+                    );
                   } catch {
                     toast.error("Fehler beim Anfordern der Positionen.");
                   }

@@ -10,10 +10,8 @@ interface VisualCheckTableProps {
 }
 
 const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
-  const {
-    data: producedOrders = [],
-  } = orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
-
+  const { data: producedOrders = [] } =
+    orderApi.useGetOrdersWithPositionStatusQuery("READY_FOR_INSPECTION");
 
   const [dialogData, setDialogData] = useState<{
     positions: Position[];
@@ -59,14 +57,12 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
             actions={[
               {
                 label: "Check durchführen",
-                content: () => null,
                 onConfirm: (selected, orderNumber) =>
                   setDialogData({ positions: selected, orderNumber }),
                 renderDropdown: false,
               },
             ]}
           />
-
         </div>
       ))}
 
@@ -82,7 +78,6 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
             setDialogData(null);
           }}
         />
-
       )}
     </div>
   );

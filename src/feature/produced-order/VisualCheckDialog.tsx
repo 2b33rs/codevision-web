@@ -13,6 +13,10 @@ import { PositionPreview } from "@/common/PositionPreview.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { useState } from "react";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { InvoicePDF } from "@/components/pdf/Invoice";
+import { DeliveryNotePDF } from "@/components/pdf/DeliveryNotePDF.tsx";
+import { Col } from "@/common/flex/Flex.tsx";
 
 const checklistLabels = [
   "Farbe innerhalb Toleranz",
@@ -22,10 +26,7 @@ const checklistLabels = [
   "Nähte in Ordnung",
 ];
 
-const complaintReasons: Record<
-  number,
-  ComplaintDto["ComplaintReason"]
-> = {
+const complaintReasons: Record<number, ComplaintDto["ComplaintReason"]> = {
   0: "WRONG_COLOR",
   1: "PRINT_INCORRECT",
   2: "PRINT_OFF_CENTER",
@@ -63,7 +64,6 @@ export default function VisualCheckDialog({
   };
 
   const handleAction = async (status: Position["Status"]) => {
-
     try {
       const success = await patchPosition({
         orderNumber,
@@ -72,7 +72,9 @@ export default function VisualCheckDialog({
       }).unwrap();
 
       if (success) {
-        toast.success(`${positions.length} Position(en) als "${status}" markiert.`);
+        toast.success(
+          `${positions.length} Position(en) als "${status}" markiert.`,
+        );
         onOpenChange(false);
         onComplete();
       }
@@ -84,7 +86,7 @@ export default function VisualCheckDialog({
   const submitComplaint = async (
     positionId: string,
     reason: ComplaintDto["ComplaintReason"],
-    createNewOrder: boolean
+    createNewOrder: boolean,
   ) => {
     const body = {
       positionId,
@@ -109,8 +111,7 @@ export default function VisualCheckDialog({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent style={{ width: "100%", maxWidth: "55vw", padding: 24 }}>
-
-        <DialogHeader>
+          <DialogHeader>
             <DialogTitle>
               {positions.length === 1
                 ? `Position für Bestellung ${orderNumber} prüfen`
@@ -118,7 +119,7 @@ export default function VisualCheckDialog({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex gap-6 max-h-[60vh] overflow-y-auto">
+          <div className="flex max-h-[60vh] gap-6 overflow-y-auto">
             {/* Permanente Vorschau */}
             <div className="w-1/2 space-y-4">
               {positions.map((pos, idx) => (
@@ -126,11 +127,43 @@ export default function VisualCheckDialog({
               ))}
             </div>
 
-
             <div className="w-1/2 space-y-4">
+              <Col f1>
+                {positions.length === 1 && (
+                  <div className="mb-4 flex gap-4">
+                    <Button variant={"link"} asChild>
+                      <PDFDownloadLink
+                        document={<InvoicePDF position={positions[0]} />}
+                        fileName={`Rechnung_Position_${positions[0].pos_number}.pdf`}
+                      >
+                        {({ loading }) =>
+                          loading
+                            ? "Lade Rechnung..."
+                            : "📄 Rechnung herunterladen"
+                        }
+                      </PDFDownloadLink>
+                    </Button>
+                    <Button variant={"link"} asChild>
+                      <PDFDownloadLink
+                        document={<DeliveryNotePDF position={positions[0]} />}
+                        fileName={`Lieferschein_Position_${positions[0].pos_number}.pdf`}
+                      >
+                        {({ loading }) =>
+                          loading
+                            ? "Lade Lieferschein..."
+                            : "📦 Lieferschein herunterladen"
+                        }
+                      </PDFDownloadLink>
+                    </Button>
+                  </div>
+                )}
+              </Col>
               <div className="space-y-3">
                 {checklistLabels.map((label, idx) => (
-                  <div key={idx} className="flex items-center gap-3 justify-between">
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between gap-3"
+                  >
                     <div className="flex items-center gap-3">
                       <Checkbox
                         id={`check-${idx}`}
@@ -157,8 +190,7 @@ export default function VisualCheckDialog({
                 ))}
               </div>
 
-
-              <div className="flex gap-2 justify-end mt-4">
+              <div className="mt-4 flex justify-end gap-2">
                 <Button
                   onClick={() => handleAction("COMPLETED")}
                   variant="default"
@@ -173,7 +205,10 @@ export default function VisualCheckDialog({
       </Dialog>
 
       {/* Reklamationsentscheidung */}
-      <Dialog open={!!complaintDialog} onOpenChange={() => setComplaintDialog(null)}>
+      <Dialog
+        open={!!complaintDialog}
+        onOpenChange={() => setComplaintDialog(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Neu produzieren?</DialogTitle>
@@ -185,7 +220,11 @@ export default function VisualCheckDialog({
                 variant="secondary"
                 onClick={() =>
                   complaintDialog &&
-                  submitComplaint(complaintDialog.positionId, complaintDialog.reason, false)
+                  submitComplaint(
+                    complaintDialog.positionId,
+                    complaintDialog.reason,
+                    false,
+                  )
                 }
               >
                 Nein
@@ -193,7 +232,11 @@ export default function VisualCheckDialog({
               <Button
                 onClick={() =>
                   complaintDialog &&
-                  submitComplaint(complaintDialog.positionId, complaintDialog.reason, true)
+                  submitComplaint(
+                    complaintDialog.positionId,
+                    complaintDialog.reason,
+                    true,
+                  )
                 }
               >
                 Ja, neu produzieren
