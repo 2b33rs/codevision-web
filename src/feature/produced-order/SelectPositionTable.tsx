@@ -20,14 +20,18 @@ type Props = {
   selectableStatus: Position["Status"] | Position["Status"][];
   actions: Action[];
   onResetSelection?: () => void;
+  singleSelect?: boolean;
 };
 
+
 const SelectablePositionsTable = ({
-  positions,
-  orderNumber,
-  selectableStatus,
-  actions,
-}: Props) => {
+                                    positions,
+                                    orderNumber,
+                                    selectableStatus,
+                                    actions,
+                                    singleSelect = false, // default: false
+                                  }: Props) => {
+
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
@@ -43,6 +47,7 @@ const SelectablePositionsTable = ({
     {
       id: "select",
       header: ({ table }) => {
+        if (singleSelect) return null;
         const rows = table.getFilteredRowModel().rows;
         const selectableRows = rows.filter((row) =>
           Array.isArray(selectableStatus)
@@ -77,28 +82,40 @@ const SelectablePositionsTable = ({
       cell: ({ row }) => {
         const pos = row.original;
         const canSelect = isSelectable(pos.Status);
+        const isSelected = rowSelection[row.id];
+
+        const handleChange = (checked: boolean) => {
+          if (!canSelect) return;
+
+          if (singleSelect && checked) {
+            setRowSelection({ [row.id]: true });
+          } else if (singleSelect && !checked) {
+            // Deselect
+            setRowSelection({});
+          } else {
+            setRowSelection((prev) => ({
+              ...prev,
+              [row.id]: checked,
+            }));
+          }
+        };
 
         return (
           <Input
             type="checkbox"
-            checked={rowSelection[row.id]}
+            checked={isSelected}
             disabled={!canSelect}
-            onChange={(e) => {
-              setRowSelection((prev) => ({
-                ...prev,
-                [row.id]: e.target.checked,
-              }));
-            }}
+            onChange={(e) => handleChange(e.target.checked)}
             aria-label="Zeile auswählen"
           />
         );
       },
+
       enableSorting: false,
       enableHiding: false,
     },
     {
       id: "pos_details",
-      header: "Alle Positionen",
       cell: ({ row }) => <PositionDetails position={row.original} />,
     },
   ];
