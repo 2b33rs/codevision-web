@@ -43,7 +43,7 @@ export default function PositionList({
             pos_number: fields.length + 1,
             name: "",
             productCategory: "T_SHIRT",
-            color: "cmyk(0%,0%,0%,100%)",
+            color: "cmyk(0,0,0,100)",
             shirtSize: "M",
             design: "",
             description: null,

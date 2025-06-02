@@ -172,20 +172,26 @@ export default function VisualCheckDialog({
                       />
                       <label htmlFor={`check-${idx}`}>{label}</label>
                     </div>
-                    {!checked[idx] && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() =>
-                          setComplaintDialog({
-                            reason: complaintReasons[idx],
-                            positionId: positions[0].id,
-                          })
-                        }
-                      >
-                        Reklamieren
-                      </Button>
-                    )}
+
+                        <Button
+                            variant="default"
+                            size="sm"
+                            className={`bg-red-500 text-white hover:bg-red-700 transition-colors ${
+                                checked[idx] ? "invisible" : ""
+                            }`}
+                            onClick={() =>
+                                setComplaintDialog({
+                                  reason: complaintReasons[idx],
+                                  positionId: positions[0].id,
+                                })
+                            }
+                        >
+                          Reklamieren
+                        </Button>
+
+
+
+
                   </div>
                 ))}
               </div>
