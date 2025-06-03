@@ -1,16 +1,17 @@
 import { ReactNode, useState } from "react";
 import { Position } from "@/models/order";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext, Row } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table.tsx";
 import PositionDetails from "@/common/PositionDetails.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input.tsx";
-import { Col, Row } from "@/common/flex/Flex.tsx";
+import { Col, Row as FlexRow } from "@/common/flex/Flex.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
+import { SearchCheck } from "lucide-react";
 
 type Action = {
   label: ReactNode;
@@ -22,6 +23,8 @@ type Action = {
 type Props = {
   positions: Position[];
   orderNumber: string;
+  // neu: übergib den Kundennamen als Prop
+  customerName?: string;
   selectableStatus: Position["Status"] | Position["Status"][];
   actions: Action[];
   onResetSelection?: () => void;
@@ -31,106 +34,137 @@ type Props = {
 const SelectablePositionsTable = ({
   positions,
   orderNumber,
+  customerName,
   selectableStatus,
   actions,
-  singleSelect = false, // default: false
+  singleSelect = false,
 }: Props) => {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
   const selectedCount = selectedPositions.length;
 
-  const isSelectable = (status: Position["Status"]) => {
-    return Array.isArray(selectableStatus)
+  const isSelectable = (status: Position["Status"]) =>
+    Array.isArray(selectableStatus)
       ? selectableStatus.includes(status)
       : selectableStatus === status;
-  };
 
   const columns: ColumnDef<Position>[] = [
-    {
-      id: "select",
-      header: ({ table }) => {
-        if (singleSelect) return null;
-        const rows = table.getFilteredRowModel().rows;
-        const selectableRows = rows.filter((row) =>
-          Array.isArray(selectableStatus)
-            ? selectableStatus.includes(row.original.Status)
-            : row.original.Status === selectableStatus,
-        );
+    ...(singleSelect
+      ? [
+          {
+            id: "action_button",
+            header: () => "Aktion",
+            cell: ({ row }: { row: Row<Position> }) => {
+              const pos = row.original;
+              const canSelect = isSelectable(pos.Status);
+              if (!canSelect) return null;
 
-        const allSelected = selectableRows.every((row) => rowSelection[row.id]);
-        const someSelected = selectableRows.some((row) => rowSelection[row.id]);
+              return (
+                <div title={"Visueller Check durchführen"}>
+                  <SearchCheck
+                    className="text-primary hover:text-primary/70 h-5 w-5 cursor-pointer transition-colors"
+                    onClick={() => {
+                      const action = actions[0];
+                      action.onConfirm([pos], orderNumber);
+                    }}
+                  />
+                </div>
+              );
+            },
+            enableSorting: false,
+            enableHiding: false,
+          },
+        ]
+      : [
+          {
+            id: "select",
+            header: ({ table }: HeaderContext<Position, unknown>) => {
+              const rows = table.getFilteredRowModel().rows;
+              const selectableRows = rows.filter((row) =>
+                isSelectable(row.original.Status),
+              );
 
-        const handleSelectAll = (checked: boolean) => {
-          const newSelection: Record<string, boolean> = {};
-          selectableRows.forEach((row) => {
-            newSelection[row.id] = checked;
-          });
-          setRowSelection(newSelection);
-        };
+              const allSelected = selectableRows.every(
+                (row) => rowSelection[row.id],
+              );
+              const someSelected = selectableRows.some(
+                (row) => rowSelection[row.id],
+              );
 
-        return (
-          <Input
-            type="checkbox"
-            ref={(el) => {
-              if (el) el.indeterminate = someSelected && !allSelected;
-            }}
-            checked={allSelected && selectableRows.length > 0}
-            onChange={(e) => handleSelectAll(e.target.checked)}
-            aria-label="Alle auswählen"
-          />
-        );
-      },
+              const handleSelectAll = (checked: boolean) => {
+                const newSelection: Record<string, boolean> = {};
+                selectableRows.forEach((row) => {
+                  newSelection[row.id] = checked;
+                });
+                setRowSelection(newSelection);
+              };
 
-      cell: ({ row }) => {
-        const pos = row.original;
-        const canSelect = isSelectable(pos.Status);
-        const isSelected = rowSelection[row.id];
+              return (
+                <Input
+                  type="checkbox"
+                  ref={(el) => {
+                    if (el) el.indeterminate = someSelected && !allSelected;
+                  }}
+                  checked={allSelected && selectableRows.length > 0}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  aria-label="Alle auswählen"
+                />
+              );
+            },
+            cell: ({ row }: { row: Row<Position> }) => {
+              const pos = row.original;
+              const canSelect = isSelectable(pos.Status);
+              const isSelected = rowSelection[row.id];
 
-        const handleChange = (checked: boolean) => {
-          if (!canSelect) return;
+              const handleChange = (checked: boolean) => {
+                if (!canSelect) return;
+                setRowSelection((prev) =>
+                  checked
+                    ? { ...prev, [row.id]: true }
+                    : Object.fromEntries(
+                        Object.entries(prev).filter(([id]) => id !== row.id),
+                      ),
+                );
+              };
 
-          if (singleSelect && checked) {
-            setRowSelection({ [row.id]: true });
-          } else if (singleSelect && !checked) {
-            // Deselect
-            setRowSelection({});
-          } else {
-            setRowSelection((prev) => ({
-              ...prev,
-              [row.id]: checked,
-            }));
-          }
-        };
-
-        return (
-          <Input
-            type="checkbox"
-            checked={isSelected}
-            disabled={!canSelect}
-            onChange={(e) => handleChange(e.target.checked)}
-            aria-label="Zeile auswählen"
-          />
-        );
-      },
-
-      enableSorting: false,
-      enableHiding: false,
-    },
+              return (
+                <Input
+                  type="checkbox"
+                  checked={isSelected}
+                  disabled={!canSelect}
+                  onChange={(e) => handleChange(e.target.checked)}
+                  aria-label="Zeile auswählen"
+                />
+              );
+            },
+            enableSorting: false,
+            enableHiding: false,
+          },
+        ]),
     {
       id: "pos_details",
-      cell: ({ row }) => <PositionDetails position={row.original} />,
+      cell: ({ row }: { row: Row<Position> }) => (
+        <PositionDetails position={row.original} />
+      ),
     },
   ];
 
   return (
     <DataTable
       toolbar={
-        <Row f1 gap={0} justify={"between"}>
-          <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
-          <div className="flex space-x-2">
-            {selectedCount > 0 &&
-              actions.map((action, idx) =>
+        <FlexRow f1 gap={0} justify="between">
+          {/* Header zeigt jetzt Bestellnummer und optional Kundennamen */}
+          <div>
+            <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
+            {customerName && (
+              <p className="text-sm text-gray-600">Kunde: {customerName}</p>
+            )}
+          </div>
+
+          {!singleSelect && selectedCount > 0 && (
+            <div className="flex space-x-2">
+              {actions.map((action, idx) =>
                 action.renderDropdown ? (
                   <DropdownMenu key={idx}>
                     <DropdownMenuTrigger asChild>
@@ -144,7 +178,7 @@ const SelectablePositionsTable = ({
                         <Button
                           variant="default"
                           size="sm"
-                          onClick={async () => {
+                          onClick={() => {
                             action.onConfirm(selectedPositions, orderNumber);
                             setRowSelection({});
                           }}
@@ -168,8 +202,9 @@ const SelectablePositionsTable = ({
                   </Button>
                 ),
               )}
-          </div>
-        </Row>
+            </div>
+          )}
+        </FlexRow>
       }
       data={positions}
       columns={columns}

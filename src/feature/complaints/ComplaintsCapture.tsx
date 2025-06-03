@@ -1,12 +1,12 @@
-import { toast } from "sonner";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
 import { orderApi } from "@/api/endpoints/orderApi";
 import { Order, Position } from "@/models/order";
-import { positionApi } from "@/api/endpoints/positionApi.ts";
 import { SearchInput } from "@/components/ui/search-input";
 import { H2 } from "@/common/Text.tsx";
+import ComplaintDialog from "./ComplaintDialog";
+import { useEffect } from "react";
 
 const selectableStatuses = [
   "IN_PROGRESS",
@@ -18,14 +18,18 @@ const selectableStatuses = [
 
 const ComplaintsCapture = () => {
   const { data: allOrders = [], refetch } = orderApi.useGetOrdersQuery({});
-  const [patchPosition] = positionApi.usePatchPositionMutation();
   const [searchValue, setSearchValue] = useState("");
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<Position | null>(null);
 
   const validOrders = useMemo(() => {
     return (allOrders as Order[]).filter((order: Order) =>
-      order.positions.some((pos: Position) => pos.Status !== "CANCELLED"),
+        order.positions.some((pos: Position) => pos.Status !== "CANCELLED"),
     );
   }, [allOrders]);
+
+
 
   const filteredOrders = useMemo(() => {
     if (!searchValue) return validOrders;
@@ -42,52 +46,71 @@ const ComplaintsCapture = () => {
     return fuse.search(searchValue).map((r) => r.item);
   }, [validOrders, searchValue]);
 
-  const handleComplaint = async (
-    selectedPositions: Position[],
-    orderNumber: string,
-  ) => {
-    try {
-      await patchPosition({
-        orderNumber,
-        positions: selectedPositions,
-        status: "CANCELLED",
-      }).unwrap();
-
-      toast.success(`Reklamation eingereicht`);
-
-      await refetch(); // 👈 Daten neu laden
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unbekannter Fehler";
-      toast.error("Fehler beim Einreichen der Reklamation: " + errorMessage);
+  useEffect(() => {
+    if (selectedPosition) {
+      setDialogOpen(true);
     }
+  }, [selectedPosition]);
+
+  const openComplaintDialog = (selectedPositions: Position[]) => {
+    const position = selectedPositions[0];
+    setSelectedPosition(position);
   };
 
+
   return (
-    <div className="space-y-6">
-      <H2>Reklamation erfassen</H2>
-      <SearchInput
-        value={searchValue}
-        onChange={setSearchValue}
-        placeholder="Suche nach Auftragsnummer oder Position …"
-        className="max-w-sm"
-      />
-      {filteredOrders.map((order) => (
-        <div key={order.id}>
-          <SelectablePositionsTable
-            positions={order.positions}
-            orderNumber={order.orderNumber}
-            selectableStatus={selectableStatuses} // Array übergeben
-            actions={[
-              {
-                label: "Reklamieren",
-                onConfirm: handleComplaint,
-              },
-            ]}
-          />
+      <>
+        <div className="flex h-full flex-col space-y-4">
+          {/* Fixed Header */}
+          <div className="space-y-4 sticky top-0 z-10 pb-2">
+            <H2>Reklamation erfassen</H2>
+            <SearchInput
+                value={searchValue}
+                onChange={setSearchValue}
+                placeholder="Suche nach Auftragsnummer oder Position …"
+                className="max-w-sm"
+            />
+          </div>
+
+          {/* Scrollable Content */}
+          <div
+              className="overflow-y-auto space-y-4 pr-2"
+              style={{ maxHeight: "calc(100vh - 150px)" }}
+          >
+            {filteredOrders.map((order) => (
+                <div key={order.id}>
+                  <SelectablePositionsTable
+                      positions={order.positions}
+                      orderNumber={order.orderNumber}
+                      selectableStatus={selectableStatuses}
+                      singleSelect
+                      actions={[
+                        {
+                          label: "Reklamieren",
+                          onConfirm: openComplaintDialog,
+                        },
+                      ]}
+                  />
+                </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
+
+        {selectedPosition && (
+            <ComplaintDialog
+                open={dialogOpen}
+                onOpenChange={(open) => {
+                  setDialogOpen(open);
+                  if (!open) setSelectedPosition(null);
+                }}
+                positionId={selectedPosition.id}
+                onSuccess={refetch}
+            />
+        )}
+
+
+      </>
   );
 };
+
 export default ComplaintsCapture;

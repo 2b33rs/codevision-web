@@ -23,7 +23,7 @@ export default function PositionList({
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-medium">Positionen</h3>
-      <div className="max-h-[400px] space-y-6 overflow-y-auto pr-2">
+      <div className="max-h-[60vh] space-y-6 overflow-y-auto pr-2">
         {fields.map((field, index) => (
           <PositionItem
             key={field.id}
@@ -32,26 +32,26 @@ export default function PositionList({
             remove={remove}
           />
         ))}
+        <Button
+          type="button"
+          variant={"ghost"}
+          size="icon"
+          onClick={() =>
+            append({
+              amount: 1,
+              pos_number: fields.length + 1,
+              name: "",
+              productCategory: "T_SHIRT",
+              color: "cmyk(0,0,0,100)",
+              shirtSize: "M",
+              design: "",
+              description: null,
+            })
+          }
+        >
+          <Plus></Plus>
+        </Button>
       </div>
-      <Button
-        type="button"
-        variant={"ghost"}
-        size="icon"
-        onClick={() =>
-          append({
-            amount: 1,
-            pos_number: fields.length + 1,
-            name: "",
-            productCategory: "T_SHIRT",
-            color: "cmyk(0%,0%,0%,100%)",
-            shirtSize: "M",
-            design: "",
-            description: null,
-          })
-        }
-      >
-        <Plus></Plus>
-      </Button>
     </div>
   );
 }

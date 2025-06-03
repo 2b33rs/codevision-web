@@ -27,7 +27,7 @@ export default function CreateOrderForm({
           productCategory: "T_SHIRT",
           amount: 0,
           shirtSize: undefined,
-          color: "",
+          color: "cmyk(0,0,0,0)",
           design: "",
         },
       ],
