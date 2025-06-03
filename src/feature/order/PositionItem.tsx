@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import {
   FormControl,
   FormField,
@@ -17,17 +19,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { Row } from "@/common/flex/Flex.tsx";
-import { Image as ImageIcon, Trash, Trash2 } from "lucide-react";
+import { Image as ImageIcon, Trash } from "lucide-react";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { UseFieldArrayRemove, UseFormReturn } from "react-hook-form";
 import { OrderForm } from "@/models/order.ts";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 export default function PositionItem({
   form,
@@ -172,73 +168,61 @@ export default function PositionItem({
               <FormLabel>Motiv auswählen</FormLabel>
               <div className="flex items-center gap-2">
                 <FormControl>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    {...field}
-                    className="w-full"
-                    hidden
-                  />
+                  <>
+                    <Input
+                      type="url"
+                      placeholder="https://..."
+                      {...field}
+                      className="w-full"
+                      hidden
+                    />
+
+                    <div className="grid grid-cols-10 gap-2">
+                      {[...Array(10)].map((_, i) => {
+                        const isReset = i === 0;
+                        const imgUrl = isReset
+                          ? ""
+                          : `https://picsum.photos/seed/${i + 1}/100/100`;
+                        const isSelected = field.value === imgUrl;
+
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => field.onChange(imgUrl)}
+                            className={`flex items-center justify-center overflow-hidden rounded ring-offset-2 transition-all focus:outline-none ${
+                              isSelected
+                                ? "ring-primary ring-2"
+                                : "hover:ring-muted hover:ring-2"
+                            }`}
+                            title={
+                              isReset
+                                ? "Kein Motiv auswählen"
+                                : `Motiv ${i + 1}`
+                            }
+                          >
+                            {isReset ? (
+                              <div className="text-muted-foreground flex h-[100px] w-[100px] flex-col items-center justify-center">
+                                <ImageIcon className="mb-1 h-5 w-5" />
+                                <span className="px-1 text-center text-xs">
+                                  Kein&nbsp;Motiv
+                                </span>
+                              </div>
+                            ) : (
+                              <img
+                                src={imgUrl}
+                                alt={`Motiv ${i + 1}`}
+                                width={100}
+                                height={100}
+                                className="object-cover"
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
                 </FormControl>
-
-                {/* BUTTON mit Bild oder Icon */}
-                <Popover>
-                  <PopoverTrigger asChild>
-                    {field.value ? (
-                      <div className="border-muted size-20 overflow-hidden rounded border transition-all hover:scale-150">
-                        <img
-                          src={field.value}
-                          alt="Ausgewähltes Motiv"
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="overflow-hidden"
-                      >
-                        <ImageIcon className="size-4" />
-                      </Button>
-                    )}
-                  </PopoverTrigger>
-
-                  <PopoverContent className="grid max-w-[300px] grid-cols-3 gap-2">
-                    {[...Array(12)].map((_, i) => {
-                      const imgUrl = `https://picsum.photos/seed/${i + 1}/100/100`;
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => field.onChange(imgUrl)}
-                          className="ring-ring rounded focus:ring-2 focus:outline-none"
-                        >
-                          <img
-                            src={imgUrl}
-                            alt={`Motiv ${i}`}
-                            width={100}
-                            height={100}
-                            className="rounded object-cover"
-                          />
-                        </button>
-                      );
-                    })}
-                  </PopoverContent>
-                </Popover>
-
-                {/* DELETE-BUTTON */}
-                {field.value && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => field.onChange("")}
-                    aria-label="Design entfernen"
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                )}
               </div>
               <FormMessage />
             </FormItem>

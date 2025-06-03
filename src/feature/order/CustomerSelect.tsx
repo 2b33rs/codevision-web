@@ -70,12 +70,13 @@ export default function CustomerSelect({
                       </div>
                     ) : (
                       filteredCustomers.map((c) => (
-                        <span
+                        <button
+                          type="button"
                           key={c.id}
-                          onClick={() =>
+                          onPointerDown={() =>
                             handleSelectCustomer(c.id, `${c.name} (${c.email})`)
                           }
-                          className="hover:bg-accent hover:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                          className="hover:bg-accent hover:text-accent-foreground relative flex w-full cursor-default items-start gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none select-none"
                         >
                           <div className="space-y-0.5 leading-tight">
                             <div>{c.name}</div>
@@ -83,7 +84,7 @@ export default function CustomerSelect({
                               {c.email}
                             </div>
                           </div>
-                        </span>
+                        </button>
                       ))
                     )}
                   </ScrollArea>
