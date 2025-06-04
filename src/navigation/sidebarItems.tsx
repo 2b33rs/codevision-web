@@ -56,7 +56,7 @@ export const NAV_MAIN = [
 
 export const NAV_ABTEILUNGEN = [
   {
-    title: "Vertrieb & Logistik",
+    title: "Verkauf & Versand",
     url: "/",
     icon: IconTruck,
   },
