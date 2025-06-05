@@ -14,11 +14,15 @@ export default function PositionList({
   fields,
   append,
   remove,
+  groessen,
+  typen,
 }: {
   form: UseFormReturn<OrderForm>;
   fields: FieldArrayWithId<OrderForm, "positions", "id">[];
   append: UseFieldArrayAppend<OrderForm>;
   remove: UseFieldArrayRemove;
+  groessen: string[];
+  typen: string[];
 }) {
   return (
     <div className="space-y-2">
@@ -30,6 +34,8 @@ export default function PositionList({
             form={form}
             index={index}
             remove={remove}
+            groessen={groessen}
+            typen={typen}
           />
         ))}
         <Button
@@ -41,10 +47,11 @@ export default function PositionList({
               amount: 1,
               pos_number: fields.length + 1,
               name: "",
-              productCategory: "T_SHIRT",
+              productCategory: "T-SHIRT",
               color: "cmyk(0,0,0,100)",
-              shirtSize: "M",
-              design: "",
+              shirtSize: groessen[0] ?? "",
+              design: typen[0] ?? "",
+              typ: typen[0] ? [typen[0]] : [],
               description: null,
             })
           }

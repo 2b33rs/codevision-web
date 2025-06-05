@@ -4,24 +4,27 @@ import { z } from "zod";
 export const positionInputZ = z.object({
   amount: z.coerce.number().int().positive(),
   pos_number: z.coerce.number().int().positive(),
-    name: z.string().optional().transform(val => val ?? ""),
-    productCategory: z.literal("T_SHIRT"),
-  design: z.string().min(1),
+  name: z
+    .string()
+    .optional()
+    .transform((val) => val ?? ""),
+  productCategory: z.string(),
+  design: z.string().optional(),
+  typ: z.array(z.string()),
   color: z
     .string()
     .regex(
       /^cmyk\(\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$/i,
       "Ungültige CMYK-Farbe",
     ),
-  shirtSize: z.enum(["S", "M", "L", "XL"]),
+  shirtSize: z.string(),
   description: z.string().nullable().optional(),
-    standardProductId: z
-        .string()
-        .uuid()
-        .or(z.literal(""))
-        .transform((val) => (val === "" ? undefined : val))
-        .optional(),
-
+  standardProductId: z
+    .string()
+    .uuid()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val))
+    .optional(),
 });
 
 export const createOrderFormZ = z.object({

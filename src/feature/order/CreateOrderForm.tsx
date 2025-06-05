@@ -9,6 +9,7 @@ import PositionList from "./PositionList";
 import { OrderForm, orderSchema } from "@/models/order.ts";
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import { toast } from "sonner";
+import { mawiApi } from "@/api/endpoints/mawiApi.ts";
 
 interface CreateOrderFormProps {
   setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;
@@ -18,13 +19,18 @@ export default function CreateOrderForm({
   setShowModal,
 }: CreateOrderFormProps) {
   const [createOrder] = orderApi.useCreateOrderMutation();
+  const { data: categoryData } = mawiApi.useGetCategoriesQuery();
+
+  const groessen = categoryData?.[0]?.groessen ?? [];
+  const typen = categoryData?.[0]?.typen ?? [];
+  const productCategory = categoryData?.[0]?.kategorie || "T-Shirt";
 
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       positions: [
         {
-          productCategory: "T_SHIRT",
+          productCategory,
           amount: 0,
           shirtSize: undefined,
           color: "cmyk(0,0,0,0)",
@@ -67,6 +73,8 @@ export default function CreateOrderForm({
           fields={fields}
           append={append}
           remove={remove}
+          groessen={groessen}
+          typen={typen}
         />
         <Button type="submit" className={"ml-auto"}>
           Bestellung aufgeben

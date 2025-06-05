@@ -9,7 +9,7 @@ export enum ShirtSize {
 }
 
 export enum ProductCategory {
-  TShirt = "T_SHIRT",
+  TShirt = "T-SHIRT",
 }
 
 export type CreateProductDto = {
@@ -18,6 +18,7 @@ export type CreateProductDto = {
   productCategory: ProductCategory;
   minAmount: number;
   name: string;
+  typ: string[];
 };
 
 export type Product = CreateProductDto &
@@ -43,4 +44,5 @@ export const createProductZ = z.object({
   minAmount: z.coerce.number().int().nonnegative(),
   amountInProduction: z.coerce.number().int().nonnegative().default(0),
   design: z.string().optional(),
+  typ: z.array(z.string()),
 });
