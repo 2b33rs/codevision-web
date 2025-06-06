@@ -25,6 +25,7 @@ import { H2 } from "@/common/Text.tsx";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { toast } from "sonner";
 import React, { useState } from "react";
+import { mawiApi } from "@/api/endpoints/mawiApi.ts";
 
 
 type OrderForm = z.infer<typeof createProductZ>;
@@ -42,10 +43,12 @@ export default function AddStandardProductForm({
 
   const [createProduct] = productApi.useCreateProductMutation();
 
+  const { data: categoryData } = mawiApi.useGetCategoriesQuery();
+  const typen = categoryData?.[0]?.typen ?? [];
+
   const onSubmit = form.handleSubmit(
     async (data) => {
       try {
-        data.productCategory = ProductCategory.TShirt;
         await createProduct(data).unwrap();
 
         form.reset();
@@ -95,9 +98,6 @@ export default function AddStandardProductForm({
           />
         </Row>
 
-
-
-
         <FormField
           control={form.control}
           name="color"
@@ -132,6 +132,34 @@ export default function AddStandardProductForm({
                       {Object.values(ShirtSize).map((size) => (
                         <SelectItem key={size} value={size}>
                           {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="typ"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Typ</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={(val) => field.onChange([val])}
+                    value={field.value?.[0] ?? ""}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Typ auswählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {typen.map((typ) => (
+                        <SelectItem key={typ} value={typ}>
+                          {typ}
                         </SelectItem>
                       ))}
                     </SelectContent>

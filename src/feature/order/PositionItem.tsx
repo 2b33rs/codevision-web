@@ -31,10 +31,14 @@ export default function PositionItem({
   form,
   index,
   remove,
+  groessen,
+  typen,
 }: {
   form: UseFormReturn<OrderForm>;
   index: number;
   remove: UseFieldArrayRemove;
+  groessen: string[];
+  typen: string[];
 }) {
   const { data: products } = productApi.useListProductsQuery({});
 
@@ -47,6 +51,7 @@ export default function PositionItem({
       `positions.${index}.productCategory`,
       selected.productCategory,
     );
+    form.setValue(`positions.${index}.typ`, selected.typ);
     form.setValue(`positions.${index}.shirtSize`, selected.shirtSize ?? "M");
     form.setValue(`positions.${index}.name`, selected.name);
     form.setValue(
@@ -107,7 +112,7 @@ export default function PositionItem({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input {...field} disabled value="T_SHIRT" />
+                <Input {...field} disabled />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -202,9 +207,37 @@ export default function PositionItem({
                     <SelectValue placeholder="Größe auswählen" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["S", "M", "L", "XL"].map((size) => (
+                    {groessen.map((size) => (
                       <SelectItem key={size} value={size}>
                         {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`positions.${index}.typ`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Typ auswählen</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(val) => field.onChange([val])}
+                  value={field.value?.[0] ?? ""}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Typ auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {typen.map((typ) => (
+                      <SelectItem key={typ} value={typ}>
+                        {typ}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -236,7 +269,7 @@ export default function PositionItem({
                       {[...Array(10)].map((_, i) => {
                         const isReset = i === 0;
                         const imgUrl = isReset
-                          ? ""
+                          ? undefined
                           : `https://picsum.photos/seed/${i + 1}/100/100`;
                         const isSelected = field.value === imgUrl;
 
@@ -265,7 +298,7 @@ export default function PositionItem({
                               </div>
                             ) : (
                               <img
-                                src={imgUrl}
+                                src={imgUrl ?? ""}
                                 alt={`Motiv ${i + 1}`}
                                 width={100}
                                 height={100}
