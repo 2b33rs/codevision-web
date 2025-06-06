@@ -7,7 +7,9 @@ export const positionInputZ = z.object({
     name: z.string().optional().transform(val => val ?? ""),
     productCategory: z.literal("T_SHIRT"),
   design: z.string().min(1),
-  color: z
+
+
+    color: z
     .string()
     .regex(
       /^cmyk\(\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$/i,
@@ -21,6 +23,9 @@ export const positionInputZ = z.object({
         .or(z.literal(""))
         .transform((val) => (val === "" ? undefined : val))
         .optional(),
+
+
+    price: z.coerce.number().nonnegative(),
 
 });
 

@@ -21,7 +21,7 @@ const Order = () => {
                             content: <OrderTable setShowModal={setShowModal} />,
                         },
                         {
-                            title: "Rechnungen",
+                            title: "Dokumente",
                             content: <InvoicesTable  />,
                         },
                     ]}

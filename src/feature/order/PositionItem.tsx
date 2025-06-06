@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+
 
 import {
   FormControl,
@@ -24,6 +24,8 @@ import { productApi } from "@/api/endpoints/productApi.ts";
 import { UseFieldArrayRemove, UseFormReturn } from "react-hook-form";
 import { OrderForm } from "@/models/order.ts";
 import { Input } from "@/components/ui/input";
+import React, { useEffect, useState } from "react";
+
 
 export default function PositionItem({
   form,
@@ -51,6 +53,7 @@ export default function PositionItem({
       `positions.${index}.standardProductId`,
       selected.id || undefined,
     );
+
   };
 
   useEffect(() => {
@@ -110,6 +113,58 @@ export default function PositionItem({
             </FormItem>
           )}
         />
+
+          <FormField
+              control={form.control}
+              name={`positions.${index}.price`}
+              render={({ field }) => {
+                  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      // Nur Ziffern extrahieren
+                      const digitsOnly = e.target.value.replace(/\D/g, "");
+
+                      // Pad mit führenden Nullen (mind. 3 Stellen)
+                      const padded = digitsOnly.padStart(3, "0");
+
+                      // Letzte zwei Ziffern = Nachkommastellen
+                      const intPart = padded.slice(0, -2);
+                      const fracPart = padded.slice(-2);
+
+                      // Anzeige-Format z. B. "12,34"
+                      const display = `${parseInt(intPart, 10)},${fracPart}`;
+
+                      // Float-Wert im Hintergrund z. B. 12.34
+                      const floatValue = parseFloat(`${intPart}.${fracPart}`);
+
+                      field.onChange(floatValue);
+                      setDisplayValue(display);
+                  };
+
+                  const [displayValue, setDisplayValue] = useState(
+                      (field.value ?? 0).toFixed(2).replace(".", ",")
+                  );
+
+                  return (
+                      <FormItem className="relative">
+                          <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                              Preis
+                          </FormLabel>
+                          <FormControl>
+                              <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  className="pt-5"
+                                  value={displayValue}
+                                  onChange={handleChange}
+                              />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  );
+              }}
+          />
+
+
 
         <FormField
           control={form.control}

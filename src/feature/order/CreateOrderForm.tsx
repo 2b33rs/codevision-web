@@ -29,6 +29,7 @@ export default function CreateOrderForm({
           shirtSize: undefined,
           color: "cmyk(0,0,0,0)",
           design: "",
+          price: 0,
         },
       ],
     },
@@ -40,23 +41,25 @@ export default function CreateOrderForm({
   });
 
   const onSubmit = form.handleSubmit(
-    async (data) => {
-      try {
-        const result = await createOrder(data).unwrap();
-        toast.success("Bestellung erstellt:", result);
-        form.reset();
-        setShowModal?.(false);
-      } catch (err) {
-        console.error("❌ Fehler beim Absenden:", err);
-        toast.error(
-          "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
-        );
-      }
-    },
-    (errors) => {
-      toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
-    },
+      async (data) => {
+        console.log("📦 Gesendeter Body:", data); // <-- Hier wird der Body geloggt
+        try {
+          const result = await createOrder(data).unwrap();
+          toast.success("Bestellung erstellt:", result);
+          form.reset();
+          setShowModal?.(false);
+        } catch (err) {
+          console.error("❌ Fehler beim Absenden:", err);
+          toast.error(
+              "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
+          );
+        }
+      },
+      (errors) => {
+        toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
+      },
   );
+
 
   return (
     <Form {...form}>
