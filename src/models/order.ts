@@ -1,5 +1,6 @@
 import { BaseEntity } from "@/models/base.ts";
 import { z } from "zod";
+import { Customer } from "@/models/customer.ts";
 
 export const positionInputZ = z.object({
   amount: z.coerce.number().int().positive(),
@@ -45,6 +46,7 @@ export type Position = BaseEntity &
 
 export type Order = BaseEntity & {
   customerId: string;
+  customer: Customer;
   orderNumber: string;
   status: "PENDING" | "QUARANTINE" | "COMPLETED" | "CANCELLED";
   positions: Position[];
