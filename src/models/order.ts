@@ -5,6 +5,7 @@ import { Customer } from "@/models/customer.ts";
 export const positionInputZ = z.object({
   amount: z.coerce.number().int().positive(),
   pos_number: z.coerce.number().int().positive(),
+
   name: z
     .string()
     .optional()
@@ -13,6 +14,7 @@ export const positionInputZ = z.object({
   design: z.string().optional(),
   typ: z.array(z.string()),
   color: z
+
     .string()
     .regex(
       /^cmyk\(\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$/i,
@@ -20,12 +22,18 @@ export const positionInputZ = z.object({
     ),
   shirtSize: z.string(),
   description: z.string().nullable().optional(),
-  standardProductId: z
-    .string()
-    .uuid()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? undefined : val))
-    .optional(),
+
+    standardProductId: z
+        .string()
+        .uuid()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val))
+        .optional(),
+
+
+    price: z.coerce.number().nonnegative(),
+
+
 });
 
 export const createOrderFormZ = z.object({
