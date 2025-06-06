@@ -24,7 +24,9 @@ import { Row } from "@/common/flex/Flex.tsx";
 import { H2 } from "@/common/Text.tsx";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { toast } from "sonner";
+import React, { useState } from "react";
 import { mawiApi } from "@/api/endpoints/mawiApi.ts";
+
 
 type OrderForm = z.infer<typeof createProductZ>;
 
@@ -187,7 +189,50 @@ export default function AddStandardProductForm({
             )}
           />
 
-          <Button type="submit" className={"mt-auto ml-auto"}>
+            <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => {
+                    const [displayValue, setDisplayValue] = useState(
+                        (field.value ?? 0).toFixed(2).replace(".", ",")
+                    );
+
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, ""); // nur Ziffern
+
+                        const padded = digitsOnly.padStart(3, "0");
+                        const intPart = padded.slice(0, -2);
+                        const fracPart = padded.slice(-2);
+
+                        const display = `${parseInt(intPart, 10)},${fracPart}`;
+                        const floatValue = parseFloat(`${intPart}.${fracPart}`);
+
+                        setDisplayValue(display);
+                        field.onChange(floatValue);
+                    };
+
+                    return (
+                        <FormItem>
+                            <FormLabel>Preis</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={displayValue}
+                                    onChange={handleChange}
+                                    className="w-full"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    );
+                }}
+            />
+
+
+
+
+            <Button type="submit" className={"mt-auto ml-auto"}>
             Speichern
           </Button>
         </Row>
