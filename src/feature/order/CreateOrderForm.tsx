@@ -21,9 +21,26 @@ export default function CreateOrderForm({
   const [createOrder] = orderApi.useCreateOrderMutation();
   const { data: categoryData } = mawiApi.useGetCategoriesQuery();
 
-  const groessen = categoryData?.[0]?.groessen ?? [];
-  const typen = categoryData?.[0]?.typen ?? [];
-  const productCategory = categoryData?.[0]?.kategorie || "T-Shirt";
+  const fallbackGroessen = ["XS", "S", "M", "L", "XL"];
+  const fallbackTypen = [
+    "Sport",
+    "Rundhals",
+    "Oversize",
+    "Top",
+    "V-Ausschnitt",
+    "Bedruckt",
+  ];
+  const fallbackKategorie = "T-Shirt";
+
+  const groessen = categoryData?.[0]?.groessen?.length
+    ? categoryData[0].groessen
+    : fallbackGroessen;
+
+  const typen = categoryData?.[0]?.typen?.length
+    ? categoryData[0].typen
+    : fallbackTypen;
+
+  const productCategory = categoryData?.[0]?.kategorie || fallbackKategorie;
 
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
@@ -47,25 +64,24 @@ export default function CreateOrderForm({
   });
 
   const onSubmit = form.handleSubmit(
-      async (data) => {
-        console.log("📦 Gesendeter Body:", data); // <-- Hier wird der Body geloggt
-        try {
-          const result = await createOrder(data).unwrap();
-          toast.success("Bestellung erstellt:", result);
-          form.reset();
-          setShowModal?.(false);
-        } catch (err) {
-          console.error("❌ Fehler beim Absenden:", err);
-          toast.error(
-              "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
-          );
-        }
-      },
-      (errors) => {
-        toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
-      },
+    async (data) => {
+      console.log("📦 Gesendeter Body:", data); // <-- Hier wird der Body geloggt
+      try {
+        const result = await createOrder(data).unwrap();
+        toast.success("Bestellung erstellt:", result);
+        form.reset();
+        setShowModal?.(false);
+      } catch (err) {
+        console.error("❌ Fehler beim Absenden:", err);
+        toast.error(
+          "Fehler beim Erstellen der Bestellung:" + JSON.stringify(err),
+        );
+      }
+    },
+    (errors) => {
+      toast.error("❌ Validierungsfehler:" + JSON.stringify(errors));
+    },
   );
-
 
   return (
     <Form {...form}>
