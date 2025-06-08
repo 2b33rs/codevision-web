@@ -83,6 +83,7 @@ const ComplaintsCapture = () => {
                       positions={order.positions}
                       orderNumber={order.orderNumber}
                       selectableStatus={selectableStatuses}
+                      customerName={order.customer.name}
                       singleSelect
                       actions={[
                         {

@@ -77,6 +77,7 @@ const InvoicesTable = ({ searchValue }: InvoicesTableProps) => {
                         orderNumber={order.orderNumber}
                         selectableStatus="COMPLETED"
                         singleSelect={false}
+                        customerName={order.customer.name}
                         actions={[
                             {
                                 label: "Download-Option wählen",

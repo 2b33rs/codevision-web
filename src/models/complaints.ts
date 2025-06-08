@@ -15,6 +15,7 @@ export interface ComplaintDto extends BaseEntity {
     | "MISSING_ITEM"
     | "BAD_QUALITY"
     | "NOT_AS_DESCRIBED"
+      |"CANCELLATION"
     | "OTHER";
   ComplaintKind: "INTERN" | "EXTERN";
   createNewOrder: boolean;

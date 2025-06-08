@@ -54,6 +54,7 @@ const VisualCheckTable = ({ searchValue }: VisualCheckTableProps) => {
             orderNumber={order.orderNumber}
             selectableStatus={"READY_FOR_INSPECTION"}
             singleSelect
+            customerName={order.customer.name}
             actions={[
               {
                 label: "Check durchführen",

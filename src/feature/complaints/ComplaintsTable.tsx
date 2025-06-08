@@ -21,6 +21,7 @@ const complaintReasonMap: Record<ComplaintDto["ComplaintReason"], string> = {
   MISSING_ITEM: "Fehlender Artikel",
   BAD_QUALITY: "Schlechte Qualität",
   NOT_AS_DESCRIBED: "Nicht wie beschrieben",
+  CANCELLATION: "Stornieren",
   OTHER: "Sonstiges",
 };
 

@@ -154,12 +154,14 @@ const SelectablePositionsTable = ({
     <DataTable
       toolbar={
         <FlexRow f1 gap={0} justify="between">
-          {/* Header zeigt jetzt Bestellnummer und optional Kundennamen */}
           <div>
             <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
-            {customerName && (
-              <p className="text-sm text-gray-600">Kunde: {customerName}</p>
-            )}
+            <p className="text-sm text-gray-600">
+              {customerName?.trim() ? `Kunde: ${customerName}` : "Lagerauftrag"}
+            </p>
+
+
+
           </div>
 
           {!singleSelect && selectedCount > 0 && (

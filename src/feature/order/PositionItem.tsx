@@ -219,7 +219,6 @@ export default function PositionItem({
           name={`positions.${index}.typ`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Typ auswählen</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={(val) => field.onChange([val])}

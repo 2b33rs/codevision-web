@@ -44,6 +44,7 @@ const PartialOrdersTable = ({ searchValue }: Props) => {
             positions={order.positions}
             orderNumber={order.orderNumber}
             selectableStatus={"READY_FOR_SHIPMENT"}
+            customerName={order.customer.name}
             actions={[
               {
                 label: "Positionen anfordern",
