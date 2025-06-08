@@ -90,8 +90,11 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
     year: "numeric",
   });
 
-  const unitPrice = 10; // 🔶 hier später durch echten Preis ersetzen
-  const totalSum = positions.reduce((acc, pos) => acc + (pos.amount || 0) * unitPrice, 0);
+  const totalSum = positions.reduce((acc, pos) => {
+    const price = pos.price ?? 10;
+    return acc + (pos.amount || 0) * price;
+  }, 0);
+
 
   return (
       <Document>
@@ -136,14 +139,15 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
               const color = pos.color || "";
               const shirtSize = pos.shirtSize || "";
               const [r, g, b] = cmykToRgb(color);
-              const sum = amount * unitPrice;
+              const price = pos.price ?? 10;
+              const sum = amount * price;
 
               return (
                   <View key={idx} style={styles.row}>
                     <Text style={styles.cell}>{posNumber}</Text>
                     <Text style={styles.cell}>{amount}</Text>
                     <View style={[styles.cell, { flexDirection: "row", alignItems: "center" }]}>
-                    {color ? (
+                      {color ? (
                           <View
                               style={[
                                 styles.colorBox,
@@ -154,7 +158,7 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
                     </View>
                     <Text style={styles.cell}>{shirtSize}</Text>
                     <Text style={styles.cell}>
-                      {unitPrice} € {/*  Hier später den echten Preis pro Stück einsetzen */}
+                      {price} €
                     </Text>
                     <Text style={styles.cell}>
                       {sum.toFixed(2)} €

@@ -50,6 +50,7 @@ export type Position = BaseEntity &
     Status: string;
     createdAt: string;
     updatedAt: string;
+    price: number;
   };
 
 export type Order = BaseEntity & {
