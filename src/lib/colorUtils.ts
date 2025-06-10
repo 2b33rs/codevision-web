@@ -2,7 +2,7 @@ export type CMYK = { c: number; m: number; y: number; k: number };
 
 export function parseCMYK(value: string | undefined | null): CMYK {
   const match = (value ?? "").match(/(\d{1,3})%/g);
-  if (!match || match.length !== 4) return { c: 0, m: 0, y: 0, k: 0 };
+  if (!match || match.length !== 4) return { c: 50, m: 50, y: 50, k: 50 };
   const [c, m, y, k] = match.map((v) => parseInt(v.replace("%", ""), 10));
   return { c, m, y, k };
 }

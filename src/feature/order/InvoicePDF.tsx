@@ -2,6 +2,8 @@ import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/render
 import { Position } from "@/models/order.ts";
 import shirtIcon from "@/assets/shirt.png";
 import { cmykToRgb } from "@/lib/utils.ts"
+import Decimal from "decimal.js";
+
 
 interface InvoicePDFProps {
   positions: Position[];
@@ -91,9 +93,11 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
   });
 
   const totalSum = positions.reduce((acc, pos) => {
-    const price = pos.price ?? 10;
-    return acc + (pos.amount || 0) * price;
-  }, 0);
+    const price = new Decimal(pos.price ?? "10");
+    const amount = new Decimal(pos.amount ?? 0);
+    return acc.plus(price.times(amount));
+  }, new Decimal(0));
+
 
 
   return (
@@ -139,8 +143,10 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
               const color = pos.color || "";
               const shirtSize = pos.shirtSize || "";
               const [r, g, b] = cmykToRgb(color);
-              const price = pos.price ?? 10;
-              const sum = amount * price;
+              const price = new Decimal(pos.price ?? "10");
+              const amountDecimal = new Decimal(amount);
+              const sum = price.times(amountDecimal);
+
 
               return (
                   <View key={idx} style={styles.row}>
@@ -158,7 +164,7 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
                     </View>
                     <Text style={styles.cell}>{shirtSize}</Text>
                     <Text style={styles.cell}>
-                      {price} €
+                      {price.toFixed(2)} €
                     </Text>
                     <Text style={styles.cell}>
                       {sum.toFixed(2)} €

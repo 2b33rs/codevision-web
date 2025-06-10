@@ -193,22 +193,25 @@ export default function AddStandardProductForm({
                 control={form.control}
                 name="price"
                 render={({ field }) => {
+                    // Initialize displayValue from the field's stored string value
+                    // Converts stored string "X.YY" to display format "X,YY"
                     const [displayValue, setDisplayValue] = useState(
-                        (field.value ?? 0).toFixed(2).replace(".", ",")
+                        (field.value ? String(field.value).replace(".", ",") : "0,00")
                     );
 
                     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                        const digitsOnly = e.target.value.replace(/\D/g, ""); // nur Ziffern
+                        const digitsOnly = e.target.value.replace(/\D/g, ""); // only digits
 
                         const padded = digitsOnly.padStart(3, "0");
                         const intPart = padded.slice(0, -2);
                         const fracPart = padded.slice(-2);
 
                         const display = `${parseInt(intPart, 10)},${fracPart}`;
-                        const floatValue = parseFloat(`${intPart}.${fracPart}`);
+                        // Store as string, e.g., "12.34"
+                        const stringValue = `${parseInt(intPart, 10)}.${fracPart}`;
 
                         setDisplayValue(display);
-                        field.onChange(floatValue);
+                        field.onChange(stringValue); // <--- Changed to store as string
                     };
 
                     return (

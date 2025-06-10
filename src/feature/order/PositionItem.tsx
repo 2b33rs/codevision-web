@@ -115,55 +115,56 @@ export default function PositionItem({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={`positions.${index}.price`}
-          render={({ field }) => {
-            const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-              // Nur Ziffern extrahieren
-              const digitsOnly = e.target.value.replace(/\D/g, "");
+          <FormField
+              control={form.control}
+              name={`positions.${index}.price`}
+              render={({ field }) => {
+                  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      // Nur Ziffern extrahieren
+                      const digitsOnly = e.target.value.replace(/\D/g, "");
 
-              // Pad mit führenden Nullen (mind. 3 Stellen)
-              const padded = digitsOnly.padStart(3, "0");
+                      // Pad mit führenden Nullen (mind. 3 Stellen)
+                      const padded = digitsOnly.padStart(3, "0");
 
-              // Letzte zwei Ziffern = Nachkommastellen
-              const intPart = padded.slice(0, -2);
-              const fracPart = padded.slice(-2);
+                      // Letzte zwei Ziffern = Nachkommastellen
+                      const intPart = padded.slice(0, -2);
+                      const fracPart = padded.slice(-2);
 
-              // Anzeige-Format z. B. "12,34"
-              const display = `${parseInt(intPart, 10)},${fracPart}`;
+                      // Anzeige-Format z. B. "12,34"
+                      const display = `${parseInt(intPart, 10)},${fracPart}`;
 
-              // Float-Wert im Hintergrund z. B. 12.34
-              const floatValue = parseFloat(`${intPart}.${fracPart}`);
+                      // Speichern als String, z. B. "12.34"
+                      const stringValue = `${parseInt(intPart, 10)}.${fracPart}`;
 
-              field.onChange(floatValue);
-              setDisplayValue(display);
-            };
+                      field.onChange(stringValue); // <--- Hier wird der Wert als String gesetzt
+                      setDisplayValue(display);
+                  };
 
-            const [displayValue, setDisplayValue] = useState(
-              (field.value ?? 0).toFixed(2).replace(".", ","),
-            );
+                  const [displayValue, setDisplayValue] = useState(
+                      // Initialisiert den Anzeigewert aus dem gespeicherten String-Wert des Feldes
+                      // Konvertiert den gespeicherten String "X.YY" ins Anzeigeformat "X,YY"
+                      (field.value ? String(field.value).replace(".", ",") : "0,00")
+                  );
 
-            return (
-              <FormItem className="relative">
-                <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                  Preis
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    className="pt-5"
-                    value={displayValue}
-                    onChange={handleChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
+                  return (
+                      <FormItem className="relative">
+                          <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                              Preis
+                          </FormLabel>
+                          <FormControl>
+                              <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  className="pt-5"
+                                  value={displayValue}
+                                  onChange={handleChange}
+                              />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  );
+              }}
+          />
 
         <FormField
           control={form.control}
@@ -262,7 +263,7 @@ export default function PositionItem({
                       {[...Array(10)].map((_, i) => {
                         const isReset = i === 0;
                         const imgUrl = isReset
-                          ? undefined
+                          ? ""
                           : `https://picsum.photos/seed/${i + 1}/100/100`;
                         const isSelected = field.value === imgUrl;
 

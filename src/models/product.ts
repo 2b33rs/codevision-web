@@ -45,7 +45,7 @@ export const createProductZ = z.object({
   amountInProduction: z.coerce.number().int().nonnegative().default(0),
   design: z.string().optional(),
 
-  price: z.coerce.number().nonnegative(),
+  price: z.string(),
 
   typ: z.array(z.string()),
 
