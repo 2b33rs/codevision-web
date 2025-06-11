@@ -166,32 +166,51 @@ export default function PositionItem({
               }}
           />
 
-        <FormField
-          control={form.control}
-          name={`positions.${index}.amount`}
-          render={({ field }) => (
-            <FormItem className="relative">
-              <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                Menge
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  className="pt-5"
-                  min={0}
-                  value={field.value}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10);
-                    field.onChange(isNaN(value) ? 0 : Math.max(0, value));
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+              control={form.control}
+              name={`positions.${index}.amount`}
+              render={({ field }) => (
+                  <FormItem className="relative">
+                      <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                          Menge
+                      </FormLabel>
+                      <FormControl>
+                          <Input
+                              type="number"
+                              className="pt-5"
+                              min={0}
+                              value={field.value === 0 ? "0" : field.value.toString()}
+                              onChange={(e) => {
+                                  let val = e.target.value;
 
-        <FormField
+
+                                  if (val === "") {
+                                      field.onChange(0);
+                                      return;
+                                  }
+
+
+                                  val = val.replace(/^0+/, "");
+                                  const parsed = parseInt(val, 10);
+
+                                  field.onChange(isNaN(parsed) ? 0 : parsed);
+                              }}
+                              onBlur={(e) => {
+                                  if (e.target.value.trim() === "") {
+                                      field.onChange(0);
+                                  }
+                              }}
+                          />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+              )}
+          />
+
+
+
+
+          <FormField
           control={form.control}
           name={`positions.${index}.shirtSize`}
           render={({ field }) => (
