@@ -31,6 +31,7 @@ const downloadPDF = async (component: JSX.Element, fileName: string) => {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(url);
+
 };
 
 const InvoicesTable = ({ searchValue }: InvoicesTableProps) => {
@@ -80,6 +81,7 @@ const InvoicesTable = ({ searchValue }: InvoicesTableProps) => {
                         customerName={order.customer.name}
                         actions={[
                             {
+
                                 label: "Download-Option wählen",
                                 onConfirm: (selected, orderNumber) => {
                                     setModalData({ positions: selected, orderNumber });

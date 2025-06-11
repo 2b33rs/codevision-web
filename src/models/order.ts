@@ -31,7 +31,7 @@ export const positionInputZ = z.object({
         .optional(),
 
 
-    price: z.coerce.number().nonnegative(),
+    price: z.string(),
 
 
 });
@@ -50,7 +50,7 @@ export type Position = BaseEntity &
     Status: string;
     createdAt: string;
     updatedAt: string;
-    price: number;
+    price: string;
   };
 
 export type Order = BaseEntity & {

@@ -53,7 +53,7 @@ export default function PositionList({
               design: typen[0] ?? "",
               typ: typen[0] ? [typen[0]] : [],
               description: null,
-                price: 0,
+                price: "0,00",
             })
           }
         >

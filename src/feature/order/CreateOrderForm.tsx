@@ -52,7 +52,7 @@ export default function CreateOrderForm({
           shirtSize: undefined,
           color: "cmyk(0,0,0,0)",
           design: "",
-          price: 0,
+          price: "0,00",
         },
       ],
     },
