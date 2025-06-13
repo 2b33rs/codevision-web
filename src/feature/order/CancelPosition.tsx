@@ -26,7 +26,7 @@ const deleteProductionOrders = async (
       const response = await fetch(
         `${baseUrl}/fertigungsauftraege/${businessKey}/loeschen`,
         {
-          method: "DELETE",
+          method: "PATCH",
         },
       );
 
