@@ -159,9 +159,6 @@ const SelectablePositionsTable = ({
             <p className="text-sm text-gray-600">
               {customerName?.trim() ? `Kunde: ${customerName}` : "Lagerauftrag"}
             </p>
-
-
-
           </div>
 
           {!singleSelect && selectedCount > 0 && (

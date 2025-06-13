@@ -90,7 +90,9 @@ export function DataTable<T extends { id: string }>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>(
+    initialSorting ?? [],
+  );
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,

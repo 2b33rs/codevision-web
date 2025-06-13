@@ -78,6 +78,7 @@ const OrderTable = ({ setShowModal }: OrderTableProps) => {
     <DataTable
       data={filteredOrders}
       columns={columns}
+      initialSorting={[{ id: "orderNumber", desc: true }]}
       toolbar={
         <Row f1 className="w-full justify-between gap-2">
           <SearchInput
