@@ -9,7 +9,7 @@ export enum ShirtSize {
 }
 
 export enum ProductCategory {
-  TShirt = "T-SHIRT",
+  TShirt = "T-Shirt",
 }
 
 export type CreateProductDto = {
@@ -48,5 +48,4 @@ export const createProductZ = z.object({
   price: z.string(),
 
   typ: z.array(z.string()),
-
 });

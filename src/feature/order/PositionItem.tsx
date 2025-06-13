@@ -115,102 +115,97 @@ export default function PositionItem({
           )}
         />
 
-          <FormField
-              control={form.control}
-              name={`positions.${index}.price`}
-              render={({ field }) => {
-                  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                      // Nur Ziffern extrahieren
-                      const digitsOnly = e.target.value.replace(/\D/g, "");
+        <FormField
+          control={form.control}
+          name={`positions.${index}.price`}
+          render={({ field }) => {
+            const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+              // Nur Ziffern extrahieren
+              const digitsOnly = e.target.value.replace(/\D/g, "");
 
-                      // Pad mit führenden Nullen (mind. 3 Stellen)
-                      const padded = digitsOnly.padStart(3, "0");
+              // Pad mit führenden Nullen (mind. 3 Stellen)
+              const padded = digitsOnly.padStart(3, "0");
 
-                      // Letzte zwei Ziffern = Nachkommastellen
-                      const intPart = padded.slice(0, -2);
-                      const fracPart = padded.slice(-2);
+              // Letzte zwei Ziffern = Nachkommastellen
+              const intPart = padded.slice(0, -2);
+              const fracPart = padded.slice(-2);
 
-                      // Anzeige-Format z. B. "12,34"
-                      const display = `${parseInt(intPart, 10)},${fracPart}`;
+              // Anzeige-Format z. B. "12,34"
+              const display = `${parseInt(intPart, 10)},${fracPart}`;
 
-                      // Speichern als String, z. B. "12.34"
-                      const stringValue = `${parseInt(intPart, 10)}.${fracPart}`;
+              // Speichern als String, z. B. "12.34"
+              const stringValue = `${parseInt(intPart, 10)}.${fracPart}`;
 
-                      field.onChange(stringValue); // <--- Hier wird der Wert als String gesetzt
-                      setDisplayValue(display);
-                  };
+              field.onChange(stringValue); // <--- Hier wird der Wert als String gesetzt
+              setDisplayValue(display);
+            };
 
-                  const [displayValue, setDisplayValue] = useState(
-                      // Initialisiert den Anzeigewert aus dem gespeicherten String-Wert des Feldes
-                      // Konvertiert den gespeicherten String "X.YY" ins Anzeigeformat "X,YY"
-                      (field.value ? String(field.value).replace(".", ",") : "0,00")
-                  );
+            const [displayValue, setDisplayValue] = useState(
+              // Initialisiert den Anzeigewert aus dem gespeicherten String-Wert des Feldes
+              // Konvertiert den gespeicherten String "X.YY" ins Anzeigeformat "X,YY"
+              field.value ? String(field.value).replace(".", ",") : "0,00",
+            );
 
-                  return (
-                      <FormItem className="relative">
-                          <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                              Preis
-                          </FormLabel>
-                          <FormControl>
-                              <Input
-                                  type="text"
-                                  inputMode="numeric"
-                                  className="pt-5"
-                                  value={displayValue}
-                                  onChange={handleChange}
-                              />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                  );
-              }}
-          />
+            return (
+              <FormItem className="relative">
+                <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                  Preis
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    className="pt-5"
+                    value={displayValue}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
 
-          <FormField
-              control={form.control}
-              name={`positions.${index}.amount`}
-              render={({ field }) => (
-                  <FormItem className="relative">
-                      <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
-                          Menge
-                      </FormLabel>
-                      <FormControl>
-                          <Input
-                              type="number"
-                              className="pt-5"
-                              min={0}
-                              value={field.value === 0 ? "0" : field.value.toString()}
-                              onChange={(e) => {
-                                  let val = e.target.value;
+        <FormField
+          control={form.control}
+          name={`positions.${index}.amount`}
+          render={({ field }) => (
+            <FormItem className="relative">
+              <FormLabel className="text-muted-foreground pointer-events-none absolute top-1 left-3 text-xs">
+                Menge
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  className="pt-5"
+                  min={0}
+                  value={field.value === 0 ? "0" : field.value.toString()}
+                  onChange={(e) => {
+                    let val = e.target.value;
 
+                    if (val === "") {
+                      field.onChange(0);
+                      return;
+                    }
 
-                                  if (val === "") {
-                                      field.onChange(0);
-                                      return;
-                                  }
+                    val = val.replace(/^0+/, "");
+                    const parsed = parseInt(val, 10);
 
+                    field.onChange(isNaN(parsed) ? 0 : parsed);
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value.trim() === "") {
+                      field.onChange(0);
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                                  val = val.replace(/^0+/, "");
-                                  const parsed = parseInt(val, 10);
-
-                                  field.onChange(isNaN(parsed) ? 0 : parsed);
-                              }}
-                              onBlur={(e) => {
-                                  if (e.target.value.trim() === "") {
-                                      field.onChange(0);
-                                  }
-                              }}
-                          />
-                      </FormControl>
-                      <FormMessage />
-                  </FormItem>
-              )}
-          />
-
-
-
-
-          <FormField
+        <FormField
           control={form.control}
           name={`positions.${index}.shirtSize`}
           render={({ field }) => (
