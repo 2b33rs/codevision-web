@@ -23,17 +23,14 @@ export const positionInputZ = z.object({
   shirtSize: z.string(),
   description: z.string().nullable().optional(),
 
-    standardProductId: z
-        .string()
-        .uuid()
-        .or(z.literal(""))
-        .transform((val) => (val === "" ? undefined : val))
-        .optional(),
+  standardProductId: z
+    .string()
+    .uuid()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val))
+    .optional(),
 
-
-    price: z.string(),
-
-
+  price: z.string(),
 });
 
 export const createOrderFormZ = z.object({
@@ -51,6 +48,7 @@ export type Position = BaseEntity &
     createdAt: string;
     updatedAt: string;
     price: string;
+    productionOrders: ProductionOrder[];
   };
 
 export type Order = BaseEntity & {
@@ -63,3 +61,28 @@ export type Order = BaseEntity & {
 
 export const orderSchema = createOrderFormZ;
 export type OrderForm = CreateOrderForm;
+
+export type ProductionOrder = {
+  id: string;
+  positionId: string;
+  amount: number;
+  designUrl?: string;
+  orderType: "COMPLAINT" | "PRODUCTION" | "REORDER";
+  dyeingNecessary: boolean;
+  Status: string;
+  materialId: number;
+  productTemplate: {
+    typ: string;
+    groesse: string;
+    farbcode: {
+      c: number;
+      k: number;
+      m: number;
+      y: number;
+    };
+    kategorie: string;
+    artikelnummer: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+};

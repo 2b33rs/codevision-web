@@ -2,6 +2,7 @@ import { Shirt } from "lucide-react";
 import { PositionStatusBadge } from "@/common/PositionStatusBadge.tsx";
 import { Position } from "@/models/order.ts";
 import { cmykToRGB, parseCMYK } from "@/lib/colorUtils.ts";
+import { ProductionOrderList } from "@/common/ProductionOrderList.tsx";
 
 export function PositionPreview({ pos }: { pos: Position }) {
   const fillColor = parseCMYK(pos.color || "cmyk(0%,0%,0%,100%)");
@@ -44,6 +45,9 @@ export function PositionPreview({ pos }: { pos: Position }) {
             </div>
           )}
         </div>
+      </div>
+      <div className="mt-4 border-t pt-4">
+        <ProductionOrderList productionOrders={pos.productionOrders} />
       </div>
     </div>
   );
