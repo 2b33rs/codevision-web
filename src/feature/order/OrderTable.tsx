@@ -5,11 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/sidebar/data-table";
 import { Grid2x2Plus } from "lucide-react";
 import { SearchInput } from "@/components/ui/search-input";
-import PositionDetailsDialog from "@/feature/order/PositionDetailsDialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Row } from "@/common/flex/Flex.tsx";
 import { useState, useMemo } from "react";
 import Fuse from "fuse.js";
+import { PositionDetailsSidebar } from "@/feature/order/PositionDetailsSidebar.tsx";
+import { usePositionSidebar } from "@/hooks/usePositionSidebar.ts";
 
 const CustomerCell = ({ customerId }: { customerId: string }) => {
   const { data, isLoading, isError } =
@@ -35,6 +36,15 @@ interface OrderTableProps {
 const OrderTable = ({ setShowModal }: OrderTableProps) => {
   const { data } = orderApi.useGetOrdersQuery({});
   const orders = Array.isArray(data) ? data : data ? [data] : [];
+
+  const {
+    selectedOrder,
+    selectedPositionIndex,
+    isOpen,
+    openSidebar,
+    closeSidebar,
+    changePosition,
+  } = usePositionSidebar();
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -70,30 +80,51 @@ const OrderTable = ({ setShowModal }: OrderTableProps) => {
     },
     {
       header: "Anzahl Positionen",
-      cell: ({ row }) => <PositionDetailsDialog order={row.original} />,
+      cell: ({ row }) => (
+        <Button
+          variant="link"
+          onClick={() => openSidebar(row.original)}
+          className="h-auto p-0 font-normal"
+        >
+          {row.original.positions.length} Positionen
+        </Button>
+      ),
     },
   ];
 
   return (
-    <DataTable
-      data={filteredOrders}
-      columns={columns}
-      initialSorting={[{ id: "orderNumber", desc: true }]}
-      toolbar={
-        <Row f1 className="w-full justify-between gap-2">
-          <SearchInput
-            value={searchValue}
-            onChange={setSearchValue}
-            placeholder="Suche nach Auftragsnummer oder Position …"
-            className="max-w-sm"
-          />
-          <Button onClick={() => setShowModal?.(true)} variant="default">
-            <Grid2x2Plus className="mr-2 h-4 w-4" />
-            Bestellung aufgeben
-          </Button>
-        </Row>
-      }
-    />
+    <>
+      <DataTable
+        data={filteredOrders}
+        columns={columns}
+        initialSorting={[{ id: "orderNumber", desc: true }]}
+        toolbar={
+          <Row f1 className="w-full justify-between gap-2">
+            <SearchInput
+              value={searchValue}
+              onChange={setSearchValue}
+              placeholder="Suche nach Auftragsnummer oder Position …"
+              className="max-w-sm"
+            />
+            <Button onClick={() => setShowModal?.(true)} variant="default">
+              <Grid2x2Plus className="mr-2 h-4 w-4" />
+              Bestellung aufgeben
+            </Button>
+          </Row>
+        }
+      />
+
+      {/* Sidebar für Positionsdetails */}
+      {selectedOrder && (
+        <PositionDetailsSidebar
+          order={selectedOrder}
+          isOpen={isOpen}
+          onClose={closeSidebar}
+          selectedPositionIndex={selectedPositionIndex}
+          onPositionChange={changePosition}
+        />
+      )}
+    </>
   );
 };
 

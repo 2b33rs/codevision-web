@@ -3,8 +3,15 @@ import { PositionStatusBadge } from "@/common/PositionStatusBadge.tsx";
 import { Position } from "@/models/order.ts";
 import { cmykToRGB, parseCMYK } from "@/lib/colorUtils.ts";
 import { ProductionOrderList } from "@/common/ProductionOrderList.tsx";
+import { CancelPositionButton } from "@/feature/order/CancelPosition.tsx";
 
-export function PositionPreview({ pos }: { pos: Position }) {
+export function PositionPreview({
+  pos,
+  onUpdate,
+}: {
+  pos: Position;
+  onUpdate?: () => void;
+}) {
   const fillColor = parseCMYK(pos.color || "cmyk(0%,0%,0%,100%)");
 
   return (
@@ -34,20 +41,27 @@ export function PositionPreview({ pos }: { pos: Position }) {
             style={{ backgroundColor: cmykToRGB(fillColor) }}
             title={pos.color}
           />
-          {pos.design && (
+          {pos.design !== "" && (
             <div className="relative size-10 transition-all duration-300 hover:size-28">
               <Shirt className="text-muted absolute inset-0 h-full w-full opacity-30" />
               <img
                 src={pos.design}
-                alt="Kein Design"
+                alt=""
                 className="mask mask-squircle h-full w-full rounded-sm object-cover"
               />
             </div>
           )}
         </div>
       </div>
+
+      {/* Fertigungsaufträge */}
       <div className="mt-4 border-t pt-4">
         <ProductionOrderList productionOrders={pos.productionOrders} />
+      </div>
+
+      {/* Stornieren Button */}
+      <div className="mt-4 border-t pt-4">
+        <CancelPositionButton position={pos} onSuccess={onUpdate} />
       </div>
     </div>
   );

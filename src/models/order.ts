@@ -85,4 +85,5 @@ export type ProductionOrder = {
   };
   createdAt: string;
   updatedAt: string;
+  productionorder_number: number;
 };
