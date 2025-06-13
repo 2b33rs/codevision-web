@@ -24,7 +24,6 @@ import { Row } from "@/common/flex/Flex.tsx";
 import { H2 } from "@/common/Text.tsx";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { toast } from "sonner";
-import React, { useState } from "react";
 import { useProductCategories } from "@/hooks/useProductCategories.ts";
 import { useProductTypes } from "@/hooks/useProductTypes.ts";
 
@@ -187,49 +186,6 @@ export default function AddStandardProductForm({
                 <FormMessage />
               </FormItem>
             )}
-          />
-
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => {
-              // Initialize displayValue from the field's stored string value
-              // Converts stored string "X.YY" to display format "X,YY"
-              const [displayValue, setDisplayValue] = useState(
-                field.value ? String(field.value).replace(".", ",") : "0,00",
-              );
-
-              const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                const digitsOnly = e.target.value.replace(/\D/g, ""); // only digits
-
-                const padded = digitsOnly.padStart(3, "0");
-                const intPart = padded.slice(0, -2);
-                const fracPart = padded.slice(-2);
-
-                const display = `${parseInt(intPart, 10)},${fracPart}`;
-                // Store as string, e.g., "12.34"
-                const stringValue = `${parseInt(intPart, 10)}.${fracPart}`;
-
-                setDisplayValue(display);
-                field.onChange(stringValue); // <--- Changed to store as string
-              };
-
-              return (
-                <FormItem>
-                  <FormLabel>Preis</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      value={displayValue}
-                      onChange={handleChange}
-                      className="w-full"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
           />
 
           <Button type="submit" className={"mt-auto ml-auto"}>
