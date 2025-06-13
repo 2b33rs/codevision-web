@@ -9,7 +9,9 @@ import PositionList from "./PositionList";
 import { OrderForm, orderSchema } from "@/models/order.ts";
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import { toast } from "sonner";
-import { mawiApi } from "@/api/endpoints/mawiApi.ts";
+import { useProductCategories } from "@/hooks/useProductCategories.ts";
+import { useProductTypes } from "@/hooks/useProductTypes.ts";
+import { useProductSizes } from "@/hooks/useProductSizes.ts";
 
 interface CreateOrderFormProps {
   setShowModal?: (value: ((prevState: boolean) => boolean) | boolean) => void;
@@ -19,28 +21,12 @@ export default function CreateOrderForm({
   setShowModal,
 }: CreateOrderFormProps) {
   const [createOrder] = orderApi.useCreateOrderMutation();
-  const { data: categoryData } = mawiApi.useGetCategoriesQuery();
 
-  const fallbackGroessen = ["XS", "S", "M", "L", "XL"];
-  const fallbackTypen = [
-    "Sport",
-    "Rundhals",
-    "Oversize",
-    "Top",
-    "V-Ausschnitt",
-    "Bedruckt",
-  ];
-  const fallbackKategorie = "T-Shirt";
+  const categories = useProductCategories();
+  const typen = useProductTypes();
+  const groessen = useProductSizes();
 
-  const groessen = categoryData?.[0]?.groessen?.length
-    ? categoryData[0].groessen
-    : fallbackGroessen;
-
-  const typen = categoryData?.[0]?.typen?.length
-    ? categoryData[0].typen
-    : fallbackTypen;
-
-  const productCategory = categoryData?.[0]?.kategorie || fallbackKategorie;
+  const productCategory = categories[0] || "T-Shirt";
 
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderSchema),
