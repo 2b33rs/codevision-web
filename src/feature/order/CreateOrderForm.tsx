@@ -20,7 +20,7 @@ interface CreateOrderFormProps {
 export default function CreateOrderForm({
   setShowModal,
 }: CreateOrderFormProps) {
-  const [createOrder] = orderApi.useCreateOrderMutation();
+  const [createOrder, { isLoading }] = orderApi.useCreateOrderMutation();
 
   const categories = useProductCategories();
   const typen = useProductTypes();
@@ -81,8 +81,8 @@ export default function CreateOrderForm({
           groessen={groessen}
           typen={typen}
         />
-        <Button type="submit" className={"ml-auto"}>
-          Bestellung aufgeben
+        <Button type="submit" className={"ml-auto"} disabled={isLoading}>
+          {isLoading ? "Wird erstellt..." : "Bestellung aufgeben"}
         </Button>
       </form>
     </Form>
