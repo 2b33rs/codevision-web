@@ -27,7 +27,12 @@ export function WarehouseOrderCell({ product }: { product: Product }) {
     setSuccess(false);
 
     try {
-      await createProductionOrder({ id: product.id, amount: num });
+      await createProductionOrder({
+        id: product.id,
+        amount: num,
+        name: product.name,
+        productCategory: product.productCategory,
+      });
       toast.success("Produktionsauftrag versendet!");
       setSuccess(true);
       setInputValue("");

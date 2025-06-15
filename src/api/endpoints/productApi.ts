@@ -48,7 +48,7 @@ export const productApi = baseApi.injectEndpoints({
 
     createProductionOrder: builder.mutation<
       { status: "ok"; message: string; productId: string; amount: number },
-      { id: string; amount: number }
+      { id: string; amount: number; name: string; productCategory: string }
     >({
       query: ({ id, amount }) => ({
         url: `/product/${id}/production-order`,
