@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Customer } from "@/models/customer.ts";
 
 export const positionInputZ = z.object({
-  amount: z.coerce.number().int().positive(),
+  amount: z.coerce.number().int().positive().max(450),
   pos_number: z.coerce.number().int().positive(),
 
   name: z
