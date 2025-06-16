@@ -12,6 +12,19 @@ import { Input } from "@/components/ui/input";
 import { productApi } from "@/api/endpoints/productApi.ts";
 import { toast } from "sonner";
 
+// Hilfsfunktion zum Parsen von CMYK-String in Farbcodes
+function parseCmyk(cmyk: string) {
+  const match = cmyk.match(/^cmyk\(\s?(\d+)%\s?,\s?(\d+)%\s?,\s?(\d+)%\s?,\s?(\d+)%\s?\)$/i);
+  if (!match) throw new Error("Ungültiges CMYK-Farbformat");
+  const [_, c, m, y, k] = match;
+  return {
+    cyan: parseInt(c, 10),
+    magenta: parseInt(m, 10),
+    yellow: parseInt(y, 10),
+    black: parseInt(k, 10),
+  };
+}
+
 export function WarehouseOrderCell({ product }: { product: Product }) {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,17 +40,30 @@ export function WarehouseOrderCell({ product }: { product: Product }) {
     setSuccess(false);
 
     try {
+      const farbcode = product.farbcode ?? parseCmyk(product.color);
+
       await createProductionOrder({
-        id: product.id,
-        amount: num,
-        name: product.name,
-        productCategory: product.productCategory,
+        positionId: product.id, // nur für URL
+        body: {
+          amount: num,
+          designUrl: product.designUrl ?? product.design ?? "https://example.com/design.png",
+          orderType: product.orderType ?? "STANDARD",
+          dyeingNecessary: product.dyeingNecessary ?? false,
+          materialId: product.materialId ?? 1001,
+          productTemplate: {
+            kategorie: product.productCategory,
+            groesse: product.shirtSize ?? "M",
+            typ: product.typ?.[0] ?? "Standard",
+            farbcode,
+          },
+        },
       });
+
       toast.success("Produktionsauftrag versendet!");
       setSuccess(true);
       setInputValue("");
     } catch (err) {
-      toast.error("Fehler beim Erstellen des Auftrags" + err);
+      toast.error("Fehler beim Erstellen des Auftrags: " + err);
     } finally {
       setIsLoading(false);
     }
