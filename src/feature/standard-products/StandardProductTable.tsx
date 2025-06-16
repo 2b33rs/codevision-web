@@ -8,6 +8,7 @@ import { Col, Row } from "@/common/flex/Flex.tsx";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { DeleteDropdownButton } from "@/common/DeleteDropdownButton.tsx";
 import EditableNameCell from "@/feature/standard-products/EditableNameCell.tsx";
+import { ProductOrdersCell } from "@/feature/standard-products/ProductOrdersCell.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -50,6 +51,14 @@ const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
       header: "Menge",
       cell: ({ row }) => {
         return <WarehouseOrderCell product={row.original} />;
+      },
+    },
+
+    {
+      accessorKey: "orders",
+      header: "",
+      cell: ({ row }) => {
+        return <ProductOrdersCell product={row.original} />;
       },
     },
     {

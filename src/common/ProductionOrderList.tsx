@@ -20,7 +20,6 @@ export function ProductionOrderList({
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-medium">Fertigungsaufträge:</div>
       {productionOrders.map((order) => (
         <div
           key={order.id}
@@ -29,9 +28,10 @@ export function ProductionOrderList({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-xs">
-                {order.orderType}
+                Fertigungsauftrag
+                <small>{order.orderType} </small>
               </Badge>
-              <span>Menge: {order.amount}</span>
+              <span>{order.amount} x</span>
             </div>
             <Badge variant="secondary" className="text-xs">
               {order.Status}

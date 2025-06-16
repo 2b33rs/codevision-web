@@ -1,5 +1,6 @@
 import { BaseEntity } from "@/models/base.ts";
 import { z } from "zod";
+import { Order } from "@/models/order.ts";
 
 export enum ShirtSize {
   S = "S",
@@ -25,6 +26,7 @@ export type Product = CreateProductDto &
   BaseEntity & {
     currentStock: number;
     amountInProduction: number;
+    orders: Order[];
   };
 
 export type UpdateProductDto = Partial<CreateProductDto>;

@@ -39,6 +39,7 @@ const OrderTable = ({ setShowModal }: OrderTableProps) => {
 
   const {
     selectedOrder,
+    selectedOrders,
     selectedPositionIndex,
     isOpen,
     openSidebar,
@@ -115,9 +116,10 @@ const OrderTable = ({ setShowModal }: OrderTableProps) => {
       />
 
       {/* Sidebar für Positionsdetails */}
-      {selectedOrder && (
+      {(selectedOrder || selectedOrders) && (
         <PositionDetailsSidebar
-          order={selectedOrder}
+          order={selectedOrder || undefined}
+          orders={selectedOrders || undefined}
           isOpen={isOpen}
           onClose={closeSidebar}
           selectedPositionIndex={selectedPositionIndex}
