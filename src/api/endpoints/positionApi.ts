@@ -42,10 +42,31 @@ export const positionApi = baseApi.injectEndpoints({
         return { data: true };
       },
 
-      invalidatesTags: () => [
-        { type: "Order"},
-      ],
+      invalidatesTags: () => [{ type: "Order" }],
+    }),
 
+    requestFinishedGoods: builder.mutation<
+      {
+        orderNumber: string;
+        results: Array<{
+          id: string;
+          message: string;
+          newStatus: string;
+        }>;
+      },
+      {
+        orderNumber: string;
+        positions: Array<{
+          id: string;
+        }>;
+      }
+    >({
+      query: (requestData) => ({
+        url: "/position/request-finished-goods",
+        method: "POST",
+        body: requestData,
+      }),
+      invalidatesTags: () => [{ type: "Order" }],
     }),
   }),
 });
