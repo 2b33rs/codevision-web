@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import Fuse from "fuse.js";
-import type { JSX } from "react";
 
 import { orderApi } from "@/api/endpoints/orderApi.ts";
 import SelectablePositionsTable from "@/feature/produced-order/SelectPositionTable.tsx";
 import InvoicePDF from "@/feature/order/InvoicePDF.tsx";
 import DeliveryNotePDF from "@/feature/order/DeliveryNotePDF.tsx";
-import { FileText, Truck, PackageCheck } from "lucide-react";
+import { FileText, PackageCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 
 import type { Position } from "@/models/order";
