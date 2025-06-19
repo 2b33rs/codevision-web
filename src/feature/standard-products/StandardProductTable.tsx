@@ -7,7 +7,6 @@ import { WarehouseOrderCell } from "@/feature/standard-products/WarehouseOrderCe
 import { Col, Row } from "@/common/flex/Flex.tsx";
 import { CMYKColorField } from "@/components/CMYKColorField.tsx";
 import { DeleteDropdownButton } from "@/common/DeleteDropdownButton.tsx";
-import EditableNameCell from "@/feature/standard-products/EditableNameCell.tsx";
 import { ProductOrdersCell } from "@/feature/standard-products/ProductOrdersCell.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ const StandardProduct = ({ setShowModal }: StandardProductTableProps) => {
     {
       accessorKey: "name",
       header: "Name",
-      cell: ({ row }) => <EditableNameCell product={row.original} />,
+      cell: ({ row }) => row.original.name,
     },
 
     {
