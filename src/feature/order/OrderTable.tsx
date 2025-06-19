@@ -21,10 +21,14 @@ const CustomerCell = ({ customerId }: { customerId: string }) => {
   if (isError || !data)
     return <div className="text-sm text-red-500">Fehler</div>;
 
+  // Wenn data.name leer ist, zeige "Lager" als Standard
+  const displayName = data.name === "" ? "Lager" : data.name;
+  const displayEmail = data.name === "" ? "-" : data.email;
+
   return (
     <div className="text-sm">
-      <div className="font-medium">{data.name}</div>
-      <div className="text-muted-foreground">{data.email}</div>
+      <div className="font-medium">{displayName}</div>
+      <div className="text-muted-foreground">{displayEmail}</div>
     </div>
   );
 };
