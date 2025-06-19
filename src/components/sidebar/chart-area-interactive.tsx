@@ -29,38 +29,56 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group.tsx";
 
 export const description = "Ein interaktives Flächendiagramm";
 
+// Define generic chart data type
+export interface ChartDataPoint {
+  date: string;
+  [key: string]: string | number;
+}
+
 // Sample chart data for fallback
-const chartData = [
-  { date: "2024-04-01", desktop: 5, mobile: 10 },
-  { date: "2024-04-02", desktop: 7, mobile: 12 },
-  { date: "2024-04-03", desktop: 10, mobile: 8 },
-  { date: "2024-04-04", desktop: 12, mobile: 6 },
-  { date: "2024-04-05", desktop: 15, mobile: 5 },
-  { date: "2024-04-06", desktop: 18, mobile: 4 },
-  { date: "2024-04-07", desktop: 20, mobile: 3 },
+const chartData: ChartDataPoint[] = [
+  { date: "2024-04-01", completed: 5, inProgress: 10 },
+  { date: "2024-04-02", completed: 7, inProgress: 12 },
+  { date: "2024-04-03", completed: 10, inProgress: 8 },
+  { date: "2024-04-04", completed: 12, inProgress: 6 },
+  { date: "2024-04-05", completed: 15, inProgress: 5 },
+  { date: "2024-04-06", completed: 18, inProgress: 4 },
+  { date: "2024-04-07", completed: 20, inProgress: 3 },
 ];
 
-const chartConfig = {
-  visitors: {
+// Define chart series configuration
+export interface ChartSeries {
+  key: string;
+  label: string;
+  color: string;
+  fillId?: string;
+}
+
+// Default chart configuration
+const defaultChartConfig: ChartConfig = {
+  total: {
     label: "Positionen",
   },
-  desktop: {
+  completed: {
     label: "Abgeschlossene Positionen",
     color: "rgba(75, 192, 192, 0.7)", // Green for completed
   },
-  mobile: {
+  inProgress: {
     label: "Positionen in Bearbeitung",
     color: "rgba(255, 159, 64, 0.7)", // Orange for in progress
   },
-} satisfies ChartConfig;
+};
 
 export interface ChartAreaInteractiveProps {
-  data?: typeof chartData;
+  data?: ChartDataPoint[];
   title?: string;
   description?: {
     desktop?: string;
     mobile?: string;
   };
+  series?: ChartSeries[];
+  chartConfig?: ChartConfig;
+  onDateClick?: (data: ChartDataPoint) => void;
 }
 
 export function ChartAreaInteractive({
@@ -70,6 +88,22 @@ export function ChartAreaInteractive({
     desktop: "Abgeschlossene und in Bearbeitung befindliche Positionen im Zeitverlauf",
     mobile: "Positionen im Zeitverlauf"
   },
+  series = [
+    {
+      key: "completed",
+      label: "Abgeschlossene Positionen",
+      color: "rgba(75, 192, 192, 0.7)",
+      fillId: "fillCompleted"
+    },
+    {
+      key: "inProgress",
+      label: "Positionen in Bearbeitung",
+      color: "rgba(255, 159, 64, 0.7)",
+      fillId: "fillInProgress"
+    }
+  ],
+  chartConfig = defaultChartConfig,
+  onDateClick,
 }: ChartAreaInteractiveProps) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
@@ -143,32 +177,36 @@ export function ChartAreaInteractive({
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <AreaChart data={filteredData}>
+          <AreaChart 
+            data={filteredData}
+            onClick={(data) => {
+              if (onDateClick && data && data.activePayload && data.activePayload[0]) {
+                onDateClick(data.activePayload[0].payload);
+              }
+            }}
+          >
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="rgba(75, 192, 192, 0.7)" // Green for completed
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="rgba(75, 192, 192, 0.7)" // Green for completed
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="rgba(255, 159, 64, 0.7)" // Orange for in progress
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="rgba(255, 159, 64, 0.7)" // Orange for in progress
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
+              {series.map((s) => (
+                <linearGradient 
+                  key={s.fillId || `fill${s.key}`} 
+                  id={s.fillId || `fill${s.key}`} 
+                  x1="0" 
+                  y1="0" 
+                  x2="0" 
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={s.color}
+                    stopOpacity={1.0}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={s.color}
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              ))}
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -200,20 +238,16 @@ export function ChartAreaInteractive({
                 />
               }
             />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="rgba(255, 159, 64, 0.7)" // Orange for in progress
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="rgba(75, 192, 192, 0.7)" // Green for completed
-              stackId="a"
-            />
+            {series.map((s) => (
+              <Area
+                key={s.key}
+                dataKey={s.key}
+                type="natural"
+                fill={`url(#${s.fillId || `fill${s.key}`})`}
+                stroke={s.color}
+                stackId="a"
+              />
+            ))}
           </AreaChart>
         </ChartContainer>
       </CardContent>

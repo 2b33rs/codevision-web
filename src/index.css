@@ -138,3 +138,105 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Sehr sanfte, subtile Geldschein-Animation */
+@keyframes money-float {
+  0% {
+    transform: translateY(2px) scale(0.98);
+    opacity: 0.15;
+  }
+  25% {
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(-1px) scale(1);
+    opacity: 0.3;
+  }
+  75% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(2px) scale(0.98);
+    opacity: 0.15;
+  }
+}
+
+@keyframes money-shimmer {
+  0% {
+    opacity: 0.1;
+    transform: translateX(-1px) rotate(-1deg);
+  }
+  50% {
+    opacity: 0.25;
+    transform: translateX(1px) rotate(1deg);
+  }
+  100% {
+    opacity: 0.1;
+    transform: translateX(-1px) rotate(-1deg);
+  }
+}
+
+@keyframes money-glow {
+  0%, 100% {
+    opacity: 0.05;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.15;
+    filter: brightness(1.1);
+  }
+}
+
+/* Hauptanimation - sehr langsam und soft */
+.animate-money-float {
+  animation: money-float 6s ease-in-out infinite;
+}
+
+/* Sanftes Schimmern */
+.animate-money-shimmer {
+  animation: money-shimmer 8s ease-in-out infinite;
+}
+
+/* Subtiles Glühen */
+.animate-money-glow {
+  animation: money-glow 4s ease-in-out infinite;
+}
+
+/* Hover-Verstärkung - nur bei Hover sichtbarer */
+.group:hover .animate-money-float {
+  animation-duration: 3s;
+}
+
+.group:hover .animate-money-shimmer {
+  animation-duration: 4s;
+}
+
+.group:hover .money-icon {
+  opacity: 0.4 !important;
+}
+
+/* Sehr sanfte Partikel */
+@keyframes money-particle {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.1;
+  }
+  50% {
+    transform: translateY(-3px) translateX(1px) scale(0.8);
+    opacity: 0.15;
+  }
+  80% {
+    opacity: 0.05;
+  }
+  100% {
+    transform: translateY(-6px) translateX(-1px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.animate-money-particle {
+  animation: money-particle 10s ease-out infinite;
+}
