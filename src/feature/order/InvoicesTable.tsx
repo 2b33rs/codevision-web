@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Fuse from "fuse.js";
-import { pdf } from "@react-pdf/renderer";
 import type { JSX } from "react";
 
 import { orderApi } from "@/api/endpoints/orderApi.ts";
@@ -19,16 +18,7 @@ import {
 
 import type { Position } from "@/models/order";
 import { SearchInput } from "@/components/ui/search-input.tsx";
-
-const downloadPDF = async (component: JSX.Element, fileName: string) => {
-  const blob = await pdf(component).toBlob();
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  URL.revokeObjectURL(url);
-};
+import { downloadPDF } from "@/utils/pdfUtils";
 
 const InvoicesTable = () => {
   const { data: completedOrders = [] } =

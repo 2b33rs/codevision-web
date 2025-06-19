@@ -62,12 +62,12 @@ export const NAV_ABTEILUNGEN = [
   },
   {
     title: "Produktion",
-    url: "https://www.google.de/ref-to/prod",
+    url: "https://frontend-your-shirt-gmbh.vercel.app/",
     icon: IconBuildingFactory,
   },
   {
     title: "Materialverwaltung",
-    url: "https://www.google.de/ref-to/prod",
+    url: "https://mawi-frontend-c4g8d9befvdjg4ae.swedencentral-01.azurewebsites.net/",
     icon: IconBuildingFactory,
   },
 ];

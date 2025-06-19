@@ -13,10 +13,10 @@ import { PositionPreview } from "@/common/PositionPreview.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { useState } from "react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { InvoicePDF } from "@/components/pdf/Invoice";
-import { DeliveryNotePDF } from "@/components/pdf/DeliveryNotePDF.tsx";
+import InvoicePDF from "@/feature/order/InvoicePDF.tsx";
+import DeliveryNotePDF from "@/feature/order/DeliveryNotePDF.tsx";
 import { Col } from "@/common/flex/Flex.tsx";
+import { downloadPDF } from "@/utils/pdfUtils";
 
 const checklistLabels = [
   "Farbe innerhalb Toleranz",
@@ -131,29 +131,33 @@ export default function VisualCheckDialog({
               <Col f1>
                 {positions.length === 1 && (
                   <div className="mb-4 flex gap-4">
-                    <Button variant={"link"} asChild>
-                      <PDFDownloadLink
-                        document={<InvoicePDF position={positions[0]} />}
-                        fileName={`Rechnung_Position_${positions[0].pos_number}.pdf`}
-                      >
-                        {({ loading }) =>
-                          loading
-                            ? "Lade Rechnung..."
-                            : "📄 Rechnung herunterladen"
-                        }
-                      </PDFDownloadLink>
+                    <Button
+                      variant={"link"}
+                      onClick={() =>
+                        downloadPDF(
+                          <InvoicePDF
+                            positions={[positions[0]]}
+                            orderNumber={orderNumber}
+                          />,
+                          `Rechnung_Position_${positions[0].pos_number}.pdf`,
+                        )
+                      }
+                    >
+                      📄 Rechnung herunterladen
                     </Button>
-                    <Button variant={"link"} asChild>
-                      <PDFDownloadLink
-                        document={<DeliveryNotePDF position={positions[0]} />}
-                        fileName={`Lieferschein_Position_${positions[0].pos_number}.pdf`}
-                      >
-                        {({ loading }) =>
-                          loading
-                            ? "Lade Lieferschein..."
-                            : "📦 Lieferschein herunterladen"
-                        }
-                      </PDFDownloadLink>
+                    <Button
+                      variant={"link"}
+                      onClick={() =>
+                        downloadPDF(
+                          <DeliveryNotePDF
+                            positions={[positions[0]]}
+                            orderNumber={orderNumber}
+                          />,
+                          `Lieferschein_Position_${positions[0].pos_number}.pdf`,
+                        )
+                      }
+                    >
+                      📦 Lieferschein herunterladen
                     </Button>
                   </div>
                 )}
@@ -173,25 +177,21 @@ export default function VisualCheckDialog({
                       <label htmlFor={`check-${idx}`}>{label}</label>
                     </div>
 
-                        <Button
-                            variant="default"
-                            size="sm"
-                            className={`bg-red-500 text-white hover:bg-red-700 transition-colors ${
-                                checked[idx] ? "invisible" : ""
-                            }`}
-                            onClick={() =>
-                                setComplaintDialog({
-                                  reason: complaintReasons[idx],
-                                  positionId: positions[0].id,
-                                })
-                            }
-                        >
-                          Reklamieren
-                        </Button>
-
-
-
-
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className={`bg-red-500 text-white transition-colors hover:bg-red-700 ${
+                        checked[idx] ? "invisible" : ""
+                      }`}
+                      onClick={() =>
+                        setComplaintDialog({
+                          reason: complaintReasons[idx],
+                          positionId: positions[0].id,
+                        })
+                      }
+                    >
+                      Reklamieren
+                    </Button>
                   </div>
                 ))}
               </div>

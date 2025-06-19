@@ -1,16 +1,20 @@
-import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
+import {
+  Document,
+  Image,
+  Page,
+  StyleSheet,
+  Text,
+  View,
+} from "@react-pdf/renderer";
 import { Position } from "@/models/order.ts";
 import shirtIcon from "@/assets/shirt.png";
-import { cmykToRgb } from "@/lib/utils.ts"
+import { cmykToRgb } from "@/lib/utils.ts";
 import Decimal from "decimal.js";
-
 
 interface InvoicePDFProps {
   positions: Position[];
   orderNumber: string;
 }
-
-
 
 const styles = StyleSheet.create({
   page: {
@@ -21,7 +25,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom:10,
+    marginBottom: 10,
   },
   logo: {
     width: 40,
@@ -81,8 +85,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: "bold",
   },
-
-
 });
 
 const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
@@ -98,100 +100,103 @@ const InvoicePDF = ({ positions, orderNumber }: InvoicePDFProps) => {
     return acc.plus(price.times(amount));
   }, new Decimal(0));
 
-
-
   return (
-      <Document>
-        <Page size="A4" style={styles.page}>
-          {/* HEADER */}
-          <View style={styles.header}>
-            <Image src={shirtIcon} style={styles.logo} />
-            <Text style={styles.companyName}>YourShirt GmbH</Text>
-            <Text style={styles.companySlogan}>Individuelle Kleidung für Dich</Text>
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <Image src={shirtIcon} style={styles.logo} />
+          <Text style={styles.companyName}>YourShirt GmbH</Text>
+          <Text style={styles.companySlogan}>
+            Individuelle Kleidung für Dich
+          </Text>
+        </View>
+
+        {/* RECHNUNGSINFO */}
+        <View style={styles.invoiceInfo}>
+          <View style={styles.invoiceRow}>
+            <View>
+              <Text>RECHNUNG AN:</Text>
+              <Text>Max Mustermann</Text>
+              <Text>Musterstraße 1</Text>
+              <Text>12345 Musterstadt</Text>
+            </View>
+            <View style={{ alignItems: "flex-end" }}>
+              <Text>Rechnung Nr. {orderNumber}</Text>
+              <Text>{today}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* TABELLE */}
+        <View>
+          <View style={styles.tableHeader}>
+            <Text style={styles.cell}>Pos</Text>
+            <Text style={styles.cell}>Anzahl</Text>
+            <Text style={styles.cell}>Farbe</Text>
+            <Text style={styles.cell}>Größe</Text>
+            <Text style={styles.cell}>€/Stk.</Text>
+            <Text style={styles.cell}>Summe</Text>
           </View>
 
-          {/* RECHNUNGSINFO */}
-          <View style={styles.invoiceInfo}>
-            <View style={styles.invoiceRow}>
-              <View>
-                <Text>RECHNUNG AN:</Text>
-                <Text>Max Mustermann</Text>
-                <Text>Musterstraße 1</Text>
-                <Text>12345 Musterstadt</Text>
+          {positions.map((pos, idx) => {
+            const posNumber = pos.pos_number?.toString() || "";
+            const amount = pos.amount || 0;
+            const color = pos.color || "";
+            const shirtSize = pos.shirtSize || "";
+            const [r, g, b] = cmykToRgb(color);
+            const price = new Decimal(pos.price ?? "10");
+            const amountDecimal = new Decimal(amount);
+            const sum = price.times(amountDecimal);
+
+            return (
+              <View key={idx} style={styles.row}>
+                <Text style={styles.cell}>{posNumber}</Text>
+                <Text style={styles.cell}>{amount}</Text>
+                <View
+                  style={[
+                    styles.cell,
+                    { flexDirection: "row", alignItems: "center" },
+                  ]}
+                >
+                  {color ? (
+                    <View
+                      style={[
+                        styles.colorBox,
+                        { backgroundColor: `rgb(${r}, ${g}, ${b})` },
+                      ]}
+                    />
+                  ) : null}
+                </View>
+                <Text style={styles.cell}>{shirtSize}</Text>
+                <Text style={styles.cell}>{price.toFixed(2)} €</Text>
+                <Text style={styles.cell}>{sum.toFixed(2)} €</Text>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text>Rechnung Nr. {orderNumber}</Text>
-                <Text>{today}</Text>
-              </View>
-            </View>
+            );
+          })}
+        </View>
+
+        {/* FOOTER */}
+        <View style={styles.footer}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              marginRight: 43,
+              paddingBottom: 30,
+            }}
+          >
+            <Text style={{ fontSize: 12, fontWeight: "bold" }}>
+              Gesamtsumme: {totalSum.toFixed(2)} €
+            </Text>
           </View>
 
-          {/* TABELLE */}
-          <View>
-            <View style={styles.tableHeader}>
-              <Text style={styles.cell}>Pos</Text>
-              <Text style={styles.cell}>Anzahl</Text>
-              <Text style={styles.cell}>Farbe</Text>
-              <Text style={styles.cell}>Größe</Text>
-              <Text style={styles.cell}>€/Stk.</Text>
-              <Text style={styles.cell}>Summe</Text>
-            </View>
-
-            {positions.map((pos, idx) => {
-              const posNumber = pos.pos_number?.toString() || "";
-              const amount = pos.amount || 0;
-              const color = pos.color || "";
-              const shirtSize = pos.shirtSize || "";
-              const [r, g, b] = cmykToRgb(color);
-              const price = new Decimal(pos.price ?? "10");
-              const amountDecimal = new Decimal(amount);
-              const sum = price.times(amountDecimal);
-
-
-              return (
-                  <View key={idx} style={styles.row}>
-                    <Text style={styles.cell}>{posNumber}</Text>
-                    <Text style={styles.cell}>{amount}</Text>
-                    <View style={[styles.cell, { flexDirection: "row", alignItems: "center" }]}>
-                      {color ? (
-                          <View
-                              style={[
-                                styles.colorBox,
-                                { backgroundColor: `rgb(${r}, ${g}, ${b})` },
-                              ]}
-                          />
-                      ) : null}
-                    </View>
-                    <Text style={styles.cell}>{shirtSize}</Text>
-                    <Text style={styles.cell}>
-                      {price.toFixed(2)} €
-                    </Text>
-                    <Text style={styles.cell}>
-                      {sum.toFixed(2)} €
-                    </Text>
-                  </View>
-              );
-            })}
-          </View>
-
-
-
-
-
-          {/* FOOTER */}
-          <View style={styles.footer}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-end", marginRight: 43, paddingBottom:30 }}>
-              <Text style={{ fontSize: 12, fontWeight: "bold" }}>
-                Gesamtsumme: {totalSum.toFixed(2)} €
-              </Text>
-            </View>
-
-            <Text>Zahlungsempfänger: YourShirt GmbH</Text>
-            <Text>IBAN: DE01234567890123456789 · BIC: TESTBICXXX</Text>
-            <Text>Bank: Musterbank</Text>
-          </View>
-        </Page>
-      </Document>
+          <Text>Zahlungsempfänger: YourShirt GmbH</Text>
+          <Text>IBAN: DE01234567890123456789 · BIC: TESTBICXXX</Text>
+          <Text>Bank: Musterbank</Text>
+        </View>
+      </Page>
+    </Document>
   );
 };
 
