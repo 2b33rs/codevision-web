@@ -76,11 +76,13 @@ export function WarehouseOrderCell({ product }: { product: Product }) {
 
           <Input
             type="number"
-            placeholder="z. B. 50"
+            placeholder="max. 450"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             className="h-8 px-2 text-sm"
             disabled={isLoading}
+            max={450}
+            min={1}
           />
 
           <Button
