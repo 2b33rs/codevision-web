@@ -47,13 +47,13 @@ export default function PositionList({
               amount: 1,
               pos_number: fields.length + 1,
               name: "",
-              productCategory: "T-SHIRT",
+              productCategory: "T-Shirt",
               color: "cmyk(0,0,0,100)",
               shirtSize: groessen[0] ?? "",
               design: typen[0] ?? "",
               typ: typen[0] ? [typen[0]] : [],
               description: null,
-                price: "0,00",
+              price: "0,00",
             })
           }
         >
