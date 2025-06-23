@@ -5,6 +5,7 @@ import {
   IconCircleCheck,
   IconLoader2,
   IconTruckLoading,
+  IconPackageExport,
 } from "@tabler/icons-react";
 import React from "react";
 
@@ -12,6 +13,7 @@ export type PositionStatus =
   | "IN_PROGRESS" //
   | "READY_FOR_PICKUP" //
   | "READY_FOR_INSPECTION" //
+  | "OUTSOURCING_REQUESTED"
   | "INSPECTED"
   | "COMPLETED"
   | "CANCELLED"
@@ -38,6 +40,11 @@ const config: Record<
   READY_FOR_INSPECTION: {
     label: "Ausgelagert",
     color: "bg-purple-100 text-purple-800",
+    icon: <IconPackageExport className="mr-1 h-4 w-4" />,
+  },
+  OUTSOURCING_REQUESTED: {
+    label: "Outsourcing angefragt",
+    color: "bg-blue-100 text-blue-800",
     icon: <IconTruckLoading className="mr-1 h-4 w-4" />,
   },
   INSPECTED: {
