@@ -50,7 +50,7 @@ export default function PositionList({
               productCategory: "T-Shirt",
               color: "cmyk(0,0,0,100)",
               shirtSize: groessen[0] ?? "",
-              design: typen[0] ?? "",
+              design: "",
               typ: typen[0] ? [typen[0]] : [],
               description: null,
               price: "0,00",
