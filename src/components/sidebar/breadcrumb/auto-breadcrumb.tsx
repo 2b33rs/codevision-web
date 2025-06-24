@@ -23,6 +23,8 @@ export function AutoBreadcrumb() {
   return (
     <Breadcrumb>
       <Row gap={1}>
+        <span className={"text-muted-foreground"}>Verkauf & Versand</span>
+        <ChevronRight size={14} className="text-muted-foreground my-auto" />
         {breadcrumbs.map((crumb, idx) => {
           const isActive = crumb.path === activePath;
           return (
