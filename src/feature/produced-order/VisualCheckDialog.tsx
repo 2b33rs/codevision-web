@@ -48,7 +48,7 @@ export default function VisualCheckDialog({
   onOpenChange: (val: boolean) => void;
 }) {
   const [patchPosition] = positionApi.usePatchPositionMutation();
-  const [createComplaint] = useCreateComplaintMutation();
+  const [createComplaint, { isLoading }] = useCreateComplaintMutation();
   const [checked, setChecked] = useState<boolean[]>(new Array(5).fill(false));
   const [complaintDialog, setComplaintDialog] = useState<{
     positionId: string;
@@ -224,6 +224,7 @@ export default function VisualCheckDialog({
             <div className="flex justify-end gap-2">
               <Button
                 variant="secondary"
+                disabled={isLoading}
                 onClick={() =>
                   complaintDialog &&
                   submitComplaint(
@@ -236,6 +237,7 @@ export default function VisualCheckDialog({
                 Nein
               </Button>
               <Button
+                disabled={isLoading}
                 onClick={() =>
                   complaintDialog &&
                   submitComplaint(
