@@ -39,7 +39,7 @@ const PositionDisplayRow = ({
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-auto p-2">
-        <PositionPreview pos={position} />
+        <PositionPreview pos={position}/>
       </HoverCardContent>
     </HoverCard>
   );

@@ -6,6 +6,7 @@ import {
   IconPackage,
   IconTruck,
   IconUser,
+  IconBuildingWarehouse,
 } from "@tabler/icons-react";
 import Dashboard from "@/feature/dashboard/Dashboard.tsx";
 import Order from "@/feature/order/Order.tsx";
@@ -41,7 +42,7 @@ export const NAV_MAIN = [
   },
 
   {
-    title: "Lagerbestand",
+    title: "Fertigware",
     url: "/fertigware",
     icon: IconPackage,
     element: <ProducedOrder />,
@@ -66,8 +67,8 @@ export const NAV_ABTEILUNGEN = [
     icon: IconBuildingFactory,
   },
   {
-    title: "Materialverwaltung",
+    title: "Materialwirtschaft",
     url: "https://mawi-frontend-c4g8d9befvdjg4ae.swedencentral-01.azurewebsites.net/",
-    icon: IconBuildingFactory,
+    icon: IconBuildingWarehouse,
   },
 ];

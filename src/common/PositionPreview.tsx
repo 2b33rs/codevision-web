@@ -4,13 +4,19 @@ import { Position } from "@/models/order.ts";
 import { cmykToRGB, parseCMYK } from "@/lib/colorUtils.ts";
 import { ProductionOrderList } from "@/common/ProductionOrderList.tsx";
 import { CancelPositionButton } from "@/feature/order/CancelPosition.tsx";
+import { RequestPositionButton } from "@/feature/order/RequestPosition";
+
 
 export function PositionPreview({
   pos,
+    orderNumber,
   onUpdate,
+    isOrderPage = false,
 }: {
   pos: Position;
+  orderNumber?: string;
   onUpdate?: () => void;
+  isOrderPage?: boolean;
 }) {
   const fillColor = parseCMYK(pos.color || "cmyk(0%,0%,0%,100%)");
 
@@ -58,6 +64,13 @@ export function PositionPreview({
       <div className="mt-4 border-t pt-4">
         <ProductionOrderList productionOrders={pos.productionOrders} />
       </div>
+
+        {/* Neue Schaltfläche zum Anfordern */}
+        {isOrderPage&&(
+        <div className="mt-4 border-t pt-4">
+            <RequestPositionButton position={pos} orderNumber={orderNumber} onSuccess={onUpdate} />
+        </div>
+        )}
 
       {/* Stornieren Button */}
       <div className="mt-4 border-t pt-4">

@@ -23,7 +23,6 @@ type Action = {
 type Props = {
   positions: Position[];
   orderNumber: string;
-  // neu: übergib den Kundennamen als Prop
   customerName?: string;
   selectableStatus: Position["Status"] | Position["Status"][];
   actions: Action[];
@@ -32,26 +31,26 @@ type Props = {
 };
 
 const SelectablePositionsTable = ({
-  positions,
-  orderNumber,
-  customerName,
-  selectableStatus,
-  actions,
-  singleSelect = false,
-}: Props) => {
+                                    positions,
+                                    orderNumber,
+                                    customerName,
+                                    selectableStatus,
+                                    actions,
+                                    singleSelect = false,
+                                  }: Props) => {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const selectedPositions = positions.filter((pos) => rowSelection[pos.id]);
   const selectedCount = selectedPositions.length;
 
   const isSelectable = (status: Position["Status"]) =>
-    Array.isArray(selectableStatus)
-      ? selectableStatus.includes(status)
-      : selectableStatus === status;
+      Array.isArray(selectableStatus)
+          ? selectableStatus.includes(status)
+          : selectableStatus === status;
 
   const columns: ColumnDef<Position>[] = [
     ...(singleSelect
-      ? [
+        ? [
           {
             id: "action_button",
             header: () => "Aktion",
@@ -61,35 +60,35 @@ const SelectablePositionsTable = ({
               if (!canSelect) return null;
 
               return (
-                <div title={"Visueller Check durchführen"}>
-                  <SearchCheck
-                    className="text-primary hover:text-primary/70 h-5 w-5 cursor-pointer transition-colors"
-                    onClick={() => {
-                      const action = actions[0];
-                      action.onConfirm([pos], orderNumber);
-                    }}
-                  />
-                </div>
+                  <div title={"Visueller Check durchführen"}>
+                    <SearchCheck
+                        className="text-primary hover:text-primary/70 h-5 w-5 cursor-pointer transition-colors"
+                        onClick={() => {
+                          const action = actions[0];
+                          action.onConfirm([pos], orderNumber);
+                        }}
+                    />
+                  </div>
               );
             },
             enableSorting: false,
             enableHiding: false,
           },
         ]
-      : [
+        : [
           {
             id: "select",
             header: ({ table }: HeaderContext<Position, unknown>) => {
               const rows = table.getFilteredRowModel().rows;
               const selectableRows = rows.filter((row) =>
-                isSelectable(row.original.Status),
+                  isSelectable(row.original.Status),
               );
 
               const allSelected = selectableRows.every(
-                (row) => rowSelection[row.id],
+                  (row) => rowSelection[row.id],
               );
               const someSelected = selectableRows.some(
-                (row) => rowSelection[row.id],
+                  (row) => rowSelection[row.id],
               );
 
               const handleSelectAll = (checked: boolean) => {
@@ -101,15 +100,15 @@ const SelectablePositionsTable = ({
               };
 
               return (
-                <Input
-                  type="checkbox"
-                  ref={(el) => {
-                    if (el) el.indeterminate = someSelected && !allSelected;
-                  }}
-                  checked={allSelected && selectableRows.length > 0}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  aria-label="Alle auswählen"
-                />
+                  <Input
+                      type="checkbox"
+                      ref={(el) => {
+                        if (el) el.indeterminate = someSelected && !allSelected;
+                      }}
+                      checked={allSelected && selectableRows.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      aria-label="Alle auswählen"
+                  />
               );
             },
             cell: ({ row }: { row: Row<Position> }) => {
@@ -120,22 +119,22 @@ const SelectablePositionsTable = ({
               const handleChange = (checked: boolean) => {
                 if (!canSelect) return;
                 setRowSelection((prev) =>
-                  checked
-                    ? { ...prev, [row.id]: true }
-                    : Object.fromEntries(
-                        Object.entries(prev).filter(([id]) => id !== row.id),
-                      ),
+                    checked
+                        ? { ...prev, [row.id]: true }
+                        : Object.fromEntries(
+                            Object.entries(prev).filter(([id]) => id !== row.id),
+                        ),
                 );
               };
 
               return (
-                <Input
-                  type="checkbox"
-                  checked={isSelected}
-                  disabled={!canSelect}
-                  onChange={(e) => handleChange(e.target.checked)}
-                  aria-label="Zeile auswählen"
-                />
+                  <Input
+                      type="checkbox"
+                      checked={isSelected}
+                      disabled={!canSelect}
+                      onChange={(e) => handleChange(e.target.checked)}
+                      aria-label="Zeile auswählen"
+                  />
               );
             },
             enableSorting: false,
@@ -145,15 +144,14 @@ const SelectablePositionsTable = ({
     {
       id: "pos_details",
       cell: ({ row }: { row: Row<Position> }) => (
-        <PositionDetails position={row.original} />
+          <PositionDetails position={row.original} />
       ),
     },
   ];
 
   return (
-    <DataTable
-      toolbar={
-        <FlexRow f1 gap={0} justify="between">
+      <>
+        <FlexRow f1 gap={0} justify="between" className="mb-4">
           <div>
             <h2 className="text-lg font-medium">Bestellung {orderNumber}</h2>
             <p className="text-sm text-gray-600">
@@ -161,56 +159,65 @@ const SelectablePositionsTable = ({
             </p>
           </div>
 
-          {!singleSelect && selectedCount > 0 && (
-            <div className="flex space-x-2">
-              {actions.map((action, idx) =>
-                action.renderDropdown ? (
-                  <DropdownMenu key={idx}>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="default" size="sm">
-                        {action.label} ({selectedCount})
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <Col>
-                        {action.content?.(selectedPositions, orderNumber)}
+          {!singleSelect && (
+              <div className="flex space-x-2">
+                {actions.map((action, idx) =>
+                    action.renderDropdown ? (
+                        <DropdownMenu key={idx}>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                disabled={selectedCount === 0}
+                                className={selectedCount === 0 ? "opacity-50 cursor-not-allowed" : ""}
+                            >
+                              {action.label} ({selectedCount})
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <Col>
+                              {action.content?.(selectedPositions, orderNumber)}
+                              <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => {
+                                    action.onConfirm(selectedPositions, orderNumber);
+                                    setRowSelection({});
+                                  }}
+                              >
+                                {action.label}
+                              </Button>
+                            </Col>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
                         <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => {
-                            action.onConfirm(selectedPositions, orderNumber);
-                            setRowSelection({});
-                          }}
+                            key={idx}
+                            variant="default"
+                            size="sm"
+                            disabled={selectedCount === 0}
+                            className={selectedCount === 0 ? "opacity-50 cursor-not-allowed" : ""}
+                            onClick={() => {
+                              action.onConfirm(selectedPositions, orderNumber);
+                              setRowSelection({});
+                            }}
                         >
-                          {action.label}
+                          {action.label} ({selectedCount})
                         </Button>
-                      </Col>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button
-                    key={idx}
-                    variant="default"
-                    size="sm"
-                    onClick={() => {
-                      action.onConfirm(selectedPositions, orderNumber);
-                      setRowSelection({});
-                    }}
-                  >
-                    {action.label} ({selectedCount})
-                  </Button>
-                ),
-              )}
-            </div>
+                    )
+                )}
+              </div>
           )}
         </FlexRow>
-      }
-      data={positions}
-      columns={columns}
-      search={false}
-      rowSelection={rowSelection}
-      onRowSelectionChange={setRowSelection}
-    />
+
+        <DataTable
+            data={positions}
+            columns={columns}
+            search={false}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+        />
+      </>
   );
 };
 

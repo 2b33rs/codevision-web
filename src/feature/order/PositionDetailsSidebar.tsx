@@ -207,7 +207,7 @@ export function PositionDetailsSidebar({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
-          {currentPosition && <PositionPreview pos={currentPosition} />}
+          {currentPosition && <PositionPreview pos={currentPosition} orderNumber={currentOrder.orderNumber} isOrderPage={true}/>}
         </div>
       </div>
     </>
