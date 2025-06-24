@@ -39,6 +39,8 @@ export default function CreateOrderForm({
           color: "cmyk(0,0,0,0)",
           design: "",
           price: "0,00",
+          isFromTemplate: false,
+          name:""
         },
       ],
     },
@@ -51,7 +53,7 @@ export default function CreateOrderForm({
 
   const onSubmit = form.handleSubmit(
     async (data) => {
-      console.log("📦 Gesendeter Body:", data); // <-- Hier wird der Body geloggt
+      console.log("📦 Gesendeter Body:", data);
       try {
         const result = await createOrder(data).unwrap();
         toast.success("Bestellung erstellt:", result);

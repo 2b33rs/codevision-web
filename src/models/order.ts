@@ -31,6 +31,7 @@ export const positionInputZ = z.object({
     .optional(),
 
   price: z.string(),
+  isFromTemplate: z.boolean().optional(),
 });
 
 export const createOrderFormZ = z.object({
